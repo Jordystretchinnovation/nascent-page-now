@@ -18,6 +18,11 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				'sans': ['FuturaPT-Book', 'system-ui', 'sans-serif'],
+				'heading': ['FuturaPT-Medium', 'system-ui', 'sans-serif'],
+				'body': ['FuturaPT-Book', 'system-ui', 'sans-serif'],
+			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -62,15 +67,6 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				}
-			},
-			backgroundImage: {
-				'gradient-subtle': 'var(--gradient-subtle)',
-			},
-			boxShadow: {
-				'soft': 'var(--shadow-soft)',
-			},
-			transitionProperty: {
-				'smooth': 'var(--transition-smooth)',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

@@ -1,23 +1,57 @@
-<!DOCTYPE html>
+
+<!doctype html>
 <html lang="en">
   <head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-MDFJRCF4');</script>
+    <!-- End Google Tag Manager -->
+    
     <meta charset="UTF-8" />
+    <link rel="icon" href="/lovable-uploads/8b17549f-f7b4-4ddc-ba99-08d7151df091.png" type="image/png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>nascent-page-now</title>
-    <meta name="description" content="Lovable Generated Project" />
-    <meta name="author" content="Lovable" />
-
-    <meta property="og:title" content="nascent-page-now" />
-    <meta property="og:description" content="Lovable Generated Project" />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
-
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@lovable_dev" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    
+    <!-- Default Dutch meta tags -->
+    <title>Keramische werkbladen voor keukenbouwers | Covarte</title>
+    <meta name="description" content="Topkwaliteit keramische bladen aan een scherpe prijs. Vraag gratis stalen of ons Collection Lookbook aan of bestel met 50% korting." />
+    
+    <!-- French meta tags for French pages -->
+    <script>
+      // Set French meta tags based on current path
+      if (window.location.pathname.startsWith('/fr/')) {
+        const path = window.location.pathname;
+        let title = "Plans de travail céramiques pour cuisinistes | Covarte";
+        let description = "Plans de travail céramiques de qualité supérieure à prix compétitif. Demandez des échantillons gratuits ou notre Collection Lookbook.";
+        
+        if (path.includes('echantillons-gratuits')) {
+          title = "Échantillons gratuits - Plans de travail céramiques | Covarte";
+          description = "Découvrez nos matériaux premium avec des échantillons gratuits. Plans de travail céramiques de qualité pour cuisinistes professionnels.";
+        } else if (path.includes('lookbook')) {
+          title = "Collection Lookbook - Inspirations cuisine | Covarte";
+          description = "Découvrez notre Collection Lookbook avec les dernières tendances en matière de plans de travail céramiques pour cuisines modernes.";
+        } else if (path.includes('tendances-cuisine')) {
+          title = "Tendances cuisine 2024 - Guide inspiration | Covarte";
+          description = "Découvrez les dernières tendances cuisine 2024. Guide complet des couleurs, matériaux et styles pour plans de travail céramiques.";
+        } else if (path.includes('reduction')) {
+          title = "Offre spéciale - 50% de réduction | Covarte";
+          description = "Profitez de notre offre exceptionnelle : 50% de réduction sur une sélection de plans de travail céramiques premium.";
+        }
+        
+        document.title = title;
+        document.querySelector('meta[name="description"]').setAttribute('content', description);
+        document.documentElement.lang = 'fr';
+      }
+    </script>
   </head>
-
   <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-MDFJRCF4"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
