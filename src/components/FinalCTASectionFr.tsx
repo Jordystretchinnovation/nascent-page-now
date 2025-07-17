@@ -18,7 +18,7 @@ const FinalCTASectionFr = () => {
       
       <div className="relative z-10 max-w-3xl mx-auto text-center">
         <h2 className="font-heading text-3xl md:text-4xl mb-12 leading-relaxed w-3/4 mx-auto">
-          Découvrez la qualité de Covarte. À votre rythme.
+          Découvrez la qualité de Covarte.
         </h2>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
