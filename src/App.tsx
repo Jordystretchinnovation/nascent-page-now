@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import CookieBanner from "@/components/CookieBanner";
 import CookieBannerFr from "@/components/CookieBannerFr";
 import Index from "./pages/Index";
+import IndexFr from "./pages/IndexFr";
 import GratisStalen from "./pages/GratisStalen";
 import Lookbook from "./pages/Lookbook";
 import Keukentrends from "./pages/Keukentrends";
@@ -46,6 +47,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/fr" element={<IndexFr />} />
           <Route path="/gratis-stalen" element={<GratisStalen />} />
           <Route path="/lookbook" element={<Lookbook />} />
           <Route path="/keukentrends" element={<Keukentrends />} />
