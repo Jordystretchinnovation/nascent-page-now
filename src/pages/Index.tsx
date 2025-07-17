@@ -7,6 +7,8 @@ import FinalCTASection from "@/components/FinalCTASection";
 import Footer from "@/components/Footer";
 
 const Index = () => {
+  console.log("Index page rendering");
+  
   return (
     <div className="min-h-screen bg-stone-50">
       <HeroSection />

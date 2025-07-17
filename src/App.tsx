@@ -30,50 +30,63 @@ import Cookiebeleid from "./pages/Cookiebeleid";
 import PolitiqueCookies from "./pages/PolitiqueCookies";
 import Admin from "./pages/Admin";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      retry: 1,
+    },
+  },
+});
 
 const CookieBannerWrapper = () => {
   const location = useLocation();
   const isFrenchPage = location.pathname.startsWith('/fr/');
   
+  console.log("CookieBannerWrapper rendering for path:", location.pathname);
+  
   return isFrenchPage ? <CookieBannerFr /> : <CookieBanner />;
 };
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/fr" element={<IndexFr />} />
-          <Route path="/gratis-stalen" element={<GratisStalen />} />
-          <Route path="/lookbook" element={<Lookbook />} />
-          <Route path="/keukentrends" element={<Keukentrends />} />
-          <Route path="/korting" element={<Korting />} />
-          <Route path="/fr/echantillons-gratuits" element={<GratisStatenFr />} />
-          <Route path="/fr/lookbook" element={<LookbookFr />} />
-          <Route path="/fr/tendances-cuisine" element={<KeuketrendsFr />} />
-          <Route path="/fr/reduction" element={<KortingFr />} />
-          <Route path="/cookiebeleid" element={<Cookiebeleid />} />
-          <Route path="/fr/politique-cookies" element={<PolitiqueCookies />} />
-          <Route path="/admin" element={<Admin />} />
-          <Route path="/thank-you/stalen" element={<ThankYouStalen />} />
-          <Route path="/thank-you/collection-lookbook" element={<ThankYouCollectionLookbook />} />
-          <Route path="/thank-you/keukentrends" element={<ThankYouKeukentrends />} />
-          <Route path="/thank-you/korting" element={<ThankYouKorting />} />
-          <Route path="/fr/merci/echantillons" element={<ThankYouStalenFr />} />
-          <Route path="/fr/merci/collection-lookbook" element={<ThankYouCollectionLookbookFr />} />
-          <Route path="/fr/merci/tendances-cuisine" element={<ThankYouKeuketrendsFr />} />
-          <Route path="/fr/merci/reduction" element={<ThankYouKortingFr />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <CookieBannerWrapper />
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+const App = () => {
+  console.log("App component rendering");
+  
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/fr" element={<IndexFr />} />
+            <Route path="/gratis-stalen" element={<GratisStalen />} />
+            <Route path="/lookbook" element={<Lookbook />} />
+            <Route path="/keukentrends" element={<Keukentrends />} />
+            <Route path="/korting" element={<Korting />} />
+            <Route path="/fr/echantillons-gratuits" element={<GratisStatenFr />} />
+            <Route path="/fr/lookbook" element={<LookbookFr />} />
+            <Route path="/fr/tendances-cuisine" element={<KeuketrendsFr />} />
+            <Route path="/fr/reduction" element={<KortingFr />} />
+            <Route path="/cookiebeleid" element={<Cookiebeleid />} />
+            <Route path="/fr/politique-cookies" element={<PolitiqueCookies />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/thank-you/stalen" element={<ThankYouStalen />} />
+            <Route path="/thank-you/collection-lookbook" element={<ThankYouCollectionLookbook />} />
+            <Route path="/thank-you/keukentrends" element={<ThankYouKeukentrends />} />
+            <Route path="/thank-you/korting" element={<ThankYouKorting />} />
+            <Route path="/fr/merci/echantillons" element={<ThankYouStalenFr />} />
+            <Route path="/fr/merci/collection-lookbook" element={<ThankYouCollectionLookbookFr />} />
+            <Route path="/fr/merci/tendances-cuisine" element={<ThankYouKeuketrendsFr />} />
+            <Route path="/fr/merci/reduction" element={<ThankYouKortingFr />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          <CookieBannerWrapper />
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
