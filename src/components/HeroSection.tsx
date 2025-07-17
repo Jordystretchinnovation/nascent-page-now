@@ -1,11 +1,10 @@
 
+import React, { memo } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import CTAForm from "./CTAForm";
 
-const HeroSection = () => {
-  console.log("HeroSection rendering");
-  
+const HeroSection = memo(() => {
   return (
     <section className="relative bg-gradient-to-b from-stone-800 to-stone-700 text-white py-32 px-6 overflow-hidden">
       {/* Background Image */}
@@ -68,6 +67,6 @@ const HeroSection = () => {
       </div>
     </section>
   );
-};
+});
 
 export default HeroSection;

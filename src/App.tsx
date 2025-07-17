@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { memo } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -35,22 +35,20 @@ const queryClient = new QueryClient({
     queries: {
       staleTime: 1000 * 60 * 5, // 5 minutes
       retry: 1,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
     },
   },
 });
 
-const CookieBannerWrapper = () => {
+const CookieBannerWrapper = memo(() => {
   const location = useLocation();
   const isFrenchPage = location.pathname.startsWith('/fr/');
   
-  console.log("CookieBannerWrapper rendering for path:", location.pathname);
-  
   return isFrenchPage ? <CookieBannerFr /> : <CookieBanner />;
-};
+});
 
-const App = () => {
-  console.log("App component rendering");
-  
+const App = memo(() => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -87,6 +85,6 @@ const App = () => {
       </TooltipProvider>
     </QueryClientProvider>
   );
-};
+});
 
 export default App;
