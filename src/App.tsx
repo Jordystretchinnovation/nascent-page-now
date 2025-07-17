@@ -1,5 +1,5 @@
 
-import React, { memo } from "react";
+import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -41,14 +41,14 @@ const queryClient = new QueryClient({
   },
 });
 
-const CookieBannerWrapper = memo(() => {
+const CookieBannerWrapper = () => {
   const location = useLocation();
   const isFrenchPage = location.pathname.startsWith('/fr/');
   
   return isFrenchPage ? <CookieBannerFr /> : <CookieBanner />;
-});
+};
 
-const App = memo(() => {
+const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
@@ -85,6 +85,6 @@ const App = memo(() => {
       </TooltipProvider>
     </QueryClientProvider>
   );
-});
+};
 
 export default App;
