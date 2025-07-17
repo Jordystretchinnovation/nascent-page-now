@@ -14,7 +14,7 @@ const FooterFr = () => {
               className="h-8 w-auto mb-4" 
             />
             <p className="font-body text-stone-300 leading-relaxed mb-4">
-              Plans de travail en céramique de qualité supérieure pour cuisinistes professionnels. 
+              Découvrez la qualité de Covarte. 
               Fabriqués en Belgique avec 90 ans d'expertise.
             </p>
             <div className="text-stone-300">
