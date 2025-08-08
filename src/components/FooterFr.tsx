@@ -49,6 +49,26 @@ const FooterFr = () => {
                   Politique de cookies
                 </Link>
               </li>
+              <li>
+                <a 
+                  href="https://www.iubenda.com/privacy-policy/59860343" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="font-body text-stone-300 hover:text-white transition-colors"
+                >
+                  Privacy policy
+                </a>
+              </li>
+              <li>
+                <a 
+                  href="https://www.iubenda.com/privacy-policy/59860343/cookie-policy" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="font-body text-stone-300 hover:text-white transition-colors"
+                >
+                  Cookie policy
+                </a>
+              </li>
             </ul>
           </div>
           

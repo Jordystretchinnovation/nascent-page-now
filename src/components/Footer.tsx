@@ -41,6 +41,22 @@ const Footer = () => {
                 >
                   Algemene verkoopsvoorwaarden
                 </a>
+                <a 
+                  href="https://www.iubenda.com/privacy-policy/59860343" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="hover:text-stone-300 transition-colors"
+                >
+                  Privacy policy
+                </a>
+                <a 
+                  href="https://www.iubenda.com/privacy-policy/59860343/cookie-policy" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="hover:text-stone-300 transition-colors"
+                >
+                  Cookie policy
+                </a>
               </div>
             </div>
             
