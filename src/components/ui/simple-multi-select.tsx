@@ -105,15 +105,20 @@ export function SimpleMultiSelect({
             safeOptions.map((option) => (
               <div
                 key={option.value}
-                className="flex items-center space-x-2 px-2 py-2 cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-sm"
+                className="flex items-center space-x-3 px-3 py-2 cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-md"
                 onClick={() => handleSelect(option.value)}
               >
-                <div className="flex items-center justify-center w-4 h-4 border border-primary rounded-sm">
+                <div className={cn(
+                  "flex items-center justify-center w-4 h-4 border-2 rounded-sm transition-colors",
+                  safeSelected.includes(option.value) 
+                    ? "bg-primary border-primary" 
+                    : "border-muted-foreground/30 hover:border-primary"
+                )}>
                   {safeSelected.includes(option.value) && (
-                    <Check className="h-3 w-3 text-primary" />
+                    <Check className="h-3 w-3 text-primary-foreground" />
                   )}
                 </div>
-                <span className="text-sm">{option.label}</span>
+                <span className="text-sm flex-1">{option.label}</span>
               </div>
             ))
           ) : (
