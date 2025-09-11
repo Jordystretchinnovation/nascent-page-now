@@ -5,8 +5,11 @@ import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { SubmissionsTable } from "@/components/admin/SubmissionsTable";
 import { UTMAnalytics } from "@/components/admin/UTMAnalytics";
+import { Download } from "lucide-react";
+import * as XLSX from 'xlsx';
 
 interface FormSubmission {
   id: string;
@@ -134,6 +137,89 @@ const Admin = () => {
     }
   };
 
+  const exportToExcel = () => {
+    try {
+      // Transform data for Excel with proper column names
+      const excelData = submissions.map(submission => ({
+        'ID': submission.id,
+        'Type': getTypeLabel(submission.type),
+        'Voornaam': submission.voornaam,
+        'Achternaam': submission.achternaam,
+        'Bedrijf': submission.bedrijf,
+        'Email': submission.email,
+        'Telefoon': submission.telefoon || '',
+        'Straat': submission.straat || '',
+        'Postcode': submission.postcode || '',
+        'Gemeente': submission.gemeente || '',
+        'Renderbook Type': submission.renderbook_type || '',
+        'Marketing Optin': submission.marketing_optin ? 'Ja' : 'Nee',
+        'Taal': submission.language === 'nl' ? 'Nederlands' : 'Frans',
+        'UTM Source': submission.utm_source || '',
+        'UTM Medium': submission.utm_medium || '',
+        'UTM Campaign': submission.utm_campaign || '',
+        'UTM Content': submission.utm_content || '',
+        'UTM Term': submission.utm_term || '',
+        'Aangemaakt op': new Date(submission.created_at).toLocaleDateString('nl-NL', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+      }));
+
+      // Create workbook and worksheet
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.json_to_sheet(excelData);
+
+      // Set column widths for better readability
+      const colWidths = [
+        { wch: 36 }, // ID
+        { wch: 15 }, // Type
+        { wch: 15 }, // Voornaam
+        { wch: 15 }, // Achternaam
+        { wch: 20 }, // Bedrijf
+        { wch: 25 }, // Email
+        { wch: 15 }, // Telefoon
+        { wch: 25 }, // Straat
+        { wch: 10 }, // Postcode
+        { wch: 15 }, // Gemeente
+        { wch: 15 }, // Renderbook Type
+        { wch: 12 }, // Marketing Optin
+        { wch: 10 }, // Taal
+        { wch: 15 }, // UTM Source
+        { wch: 15 }, // UTM Medium
+        { wch: 15 }, // UTM Campaign
+        { wch: 15 }, // UTM Content
+        { wch: 15 }, // UTM Term
+        { wch: 18 }  // Aangemaakt op
+      ];
+      ws['!cols'] = colWidths;
+
+      // Add worksheet to workbook
+      XLSX.utils.book_append_sheet(wb, ws, 'Formulierinzendingen');
+
+      // Generate filename with current date
+      const today = new Date().toISOString().split('T')[0];
+      const filename = `formulierinzendingen_${today}.xlsx`;
+
+      // Save file
+      XLSX.writeFile(wb, filename);
+
+      toast({
+        title: "Export geslaagd",
+        description: `Excel bestand "${filename}" is gedownload.`,
+      });
+    } catch (error) {
+      console.error('Export error:', error);
+      toast({
+        title: "Export mislukt",
+        description: "Er is een fout opgetreden bij het exporteren naar Excel.",
+        variant: "destructive"
+      });
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -225,16 +311,22 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="submissions" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="submissions">Inzendingen</TabsTrigger>
-            <TabsTrigger value="utm">UTM Analytics</TabsTrigger>
-          </TabsList>
+          <div className="flex items-center justify-between mb-4">
+            <TabsList className="grid grid-cols-2 w-auto">
+              <TabsTrigger value="submissions">Inzendingen</TabsTrigger>
+              <TabsTrigger value="utm">UTM Analytics</TabsTrigger>
+            </TabsList>
+            <Button onClick={exportToExcel} variant="outline" className="flex items-center gap-2">
+              <Download className="h-4 w-4" />
+              Exporteer naar Excel
+            </Button>
+          </div>
           
-          <TabsContent value="submissions" className="space-y-4">
+          <TabsContent value="submissions" className="space-y-4 mt-4">
             <SubmissionsTable submissions={submissions} />
           </TabsContent>
           
-          <TabsContent value="utm" className="space-y-4">
+          <TabsContent value="utm" className="space-y-4 mt-4">
             <UTMAnalytics submissions={submissions} />
           </TabsContent>
         </Tabs>
