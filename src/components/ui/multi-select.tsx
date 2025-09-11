@@ -38,16 +38,21 @@ export function MultiSelect({
 }: MultiSelectProps) {
   const [open, setOpen] = React.useState(false)
 
+  // Debug logging
+  console.log('MultiSelect props:', { options, selected, placeholder })
+
   // Ensure options is always an array to prevent iteration errors
-  const safeOptions = options || []
-  const safeSelected = selected || []
+  const safeOptions = Array.isArray(options) ? options : []
+  const safeSelected = Array.isArray(selected) ? selected : []
+
+  console.log('Safe values:', { safeOptions, safeSelected })
 
   const handleUnselect = (item: string) => {
     onChange(safeSelected.filter((i) => i !== item))
   }
 
-  // Don't render if no options are available yet
-  if (!safeOptions.length && safeSelected.length === 0) {
+  // Don't render Command component if no options are available
+  if (safeOptions.length === 0) {
     return (
       <Button
         variant="outline"
@@ -110,14 +115,15 @@ export function MultiSelect({
           <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0" align="start">
-        <Command>
+      <PopoverContent className="w-full p-0 z-50 bg-popover" align="start">
+        <Command shouldFilter={false}>
           <CommandInput placeholder="Search..." />
           <CommandEmpty>No option found.</CommandEmpty>
           <CommandGroup className="max-h-64 overflow-auto">
-            {safeOptions.map((option) => (
+            {safeOptions.length > 0 ? safeOptions.map((option) => (
               <CommandItem
                 key={option.value}
+                value={option.value}
                 onSelect={() => {
                   if (safeSelected.includes(option.value)) {
                     onChange(safeSelected.filter((item) => item !== option.value))
@@ -134,7 +140,9 @@ export function MultiSelect({
                 />
                 {option.label}
               </CommandItem>
-            ))}
+            )) : (
+              <CommandItem disabled>No options available</CommandItem>
+            )}
           </CommandGroup>
         </Command>
       </PopoverContent>

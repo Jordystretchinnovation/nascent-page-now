@@ -37,6 +37,8 @@ interface UTMAnalyticsProps {
 }
 
 export const UTMAnalytics = ({ submissions }: UTMAnalyticsProps) => {
+  console.log('UTMAnalytics received submissions:', submissions)
+  
   const [filteredSubmissions, setFilteredSubmissions] = useState<FormSubmissionWithUTM[]>([]);
   const [filterType, setFilterType] = useState<string>("all");
   const [filterUTMSource, setFilterUTMSource] = useState<string[]>([]);
@@ -46,7 +48,8 @@ export const UTMAnalytics = ({ submissions }: UTMAnalyticsProps) => {
   const [filterUTMTerm, setFilterUTMTerm] = useState<string[]>([]);
 
   // Ensure submissions is always an array to prevent iteration errors
-  const safeSubmissions = submissions || [];
+  const safeSubmissions = Array.isArray(submissions) ? submissions : [];
+  console.log('Safe submissions:', safeSubmissions.length)
 
   // Get unique values for filter options - with proper safety checks
   const uniqueUTMSources: Option[] = Array.from(new Set(safeSubmissions.map(s => s?.utm_source).filter(Boolean)))
@@ -59,6 +62,14 @@ export const UTMAnalytics = ({ submissions }: UTMAnalyticsProps) => {
     .map(content => ({ label: content!, value: content! }));
   const uniqueUTMTerms: Option[] = Array.from(new Set(safeSubmissions.map(s => s?.utm_term).filter(Boolean)))
     .map(term => ({ label: term!, value: term! }));
+
+  console.log('Unique values:', {
+    sources: uniqueUTMSources.length,
+    mediums: uniqueUTMMediums.length,
+    campaigns: uniqueUTMCampaigns.length,
+    contents: uniqueUTMContents.length,
+    terms: uniqueUTMTerms.length
+  })
 
   useEffect(() => {
     let filtered = safeSubmissions;
