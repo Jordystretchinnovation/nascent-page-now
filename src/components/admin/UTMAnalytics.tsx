@@ -45,17 +45,17 @@ export const UTMAnalytics = ({ submissions }: UTMAnalyticsProps) => {
   const [filterUTMContent, setFilterUTMContent] = useState<string[]>([]);
   const [filterUTMTerm, setFilterUTMTerm] = useState<string[]>([]);
 
-  // Get unique values for filter options
-  const uniqueUTMSources: Option[] = Array.from(new Set(submissions.map(s => s.utm_source).filter(Boolean)))
-    .map(source => ({ label: source!, value: source! }));
-  const uniqueUTMMediums: Option[] = Array.from(new Set(submissions.map(s => s.utm_medium).filter(Boolean)))
-    .map(medium => ({ label: medium!, value: medium! }));
-  const uniqueUTMCampaigns: Option[] = Array.from(new Set(submissions.map(s => s.utm_campaign).filter(Boolean)))
-    .map(campaign => ({ label: campaign!, value: campaign! }));
-  const uniqueUTMContents: Option[] = Array.from(new Set(submissions.map(s => s.utm_content).filter(Boolean)))
-    .map(content => ({ label: content!, value: content! }));
-  const uniqueUTMTerms: Option[] = Array.from(new Set(submissions.map(s => s.utm_term).filter(Boolean)))
-    .map(term => ({ label: term!, value: term! }));
+  // Get unique values for filter options - with null checks
+  const uniqueUTMSources: Option[] = submissions ? Array.from(new Set(submissions.map(s => s.utm_source).filter(Boolean)))
+    .map(source => ({ label: source!, value: source! })) : [];
+  const uniqueUTMMediums: Option[] = submissions ? Array.from(new Set(submissions.map(s => s.utm_medium).filter(Boolean)))
+    .map(medium => ({ label: medium!, value: medium! })) : [];
+  const uniqueUTMCampaigns: Option[] = submissions ? Array.from(new Set(submissions.map(s => s.utm_campaign).filter(Boolean)))
+    .map(campaign => ({ label: campaign!, value: campaign! })) : [];
+  const uniqueUTMContents: Option[] = submissions ? Array.from(new Set(submissions.map(s => s.utm_content).filter(Boolean)))
+    .map(content => ({ label: content!, value: content! })) : [];
+  const uniqueUTMTerms: Option[] = submissions ? Array.from(new Set(submissions.map(s => s.utm_term).filter(Boolean)))
+    .map(term => ({ label: term!, value: term! })) : [];
 
   useEffect(() => {
     let filtered = submissions;
