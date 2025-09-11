@@ -139,54 +139,70 @@ export const UTMAnalytics = ({ submissions }: UTMAnalyticsProps) => {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <Select value={filterType} onValueChange={setFilterType}>
-              <SelectTrigger>
-                <SelectValue placeholder="Filter op type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Alle types</SelectItem>
-                <SelectItem value="stalen">Stalen</SelectItem>
-                <SelectItem value="renderboek">Collection Lookbook</SelectItem>
-                <SelectItem value="korting">Korting</SelectItem>
-              </SelectContent>
-            </Select>
+          {safeSubmissions.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <Select value={filterType} onValueChange={setFilterType}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Filter op type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Alle types</SelectItem>
+                  <SelectItem value="stalen">Stalen</SelectItem>
+                  <SelectItem value="renderboek">Collection Lookbook</SelectItem>
+                  <SelectItem value="korting">Korting</SelectItem>
+                </SelectContent>
+              </Select>
 
-            <MultiSelect
-              options={uniqueUTMSources}
-              selected={filterUTMSource}
-              onChange={setFilterUTMSource}
-              placeholder="Filter op UTM Source"
-            />
+              {uniqueUTMSources.length > 0 && (
+                <MultiSelect
+                  options={uniqueUTMSources}
+                  selected={filterUTMSource}
+                  onChange={setFilterUTMSource}
+                  placeholder="Filter op UTM Source"
+                />
+              )}
 
-            <MultiSelect
-              options={uniqueUTMMediums}
-              selected={filterUTMMedium}
-              onChange={setFilterUTMMedium}
-              placeholder="Filter op UTM Medium"
-            />
+              {uniqueUTMMediums.length > 0 && (
+                <MultiSelect
+                  options={uniqueUTMMediums}
+                  selected={filterUTMMedium}
+                  onChange={setFilterUTMMedium}
+                  placeholder="Filter op UTM Medium"
+                />
+              )}
 
-            <MultiSelect
-              options={uniqueUTMCampaigns}
-              selected={filterUTMCampaign}
-              onChange={setFilterUTMCampaign}
-              placeholder="Filter op UTM Campaign"
-            />
+              {uniqueUTMCampaigns.length > 0 && (
+                <MultiSelect
+                  options={uniqueUTMCampaigns}
+                  selected={filterUTMCampaign}
+                  onChange={setFilterUTMCampaign}
+                  placeholder="Filter op UTM Campaign"
+                />
+              )}
 
-            <MultiSelect
-              options={uniqueUTMContents}
-              selected={filterUTMContent}
-              onChange={setFilterUTMContent}
-              placeholder="Filter op UTM Content"
-            />
+              {uniqueUTMContents.length > 0 && (
+                <MultiSelect
+                  options={uniqueUTMContents}
+                  selected={filterUTMContent}
+                  onChange={setFilterUTMContent}
+                  placeholder="Filter op UTM Content"
+                />
+              )}
 
-            <MultiSelect
-              options={uniqueUTMTerms}
-              selected={filterUTMTerm}
-              onChange={setFilterUTMTerm}
-              placeholder="Filter op UTM Term"
-            />
-          </div>
+              {uniqueUTMTerms.length > 0 && (
+                <MultiSelect
+                  options={uniqueUTMTerms}
+                  selected={filterUTMTerm}
+                  onChange={setFilterUTMTerm}
+                  placeholder="Filter op UTM Term"
+                />
+              )}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              <p className="text-sm">Geen data beschikbaar voor filtering.</p>
+            </div>
+          )}
         </div>
       </div>
 
