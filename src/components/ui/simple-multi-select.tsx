@@ -3,13 +3,6 @@ import { Check, ChevronsUpDown, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from "@/components/ui/command"
-import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -21,7 +14,7 @@ export interface Option {
   value: string
 }
 
-interface MultiSelectProps {
+interface SimpleMultiSelectProps {
   options: Option[]
   selected: string[]
   onChange: (selected: string[]) => void
@@ -29,40 +22,30 @@ interface MultiSelectProps {
   className?: string
 }
 
-export function MultiSelect({
+export function SimpleMultiSelect({
   options,
   selected,
   onChange,
   placeholder = "Select options...",
   className,
-}: MultiSelectProps) {
+}: SimpleMultiSelectProps) {
   const [open, setOpen] = React.useState(false)
 
-  // Debug logging
-  console.log('MultiSelect props:', { options, selected, placeholder })
-
-  // Ensure options is always an array to prevent iteration errors
+  // Ensure data safety
   const safeOptions = Array.isArray(options) ? options : []
   const safeSelected = Array.isArray(selected) ? selected : []
-
-  console.log('Safe values:', { safeOptions, safeSelected })
 
   const handleUnselect = (item: string) => {
     onChange(safeSelected.filter((i) => i !== item))
   }
 
-  // Don't render Command component if no options are available
-  if (safeOptions.length === 0) {
-    return (
-      <Button
-        variant="outline"
-        className={cn("w-full justify-between", className)}
-        disabled
-      >
-        <span className="text-muted-foreground">{placeholder}</span>
-        <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
-      </Button>
-    )
+  const handleSelect = (optionValue: string) => {
+    if (safeSelected.includes(optionValue)) {
+      onChange(safeSelected.filter((item) => item !== optionValue))
+    } else {
+      onChange([...safeSelected, optionValue])
+    }
+    setOpen(false)
   }
 
   return (
@@ -83,10 +66,11 @@ export function MultiSelect({
                   className="mr-1 mb-1"
                   onClick={(e) => {
                     e.preventDefault()
+                    e.stopPropagation()
                     handleUnselect(item)
                   }}
                 >
-                  {safeOptions.find((option) => option.value === item)?.label}
+                  {safeOptions.find((option) => option.value === item)?.label || item}
                   <button
                     className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                     onKeyDown={(e) => {
@@ -115,22 +99,14 @@ export function MultiSelect({
           <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-full p-0 z-50 bg-popover" align="start">
-        <Command shouldFilter={false}>
-          <CommandInput placeholder="Search..." />
-          <CommandEmpty>No option found.</CommandEmpty>
-          <CommandGroup className="max-h-64 overflow-auto">
-            {safeOptions.length > 0 ? safeOptions.map((option) => (
-              <CommandItem
+      <PopoverContent className="w-full p-0 z-50 bg-popover border" align="start">
+        <div className="max-h-64 overflow-auto">
+          {safeOptions.length > 0 ? (
+            safeOptions.map((option) => (
+              <div
                 key={option.value}
-                value={option.value}
-                onSelect={() => {
-                  if (safeSelected.includes(option.value)) {
-                    onChange(safeSelected.filter((item) => item !== option.value))
-                  } else {
-                    onChange([...safeSelected, option.value])
-                  }
-                }}
+                className="flex items-center px-4 py-2 cursor-pointer hover:bg-accent hover:text-accent-foreground"
+                onClick={() => handleSelect(option.value)}
               >
                 <Check
                   className={cn(
@@ -139,12 +115,14 @@ export function MultiSelect({
                   )}
                 />
                 {option.label}
-              </CommandItem>
-            )) : (
-              <CommandItem disabled>No options available</CommandItem>
-            )}
-          </CommandGroup>
-        </Command>
+              </div>
+            ))
+          ) : (
+            <div className="px-4 py-2 text-sm text-muted-foreground">
+              No options available
+            </div>
+          )}
+        </div>
       </PopoverContent>
     </Popover>
   )
