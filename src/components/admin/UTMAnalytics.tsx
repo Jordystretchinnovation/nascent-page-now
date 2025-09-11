@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { MultiSelect, type Option } from "@/components/ui/multi-select";
 
 interface FormSubmissionWithUTM {
   id: string;
@@ -38,18 +39,23 @@ interface UTMAnalyticsProps {
 export const UTMAnalytics = ({ submissions }: UTMAnalyticsProps) => {
   const [filteredSubmissions, setFilteredSubmissions] = useState<FormSubmissionWithUTM[]>([]);
   const [filterType, setFilterType] = useState<string>("all");
-  const [filterUTMSource, setFilterUTMSource] = useState<string>("all");
-  const [filterUTMMedium, setFilterUTMMedium] = useState<string>("all");
-  const [filterUTMCampaign, setFilterUTMCampaign] = useState<string>("all");
-  const [filterUTMContent, setFilterUTMContent] = useState<string>("all");
-  const [filterUTMTerm, setFilterUTMTerm] = useState<string>("all");
+  const [filterUTMSource, setFilterUTMSource] = useState<string[]>([]);
+  const [filterUTMMedium, setFilterUTMMedium] = useState<string[]>([]);
+  const [filterUTMCampaign, setFilterUTMCampaign] = useState<string[]>([]);
+  const [filterUTMContent, setFilterUTMContent] = useState<string[]>([]);
+  const [filterUTMTerm, setFilterUTMTerm] = useState<string[]>([]);
 
   // Get unique values for filter options
-  const uniqueUTMSources = Array.from(new Set(submissions.map(s => s.utm_source).filter(Boolean)));
-  const uniqueUTMMediums = Array.from(new Set(submissions.map(s => s.utm_medium).filter(Boolean)));
-  const uniqueUTMCampaigns = Array.from(new Set(submissions.map(s => s.utm_campaign).filter(Boolean)));
-  const uniqueUTMContents = Array.from(new Set(submissions.map(s => s.utm_content).filter(Boolean)));
-  const uniqueUTMTerms = Array.from(new Set(submissions.map(s => s.utm_term).filter(Boolean)));
+  const uniqueUTMSources: Option[] = Array.from(new Set(submissions.map(s => s.utm_source).filter(Boolean)))
+    .map(source => ({ label: source!, value: source! }));
+  const uniqueUTMMediums: Option[] = Array.from(new Set(submissions.map(s => s.utm_medium).filter(Boolean)))
+    .map(medium => ({ label: medium!, value: medium! }));
+  const uniqueUTMCampaigns: Option[] = Array.from(new Set(submissions.map(s => s.utm_campaign).filter(Boolean)))
+    .map(campaign => ({ label: campaign!, value: campaign! }));
+  const uniqueUTMContents: Option[] = Array.from(new Set(submissions.map(s => s.utm_content).filter(Boolean)))
+    .map(content => ({ label: content!, value: content! }));
+  const uniqueUTMTerms: Option[] = Array.from(new Set(submissions.map(s => s.utm_term).filter(Boolean)))
+    .map(term => ({ label: term!, value: term! }));
 
   useEffect(() => {
     let filtered = submissions;
@@ -58,24 +64,24 @@ export const UTMAnalytics = ({ submissions }: UTMAnalyticsProps) => {
       filtered = filtered.filter(sub => sub.type === filterType);
     }
 
-    if (filterUTMSource !== "all") {
-      filtered = filtered.filter(sub => sub.utm_source === filterUTMSource);
+    if (filterUTMSource.length > 0) {
+      filtered = filtered.filter(sub => sub.utm_source && filterUTMSource.includes(sub.utm_source));
     }
 
-    if (filterUTMMedium !== "all") {
-      filtered = filtered.filter(sub => sub.utm_medium === filterUTMMedium);
+    if (filterUTMMedium.length > 0) {
+      filtered = filtered.filter(sub => sub.utm_medium && filterUTMMedium.includes(sub.utm_medium));
     }
 
-    if (filterUTMCampaign !== "all") {
-      filtered = filtered.filter(sub => sub.utm_campaign === filterUTMCampaign);
+    if (filterUTMCampaign.length > 0) {
+      filtered = filtered.filter(sub => sub.utm_campaign && filterUTMCampaign.includes(sub.utm_campaign));
     }
 
-    if (filterUTMContent !== "all") {
-      filtered = filtered.filter(sub => sub.utm_content === filterUTMContent);
+    if (filterUTMContent.length > 0) {
+      filtered = filtered.filter(sub => sub.utm_content && filterUTMContent.includes(sub.utm_content));
     }
 
-    if (filterUTMTerm !== "all") {
-      filtered = filtered.filter(sub => sub.utm_term === filterUTMTerm);
+    if (filterUTMTerm.length > 0) {
+      filtered = filtered.filter(sub => sub.utm_term && filterUTMTerm.includes(sub.utm_term));
     }
 
     setFilteredSubmissions(filtered);
@@ -143,65 +149,40 @@ export const UTMAnalytics = ({ submissions }: UTMAnalyticsProps) => {
               </SelectContent>
             </Select>
 
-            <Select value={filterUTMSource} onValueChange={setFilterUTMSource}>
-              <SelectTrigger>
-                <SelectValue placeholder="Filter op UTM Source" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Alle sources</SelectItem>
-                {uniqueUTMSources.map(source => (
-                  <SelectItem key={source} value={source}>{source}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <MultiSelect
+              options={uniqueUTMSources}
+              selected={filterUTMSource}
+              onChange={setFilterUTMSource}
+              placeholder="Filter op UTM Source"
+            />
 
-            <Select value={filterUTMMedium} onValueChange={setFilterUTMMedium}>
-              <SelectTrigger>
-                <SelectValue placeholder="Filter op UTM Medium" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Alle mediums</SelectItem>
-                {uniqueUTMMediums.map(medium => (
-                  <SelectItem key={medium} value={medium}>{medium}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <MultiSelect
+              options={uniqueUTMMediums}
+              selected={filterUTMMedium}
+              onChange={setFilterUTMMedium}
+              placeholder="Filter op UTM Medium"
+            />
 
-            <Select value={filterUTMCampaign} onValueChange={setFilterUTMCampaign}>
-              <SelectTrigger>
-                <SelectValue placeholder="Filter op UTM Campaign" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Alle campaigns</SelectItem>
-                {uniqueUTMCampaigns.map(campaign => (
-                  <SelectItem key={campaign} value={campaign}>{campaign}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <MultiSelect
+              options={uniqueUTMCampaigns}
+              selected={filterUTMCampaign}
+              onChange={setFilterUTMCampaign}
+              placeholder="Filter op UTM Campaign"
+            />
 
-            <Select value={filterUTMContent} onValueChange={setFilterUTMContent}>
-              <SelectTrigger>
-                <SelectValue placeholder="Filter op UTM Content" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Alle content</SelectItem>
-                {uniqueUTMContents.map(content => (
-                  <SelectItem key={content} value={content}>{content}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <MultiSelect
+              options={uniqueUTMContents}
+              selected={filterUTMContent}
+              onChange={setFilterUTMContent}
+              placeholder="Filter op UTM Content"
+            />
 
-            <Select value={filterUTMTerm} onValueChange={setFilterUTMTerm}>
-              <SelectTrigger>
-                <SelectValue placeholder="Filter op UTM Term" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Alle terms</SelectItem>
-                {uniqueUTMTerms.map(term => (
-                  <SelectItem key={term} value={term}>{term}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <MultiSelect
+              options={uniqueUTMTerms}
+              selected={filterUTMTerm}
+              onChange={setFilterUTMTerm}
+              placeholder="Filter op UTM Term"
+            />
           </div>
         </div>
       </div>
