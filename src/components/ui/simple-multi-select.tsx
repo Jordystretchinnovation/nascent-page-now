@@ -100,21 +100,20 @@ export function SimpleMultiSelect({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0 z-50 bg-popover border" align="start">
-        <div className="max-h-64 overflow-auto">
+        <div className="max-h-64 overflow-auto p-2">
           {safeOptions.length > 0 ? (
             safeOptions.map((option) => (
               <div
                 key={option.value}
-                className="flex items-center px-4 py-2 cursor-pointer hover:bg-accent hover:text-accent-foreground"
+                className="flex items-center space-x-2 px-2 py-2 cursor-pointer hover:bg-accent hover:text-accent-foreground rounded-sm"
                 onClick={() => handleSelect(option.value)}
               >
-                <Check
-                  className={cn(
-                    "mr-2 h-4 w-4",
-                    safeSelected.includes(option.value) ? "opacity-100" : "opacity-0"
+                <div className="flex items-center justify-center w-4 h-4 border border-primary rounded-sm">
+                  {safeSelected.includes(option.value) && (
+                    <Check className="h-3 w-3 text-primary" />
                   )}
-                />
-                {option.label}
+                </div>
+                <span className="text-sm">{option.label}</span>
               </div>
             ))
           ) : (
