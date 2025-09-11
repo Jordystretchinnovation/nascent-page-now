@@ -327,7 +327,13 @@ const Admin = () => {
           </TabsContent>
           
           <TabsContent value="utm" className="space-y-4 mt-4">
-            <UTMAnalytics submissions={submissions} />
+            {isLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="text-muted-foreground">Laden...</div>
+              </div>
+            ) : (
+              <UTMAnalytics submissions={submissions} />
+            )}
           </TabsContent>
         </Tabs>
       </div>

@@ -45,47 +45,50 @@ export const UTMAnalytics = ({ submissions }: UTMAnalyticsProps) => {
   const [filterUTMContent, setFilterUTMContent] = useState<string[]>([]);
   const [filterUTMTerm, setFilterUTMTerm] = useState<string[]>([]);
 
-  // Get unique values for filter options - with null checks
-  const uniqueUTMSources: Option[] = submissions ? Array.from(new Set(submissions.map(s => s.utm_source).filter(Boolean)))
-    .map(source => ({ label: source!, value: source! })) : [];
-  const uniqueUTMMediums: Option[] = submissions ? Array.from(new Set(submissions.map(s => s.utm_medium).filter(Boolean)))
-    .map(medium => ({ label: medium!, value: medium! })) : [];
-  const uniqueUTMCampaigns: Option[] = submissions ? Array.from(new Set(submissions.map(s => s.utm_campaign).filter(Boolean)))
-    .map(campaign => ({ label: campaign!, value: campaign! })) : [];
-  const uniqueUTMContents: Option[] = submissions ? Array.from(new Set(submissions.map(s => s.utm_content).filter(Boolean)))
-    .map(content => ({ label: content!, value: content! })) : [];
-  const uniqueUTMTerms: Option[] = submissions ? Array.from(new Set(submissions.map(s => s.utm_term).filter(Boolean)))
-    .map(term => ({ label: term!, value: term! })) : [];
+  // Ensure submissions is always an array to prevent iteration errors
+  const safeSubmissions = submissions || [];
+
+  // Get unique values for filter options - with proper safety checks
+  const uniqueUTMSources: Option[] = Array.from(new Set(safeSubmissions.map(s => s?.utm_source).filter(Boolean)))
+    .map(source => ({ label: source!, value: source! }));
+  const uniqueUTMMediums: Option[] = Array.from(new Set(safeSubmissions.map(s => s?.utm_medium).filter(Boolean)))
+    .map(medium => ({ label: medium!, value: medium! }));
+  const uniqueUTMCampaigns: Option[] = Array.from(new Set(safeSubmissions.map(s => s?.utm_campaign).filter(Boolean)))
+    .map(campaign => ({ label: campaign!, value: campaign! }));
+  const uniqueUTMContents: Option[] = Array.from(new Set(safeSubmissions.map(s => s?.utm_content).filter(Boolean)))
+    .map(content => ({ label: content!, value: content! }));
+  const uniqueUTMTerms: Option[] = Array.from(new Set(safeSubmissions.map(s => s?.utm_term).filter(Boolean)))
+    .map(term => ({ label: term!, value: term! }));
 
   useEffect(() => {
-    let filtered = submissions;
+    let filtered = safeSubmissions;
 
     if (filterType !== "all") {
-      filtered = filtered.filter(sub => sub.type === filterType);
+      filtered = filtered.filter(sub => sub?.type === filterType);
     }
 
     if (filterUTMSource.length > 0) {
-      filtered = filtered.filter(sub => sub.utm_source && filterUTMSource.includes(sub.utm_source));
+      filtered = filtered.filter(sub => sub?.utm_source && filterUTMSource.includes(sub.utm_source));
     }
 
     if (filterUTMMedium.length > 0) {
-      filtered = filtered.filter(sub => sub.utm_medium && filterUTMMedium.includes(sub.utm_medium));
+      filtered = filtered.filter(sub => sub?.utm_medium && filterUTMMedium.includes(sub.utm_medium));
     }
 
     if (filterUTMCampaign.length > 0) {
-      filtered = filtered.filter(sub => sub.utm_campaign && filterUTMCampaign.includes(sub.utm_campaign));
+      filtered = filtered.filter(sub => sub?.utm_campaign && filterUTMCampaign.includes(sub.utm_campaign));
     }
 
     if (filterUTMContent.length > 0) {
-      filtered = filtered.filter(sub => sub.utm_content && filterUTMContent.includes(sub.utm_content));
+      filtered = filtered.filter(sub => sub?.utm_content && filterUTMContent.includes(sub.utm_content));
     }
 
     if (filterUTMTerm.length > 0) {
-      filtered = filtered.filter(sub => sub.utm_term && filterUTMTerm.includes(sub.utm_term));
+      filtered = filtered.filter(sub => sub?.utm_term && filterUTMTerm.includes(sub.utm_term));
     }
 
     setFilteredSubmissions(filtered);
-  }, [submissions, filterType, filterUTMSource, filterUTMMedium, filterUTMCampaign, filterUTMContent, filterUTMTerm]);
+  }, [safeSubmissions, filterType, filterUTMSource, filterUTMMedium, filterUTMCampaign, filterUTMContent, filterUTMTerm]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('nl-NL', {
