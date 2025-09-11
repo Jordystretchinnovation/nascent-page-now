@@ -45,7 +45,7 @@ export function SimpleMultiSelect({
     } else {
       onChange([...safeSelected, optionValue])
     }
-    setOpen(false)
+    // Don't close the dropdown to allow multiple selections
   }
 
   return (
