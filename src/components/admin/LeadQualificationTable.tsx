@@ -183,31 +183,27 @@ const LeadQualificationTable: React.FC = () => {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-xs">
-                    <div className="truncate" title={`${submission.voornaam} ${submission.achternaam}`}>
+                    <div className="break-words">
                       {submission.voornaam} {submission.achternaam}
                     </div>
                   </TableCell>
                   <TableCell className="text-xs">
-                    <div className="truncate" title={submission.bedrijf}>
+                    <div className="break-words">
                       {submission.bedrijf}
                     </div>
                   </TableCell>
                   <TableCell className="text-xs">
-                    <div className="truncate" title={submission.email}>
+                    <div className="break-all">
                       {submission.email}
                     </div>
                   </TableCell>
                   <TableCell className="text-xs">
-                    <div className="truncate" title={submission.telefoon || ''}>
+                    <div className="break-words">
                       {submission.telefoon || '-'}
                     </div>
                   </TableCell>
                   <TableCell className="text-xs">
-                    <div className="truncate" title={
-                      submission.straat && submission.postcode && submission.gemeente
-                        ? `${submission.straat}, ${submission.postcode} ${submission.gemeente}`
-                        : ''
-                    }>
+                    <div className="break-words">
                       {submission.straat && submission.postcode && submission.gemeente
                         ? `${submission.straat}, ${submission.postcode} ${submission.gemeente}`
                         : '-'
@@ -250,8 +246,8 @@ const LeadQualificationTable: React.FC = () => {
                       defaultValue={submission.toelichting || ""}
                       onBlur={(e) => updateSubmission(submission.id, 'toelichting', e.target.value)}
                       placeholder="Toelichting..."
-                      className="w-44 h-8 text-xs resize-none"
-                      rows={1}
+                      className="w-44 text-xs resize-none"
+                      rows={3}
                       disabled={updatingId === submission.id}
                     />
                   </TableCell>
