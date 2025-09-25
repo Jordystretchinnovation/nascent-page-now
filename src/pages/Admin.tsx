@@ -24,6 +24,7 @@ interface FormSubmission {
   postcode: string | null;
   gemeente: string | null;
   renderbook_type: string | null;
+  kwaliteit: string | null;
   marketing_optin: boolean;
   language: string;
   utm_source: string | null;
@@ -59,6 +60,7 @@ const Admin = () => {
           postcode,
           gemeente,
           renderbook_type,
+          kwaliteit,
           marketing_optin,
           language,
           utm_source,
@@ -105,6 +107,26 @@ const Admin = () => {
       korting: stats.korting || 0,
       keukentrends: stats.keukentrends || 0,
       total: submissions.length
+    };
+  };
+
+  const getQualityStats = () => {
+    const stats = submissions.reduce((acc, submission) => {
+      const quality = submission.kwaliteit;
+      if (!quality) {
+        acc.ongekwalificeerd = (acc.ongekwalificeerd || 0) + 1;
+      } else {
+        acc[quality] = (acc[quality] || 0) + 1;
+      }
+      return acc;
+    }, {} as Record<string, number>);
+    
+    return {
+      ongekwalificeerd: stats.ongekwalificeerd || 0,
+      goed: stats.Goed || 0,
+      goedKlant: stats['Goed - Klant'] || 0,
+      redelijk: stats.Redelijk || 0,
+      slecht: stats.Slecht || 0
     };
   };
 
@@ -230,6 +252,7 @@ const Admin = () => {
   }
 
   const stats = getSubmissionStats();
+  const qualityStats = getQualityStats();
 
   return (
     <div className="min-h-screen bg-background p-6">
@@ -306,6 +329,58 @@ const Admin = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-foreground">{stats.keukentrends}</div>
+              <p className="text-xs text-muted-foreground">inzendingen</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base font-medium">Ongekwalificeerd</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-foreground">{qualityStats.ongekwalificeerd}</div>
+              <p className="text-xs text-muted-foreground">inzendingen</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base font-medium">Goed</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-foreground">{qualityStats.goed}</div>
+              <p className="text-xs text-muted-foreground">inzendingen</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base font-medium">Goed - Klant</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-foreground">{qualityStats.goedKlant}</div>
+              <p className="text-xs text-muted-foreground">inzendingen</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base font-medium">Redelijk</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-foreground">{qualityStats.redelijk}</div>
+              <p className="text-xs text-muted-foreground">inzendingen</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base font-medium">Slecht</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-foreground">{qualityStats.slecht}</div>
               <p className="text-xs text-muted-foreground">inzendingen</p>
             </CardContent>
           </Card>
