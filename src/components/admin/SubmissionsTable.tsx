@@ -30,6 +30,7 @@ interface FormSubmission {
   postcode: string | null;
   gemeente: string | null;
   renderbook_type: string | null;
+  kwaliteit: string | null;
   marketing_optin: boolean;
   language: string;
   utm_source: string | null;
@@ -38,12 +39,20 @@ interface FormSubmission {
 
 interface SubmissionsTableProps {
   submissions: FormSubmission[];
+  filterType: string;
+  setFilterType: (value: string) => void;
+  filterLanguage: string;
+  setFilterLanguage: (value: string) => void;
 }
 
-export const SubmissionsTable = ({ submissions }: SubmissionsTableProps) => {
+export const SubmissionsTable = ({ 
+  submissions, 
+  filterType, 
+  setFilterType, 
+  filterLanguage, 
+  setFilterLanguage 
+}: SubmissionsTableProps) => {
   const [filteredSubmissions, setFilteredSubmissions] = useState<FormSubmission[]>([]);
-  const [filterType, setFilterType] = useState<string>("all");
-  const [filterLanguage, setFilterLanguage] = useState<string>("all");
 
   useEffect(() => {
     let filtered = submissions;

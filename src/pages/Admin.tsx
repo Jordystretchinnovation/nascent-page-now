@@ -40,6 +40,19 @@ const Admin = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
+  // Filter states for submissions
+  const [filterType, setFilterType] = useState<string>("all");
+  const [filterLanguage, setFilterLanguage] = useState<string>("all");
+
+  // Filter states for UTM Analytics
+  const [filterUTMSource, setFilterUTMSource] = useState<string[]>([]);
+  const [filterUTMMedium, setFilterUTMMedium] = useState<string[]>([]);
+  const [filterUTMCampaign, setFilterUTMCampaign] = useState<string[]>([]);
+  const [filterUTMContent, setFilterUTMContent] = useState<string[]>([]);
+  const [filterUTMTerm, setFilterUTMTerm] = useState<string[]>([]);
+
+  const [activeTab, setActiveTab] = useState("submissions");
+
   useEffect(() => {
     fetchSubmissions();
   }, []);
@@ -95,8 +108,57 @@ const Admin = () => {
     }
   };
 
+  const getSubmissionsFilteredData = () => {
+    let filtered = submissions;
+    
+    if (filterType !== "all") {
+      filtered = filtered.filter(sub => sub.type === filterType);
+    }
+    
+    if (filterLanguage !== "all") {
+      filtered = filtered.filter(sub => sub.language === filterLanguage);
+    }
+    
+    return filtered;
+  };
+
+  const getUTMFilteredData = () => {
+    let filtered = submissions;
+    
+    if (filterType !== "all") {
+      filtered = filtered.filter(sub => sub.type === filterType);
+    }
+
+    if (filterUTMSource.length > 0) {
+      filtered = filtered.filter(sub => sub.utm_source && filterUTMSource.includes(sub.utm_source));
+    }
+
+    if (filterUTMMedium.length > 0) {
+      filtered = filtered.filter(sub => sub.utm_medium && filterUTMMedium.includes(sub.utm_medium));
+    }
+
+    if (filterUTMCampaign.length > 0) {
+      filtered = filtered.filter(sub => sub.utm_campaign && filterUTMCampaign.includes(sub.utm_campaign));
+    }
+
+    if (filterUTMContent.length > 0) {
+      filtered = filtered.filter(sub => sub.utm_content && filterUTMContent.includes(sub.utm_content));
+    }
+
+    if (filterUTMTerm.length > 0) {
+      filtered = filtered.filter(sub => sub.utm_term && filterUTMTerm.includes(sub.utm_term));
+    }
+    
+    return filtered;
+  };
+
+  const getCurrentFilteredData = () => {
+    return activeTab === "utm" ? getUTMFilteredData() : getSubmissionsFilteredData();
+  };
+
   const getSubmissionStats = () => {
-    const stats = submissions.reduce((acc, submission) => {
+    const currentData = getCurrentFilteredData();
+    const stats = currentData.reduce((acc, submission) => {
       acc[submission.type] = (acc[submission.type] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
@@ -106,12 +168,13 @@ const Admin = () => {
       renderboek: stats.renderboek || 0,
       korting: stats.korting || 0,
       keukentrends: stats.keukentrends || 0,
-      total: submissions.length
+      total: currentData.length
     };
   };
 
   const getQualityStats = () => {
-    const stats = submissions.reduce((acc, submission) => {
+    const currentData = getCurrentFilteredData();
+    const stats = currentData.reduce((acc, submission) => {
       const quality = submission.kwaliteit;
       if (!quality) {
         acc.ongekwalificeerd = (acc.ongekwalificeerd || 0) + 1;
@@ -386,7 +449,7 @@ const Admin = () => {
           </Card>
         </div>
 
-        <Tabs defaultValue="submissions" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="flex items-center justify-between mb-4">
             <TabsList className="grid grid-cols-3 w-auto">
               <TabsTrigger value="submissions">Inzendingen</TabsTrigger>
@@ -400,7 +463,13 @@ const Admin = () => {
           </div>
           
           <TabsContent value="submissions" className="space-y-4 mt-4">
-            <SubmissionsTable submissions={submissions} />
+            <SubmissionsTable 
+              submissions={submissions}
+              filterType={filterType}
+              setFilterType={setFilterType}
+              filterLanguage={filterLanguage}
+              setFilterLanguage={setFilterLanguage}
+            />
           </TabsContent>
           
           <TabsContent value="qualification" className="space-y-4 mt-4">
@@ -413,7 +482,21 @@ const Admin = () => {
                 <div className="text-muted-foreground">Laden...</div>
               </div>
             ) : (
-              <UTMAnalytics submissions={submissions} />
+              <UTMAnalytics 
+                submissions={submissions}
+                filterType={filterType}
+                setFilterType={setFilterType}
+                filterUTMSource={filterUTMSource}
+                setFilterUTMSource={setFilterUTMSource}
+                filterUTMMedium={filterUTMMedium}
+                setFilterUTMMedium={setFilterUTMMedium}
+                filterUTMCampaign={filterUTMCampaign}
+                setFilterUTMCampaign={setFilterUTMCampaign}
+                filterUTMContent={filterUTMContent}
+                setFilterUTMContent={setFilterUTMContent}
+                filterUTMTerm={filterUTMTerm}
+                setFilterUTMTerm={setFilterUTMTerm}
+              />
             )}
           </TabsContent>
         </Tabs>

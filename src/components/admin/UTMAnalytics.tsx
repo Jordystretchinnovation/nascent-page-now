@@ -34,16 +34,36 @@ interface FormSubmissionWithUTM {
 
 interface UTMAnalyticsProps {
   submissions: FormSubmissionWithUTM[];
+  filterType: string;
+  setFilterType: (value: string) => void;
+  filterUTMSource: string[];
+  setFilterUTMSource: (value: string[]) => void;
+  filterUTMMedium: string[];
+  setFilterUTMMedium: (value: string[]) => void;
+  filterUTMCampaign: string[];
+  setFilterUTMCampaign: (value: string[]) => void;
+  filterUTMContent: string[];
+  setFilterUTMContent: (value: string[]) => void;
+  filterUTMTerm: string[];
+  setFilterUTMTerm: (value: string[]) => void;
 }
 
-export const UTMAnalytics = ({ submissions }: UTMAnalyticsProps) => {
+export const UTMAnalytics = ({ 
+  submissions,
+  filterType,
+  setFilterType,
+  filterUTMSource,
+  setFilterUTMSource,
+  filterUTMMedium,
+  setFilterUTMMedium,
+  filterUTMCampaign,
+  setFilterUTMCampaign,
+  filterUTMContent,
+  setFilterUTMContent,
+  filterUTMTerm,
+  setFilterUTMTerm
+}: UTMAnalyticsProps) => {
   const [filteredSubmissions, setFilteredSubmissions] = useState<FormSubmissionWithUTM[]>([]);
-  const [filterType, setFilterType] = useState<string>("all");
-  const [filterUTMSource, setFilterUTMSource] = useState<string[]>([]);
-  const [filterUTMMedium, setFilterUTMMedium] = useState<string[]>([]);
-  const [filterUTMCampaign, setFilterUTMCampaign] = useState<string[]>([]);
-  const [filterUTMContent, setFilterUTMContent] = useState<string[]>([]);
-  const [filterUTMTerm, setFilterUTMTerm] = useState<string[]>([]);
 
   // Ensure submissions is always an array to prevent iteration errors
   const safeSubmissions = Array.isArray(submissions) ? submissions : [];
