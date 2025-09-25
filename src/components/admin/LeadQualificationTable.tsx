@@ -220,8 +220,8 @@ const LeadQualificationTable: React.FC = () => {
                   </TableCell>
                   <TableCell>
                     <Textarea
-                      value={submission.toelichting || ""}
-                      onChange={(e) => updateSubmission(submission.id, 'toelichting', e.target.value)}
+                      defaultValue={submission.toelichting || ""}
+                      onBlur={(e) => updateSubmission(submission.id, 'toelichting', e.target.value)}
                       placeholder="Voeg toelichting toe..."
                       className="min-w-[200px] resize-none"
                       rows={2}
