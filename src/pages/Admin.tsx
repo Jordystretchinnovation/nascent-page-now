@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SubmissionsTable } from "@/components/admin/SubmissionsTable";
 import { UTMAnalytics } from "@/components/admin/UTMAnalytics";
+import LeadQualificationTable from "@/components/admin/LeadQualificationTable";
 import { Download } from "lucide-react";
 import * as XLSX from 'xlsx';
 
@@ -312,8 +313,9 @@ const Admin = () => {
 
         <Tabs defaultValue="submissions" className="w-full">
           <div className="flex items-center justify-between mb-4">
-            <TabsList className="grid grid-cols-2 w-auto">
+            <TabsList className="grid grid-cols-3 w-auto">
               <TabsTrigger value="submissions">Inzendingen</TabsTrigger>
+              <TabsTrigger value="qualification">Kwalificatie Leads</TabsTrigger>
               <TabsTrigger value="utm">UTM Analytics</TabsTrigger>
             </TabsList>
             <Button onClick={exportToExcel} variant="outline" className="flex items-center gap-2">
@@ -324,6 +326,10 @@ const Admin = () => {
           
           <TabsContent value="submissions" className="space-y-4 mt-4">
             <SubmissionsTable submissions={submissions} />
+          </TabsContent>
+          
+          <TabsContent value="qualification" className="space-y-4 mt-4">
+            <LeadQualificationTable />
           </TabsContent>
           
           <TabsContent value="utm" className="space-y-4 mt-4">

@@ -22,6 +22,7 @@ export type Database = {
           email: string
           gemeente: string | null
           id: string
+          kwaliteit: string | null
           language: string
           marketing_optin: boolean
           message: string | null
@@ -29,6 +30,7 @@ export type Database = {
           renderbook_type: string | null
           straat: string | null
           telefoon: string | null
+          toelichting: string | null
           type: string
           type_bedrijf: string | null
           utm_campaign: string | null
@@ -45,6 +47,7 @@ export type Database = {
           email: string
           gemeente?: string | null
           id?: string
+          kwaliteit?: string | null
           language?: string
           marketing_optin?: boolean
           message?: string | null
@@ -52,6 +55,7 @@ export type Database = {
           renderbook_type?: string | null
           straat?: string | null
           telefoon?: string | null
+          toelichting?: string | null
           type: string
           type_bedrijf?: string | null
           utm_campaign?: string | null
@@ -68,6 +72,7 @@ export type Database = {
           email?: string
           gemeente?: string | null
           id?: string
+          kwaliteit?: string | null
           language?: string
           marketing_optin?: boolean
           message?: string | null
@@ -75,6 +80,7 @@ export type Database = {
           renderbook_type?: string | null
           straat?: string | null
           telefoon?: string | null
+          toelichting?: string | null
           type?: string
           type_bedrijf?: string | null
           utm_campaign?: string | null
