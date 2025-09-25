@@ -26,8 +26,27 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Parse incoming payload from Zapier
-    const payload = await req.json();
+    // Parse incoming payload from Zapier (handle both JSON and form-encoded data)
+    const contentType = req.headers.get('content-type') || '';
+    let payload: any;
+    
+    if (contentType.includes('application/json')) {
+      payload = await req.json();
+    } else if (contentType.includes('application/x-www-form-urlencoded')) {
+      const formData = await req.formData();
+      payload = Object.fromEntries(formData.entries());
+    } else {
+      // Try to parse as text and then as JSON as fallback
+      const text = await req.text();
+      try {
+        payload = JSON.parse(text);
+      } catch {
+        // If not JSON, try to parse as form data
+        const params = new URLSearchParams(text);
+        payload = Object.fromEntries(params.entries());
+      }
+    }
+    
     console.log('Received Zapier payload:', JSON.stringify(payload, null, 2));
 
     // Extract fields from Zapier payload
