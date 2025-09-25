@@ -279,7 +279,7 @@ const CampaignAnalytics = ({ submissions }: CampaignAnalyticsProps) => {
                       return null;
                     }}
                   />
-                  <Bar dataKey="campaign" radius={[2, 2, 0, 0]}>
+                  <Bar dataKey="total" radius={[2, 2, 0, 0]}>
                     {campaignData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
                     ))}
