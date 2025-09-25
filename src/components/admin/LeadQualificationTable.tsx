@@ -149,19 +149,30 @@ const LeadQualificationTable: React.FC = () => {
         <CardTitle>Kwalificatie Leads ({submissions.length})</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto">
-          <Table>
+        <div className="w-full">
+          <Table className="table-fixed w-full">
+            <colgroup>
+              <col className="w-20" />
+              <col className="w-16" />
+              <col className="w-20" />
+              <col className="w-20" />
+              <col className="w-80" />
+              <col className="w-16" />
+              <col className="w-32" />  
+              <col className="w-28" />
+              <col className="w-40" />
+            </colgroup>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-20">Datum</TableHead>
-                <TableHead className="w-16">Type</TableHead>
-                <TableHead className="w-20">Naam</TableHead>
-                <TableHead className="w-20">Bedrijf</TableHead>
-                <TableHead className="w-72">Email</TableHead>
-                <TableHead className="w-16">Tel</TableHead>
-                <TableHead className="w-32">Adres</TableHead>
-                <TableHead className="w-28">Kwaliteit</TableHead>
-                <TableHead className="w-40">Toelichting</TableHead>
+                <TableHead>Datum</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Naam</TableHead>
+                <TableHead>Bedrijf</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Tel</TableHead>
+                <TableHead>Adres</TableHead>
+                <TableHead>Kwaliteit</TableHead>
+                <TableHead>Toelichting</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
