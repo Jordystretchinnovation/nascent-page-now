@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SubmissionsTable } from "@/components/admin/SubmissionsTable";
 import { UTMAnalytics } from "@/components/admin/UTMAnalytics";
+import CampaignAnalytics from "@/components/admin/CampaignAnalytics";
 import LeadQualificationTable from "@/components/admin/LeadQualificationTable";
 import { Download } from "lucide-react";
 import * as XLSX from 'xlsx';
@@ -451,10 +452,11 @@ const Admin = () => {
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="flex items-center justify-between mb-4">
-            <TabsList className="grid grid-cols-3 w-auto">
+            <TabsList className="grid grid-cols-4 w-auto">
               <TabsTrigger value="submissions">Inzendingen</TabsTrigger>
               <TabsTrigger value="qualification">Kwalificatie Leads</TabsTrigger>
               <TabsTrigger value="utm">UTM Analytics</TabsTrigger>
+              <TabsTrigger value="campaign">Campaign Analytics</TabsTrigger>
             </TabsList>
             <Button onClick={exportToExcel} variant="outline" className="flex items-center gap-2">
               <Download className="h-4 w-4" />
@@ -496,6 +498,18 @@ const Admin = () => {
                 setFilterUTMContent={setFilterUTMContent}
                 filterUTMTerm={filterUTMTerm}
                 setFilterUTMTerm={setFilterUTMTerm}
+              />
+            )}
+          </TabsContent>
+          
+          <TabsContent value="campaign" className="space-y-4 mt-4">
+            {isLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="text-muted-foreground">Laden...</div>
+              </div>
+            ) : (
+              <CampaignAnalytics 
+                submissions={submissions}
               />
             )}
           </TabsContent>
