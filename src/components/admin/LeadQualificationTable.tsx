@@ -156,8 +156,8 @@ const LeadQualificationTable: React.FC = () => {
               <col className="w-16" />
               <col className="w-20" />
               <col className="w-20" />
-              <col className="w-56" />
-              <col className="w-16" />
+              <col className="w-48" />
+              <col className="w-24" />
               <col className="w-32" />  
               <col className="w-28" />
               <col className="w-40" />
