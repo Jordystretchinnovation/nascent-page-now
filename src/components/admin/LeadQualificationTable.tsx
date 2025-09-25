@@ -153,39 +153,66 @@ const LeadQualificationTable: React.FC = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Datum</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Naam</TableHead>
-                <TableHead>Bedrijf</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Tel</TableHead>
-                <TableHead>Adres</TableHead>
-                <TableHead>Kwaliteit</TableHead>
-                <TableHead>Toelichting</TableHead>
+                <TableHead className="w-24">Datum</TableHead>
+                <TableHead className="w-20">Type</TableHead>
+                <TableHead className="w-32">Naam</TableHead>
+                <TableHead className="w-28">Bedrijf</TableHead>
+                <TableHead className="w-40">Email</TableHead>
+                <TableHead className="w-24">Tel</TableHead>
+                <TableHead className="w-40">Adres</TableHead>
+                <TableHead className="w-32">Kwaliteit</TableHead>
+                <TableHead className="w-48">Toelichting</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {submissions.map((submission) => (
                 <TableRow key={submission.id}>
-                  <TableCell className="whitespace-nowrap">
-                    {formatDate(submission.created_at)}
+                  <TableCell className="text-xs">
+                    {new Date(submission.created_at).toLocaleDateString('nl-NL', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: '2-digit'
+                    })}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={getTypeBadgeVariant(submission.type)}>
-                      {getTypeLabel(submission.type)}
+                    <Badge variant={getTypeBadgeVariant(submission.type)} className="text-xs px-1 py-0">
+                      {submission.type === 'stalen' ? 'Stalen' : 
+                       submission.type === 'keukentrends' ? 'Trends' :
+                       submission.type === 'lookbook' ? 'Book' :
+                       submission.type === 'korting' ? 'Korting' : submission.type}
                     </Badge>
                   </TableCell>
-                  <TableCell className="whitespace-nowrap">
-                    {submission.voornaam} {submission.achternaam}
+                  <TableCell className="text-xs">
+                    <div className="truncate" title={`${submission.voornaam} ${submission.achternaam}`}>
+                      {submission.voornaam} {submission.achternaam}
+                    </div>
                   </TableCell>
-                  <TableCell>{submission.bedrijf}</TableCell>
-                  <TableCell>{submission.email}</TableCell>
-                  <TableCell>{submission.telefoon || '-'}</TableCell>
-                  <TableCell>
-                    {submission.straat && submission.postcode && submission.gemeente
-                      ? `${submission.straat}, ${submission.postcode} ${submission.gemeente}`
-                      : '-'
-                    }
+                  <TableCell className="text-xs">
+                    <div className="truncate" title={submission.bedrijf}>
+                      {submission.bedrijf}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-xs">
+                    <div className="truncate" title={submission.email}>
+                      {submission.email}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-xs">
+                    <div className="truncate" title={submission.telefoon || ''}>
+                      {submission.telefoon || '-'}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-xs">
+                    <div className="truncate" title={
+                      submission.straat && submission.postcode && submission.gemeente
+                        ? `${submission.straat}, ${submission.postcode} ${submission.gemeente}`
+                        : ''
+                    }>
+                      {submission.straat && submission.postcode && submission.gemeente
+                        ? `${submission.straat}, ${submission.postcode} ${submission.gemeente}`
+                        : '-'
+                      }
+                    </div>
                   </TableCell>
                   <TableCell>
                     <Select
@@ -193,11 +220,11 @@ const LeadQualificationTable: React.FC = () => {
                       onValueChange={(value) => updateSubmission(submission.id, 'kwaliteit', value)}
                       disabled={updatingId === submission.id}
                     >
-                      <SelectTrigger className="w-32">
-                        <SelectValue placeholder="Selecteer">
+                      <SelectTrigger className="w-28 h-8 text-xs">
+                        <SelectValue placeholder="Kies">
                           {submission.kwaliteit && (
-                            <Badge variant={getKwaliteitBadgeVariant(submission.kwaliteit)} className="text-xs">
-                              {submission.kwaliteit}
+                            <Badge variant={getKwaliteitBadgeVariant(submission.kwaliteit)} className="text-xs px-1 py-0">
+                              {submission.kwaliteit === 'Goed - klant' ? 'Klant' : submission.kwaliteit}
                             </Badge>
                           )}
                         </SelectValue>
@@ -222,9 +249,9 @@ const LeadQualificationTable: React.FC = () => {
                     <Textarea
                       defaultValue={submission.toelichting || ""}
                       onBlur={(e) => updateSubmission(submission.id, 'toelichting', e.target.value)}
-                      placeholder="Voeg toelichting toe..."
-                      className="min-w-[200px] resize-none"
-                      rows={2}
+                      placeholder="Toelichting..."
+                      className="w-44 h-8 text-xs resize-none"
+                      rows={1}
                       disabled={updatingId === submission.id}
                     />
                   </TableCell>
