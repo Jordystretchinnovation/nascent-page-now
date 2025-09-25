@@ -159,8 +159,6 @@ const CampaignAnalytics = ({ submissions }: CampaignAnalyticsProps) => {
 
   return (
     <div className="space-y-6">
-      {renderAnalysisTable(getChannelAnalysisData(), 'channel', 'Channel Analyse (UTM Source)')}
-      {renderAnalysisTable(getMediumAnalysisData(), 'medium', 'Medium Analyse (UTM Medium)')}
       {renderAnalysisTable(getCampaignAnalysisData(), 'campaign', 'Campagne Analyse (UTM Campaign)')}
     </div>
   );
