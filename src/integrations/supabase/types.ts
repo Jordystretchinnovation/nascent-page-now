@@ -7,7 +7,7 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.3 (519615d)"
@@ -24,11 +24,13 @@ export type Database = {
           id: string
           language: string
           marketing_optin: boolean
+          message: string | null
           postcode: string | null
           renderbook_type: string | null
           straat: string | null
           telefoon: string | null
           type: string
+          type_bedrijf: string | null
           utm_campaign: string | null
           utm_content: string | null
           utm_medium: string | null
@@ -45,11 +47,13 @@ export type Database = {
           id?: string
           language?: string
           marketing_optin?: boolean
+          message?: string | null
           postcode?: string | null
           renderbook_type?: string | null
           straat?: string | null
           telefoon?: string | null
           type: string
+          type_bedrijf?: string | null
           utm_campaign?: string | null
           utm_content?: string | null
           utm_medium?: string | null
@@ -66,11 +70,13 @@ export type Database = {
           id?: string
           language?: string
           marketing_optin?: boolean
+          message?: string | null
           postcode?: string | null
           renderbook_type?: string | null
           straat?: string | null
           telefoon?: string | null
           type?: string
+          type_bedrijf?: string | null
           utm_campaign?: string | null
           utm_content?: string | null
           utm_medium?: string | null
