@@ -155,10 +155,10 @@ const LeadQualificationTable: React.FC = () => {
               <TableRow>
                 <TableHead className="w-24">Datum</TableHead>
                 <TableHead className="w-20">Type</TableHead>
-                <TableHead className="w-32">Naam</TableHead>
-                <TableHead className="w-28">Bedrijf</TableHead>
-                <TableHead className="w-40">Email</TableHead>
-                <TableHead className="w-24">Tel</TableHead>
+                <TableHead className="w-24">Naam</TableHead>
+                <TableHead className="w-24">Bedrijf</TableHead>
+                <TableHead className="w-52">Email</TableHead>
+                <TableHead className="w-20">Tel</TableHead>
                 <TableHead className="w-40">Adres</TableHead>
                 <TableHead className="w-32">Kwaliteit</TableHead>
                 <TableHead className="w-48">Toelichting</TableHead>
