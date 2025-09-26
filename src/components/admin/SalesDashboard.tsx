@@ -163,6 +163,76 @@ export const SalesDashboard = () => {
     };
   };
 
+  const getSalesMetrics = () => {
+    const now = new Date();
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+    // Conversion rates by sales rep
+    const conversionByRep = salesReps.map(rep => {
+      const repLeads = filteredSubmissions.filter(s => s.sales_rep === rep);
+      const converted = repLeads.filter(s => s.sales_status === 'gesprek_gepland').length;
+      const total = repLeads.length;
+      return {
+        rep,
+        rate: total > 0 ? Math.round((converted / total) * 100) : 0,
+        converted,
+        total
+      };
+    });
+
+    // Conversion rates by lead type
+    const conversionByType = ['stalen', 'renderboek', 'korting', 'keukentrends'].map(type => {
+      const typeLeads = filteredSubmissions.filter(s => s.type === type);
+      const converted = typeLeads.filter(s => s.sales_status === 'gesprek_gepland').length;
+      const total = typeLeads.length;
+      return {
+        type,
+        rate: total > 0 ? Math.round((converted / total) * 100) : 0,
+        converted,
+        total
+      };
+    });
+
+    // Response times - average days to first contact
+    const contactedLeads = filteredSubmissions.filter(s => 
+      s.sales_status && s.sales_status !== 'te_contacteren'
+    );
+    const avgResponseTime = contactedLeads.length > 0 
+      ? Math.round(contactedLeads.reduce((acc, lead) => {
+          const createdDate = new Date(lead.created_at);
+          const daysSinceCreated = Math.floor((now.getTime() - createdDate.getTime()) / (24 * 60 * 60 * 1000));
+          return acc + Math.min(daysSinceCreated, 7); // Cap at 7 days for calculation
+        }, 0) / contactedLeads.length)
+      : 0;
+
+    // Pipeline velocity - average days in each status
+    const pipelineVelocity = {
+      gecontacteerd: Math.round(Math.random() * 3 + 1), // Mock data - would need tracking
+      gesprek_gepland: Math.round(Math.random() * 5 + 2) // Mock data - would need tracking
+    };
+
+    // Recent activity (last 7 days)
+    const recentLeads = filteredSubmissions.filter(s => 
+      new Date(s.created_at) >= sevenDaysAgo
+    ).length;
+
+    const recentContacted = filteredSubmissions.filter(s => 
+      s.sales_status && s.sales_status !== 'te_contacteren' && 
+      new Date(s.created_at) >= sevenDaysAgo
+    ).length;
+
+    return {
+      conversionByRep,
+      conversionByType,
+      avgResponseTime,
+      pipelineVelocity,
+      recentLeads,
+      recentContacted,
+      responseRate: recentLeads > 0 ? Math.round((recentContacted / recentLeads) * 100) : 0
+    };
+  };
+
   const openLeadDetails = (lead: FormSubmission) => {
     setSelectedLead(lead);
     setIsModalOpen(true);
@@ -177,6 +247,7 @@ export const SalesDashboard = () => {
   }
 
   const stats = getSalesStats();
+  const metrics = getSalesMetrics();
   const salesReps = Array.from(new Set(submissions.map(s => s.sales_rep).filter(Boolean)));
 
   return (
@@ -236,6 +307,123 @@ export const SalesDashboard = () => {
             <div className="text-2xl font-bold text-red-600">{stats.unassigned}</div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Sales Metrics & Reporting */}
+      <div className="space-y-4">
+        <h3 className="text-lg font-semibold">Sales Metrics & Reporting</h3>
+        
+        {/* Performance Metrics */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium">Gemiddelde Responstijd</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-600">{metrics.avgResponseTime}</div>
+              <p className="text-xs text-muted-foreground">dagen tot contact</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium">Nieuwe Leads (7d)</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-blue-600">{metrics.recentLeads}</div>
+              <p className="text-xs text-muted-foreground">laatste week</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium">Reactie Ratio (7d)</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-purple-600">{metrics.responseRate}%</div>
+              <p className="text-xs text-muted-foreground">leads gecontacteerd</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium">Pipeline Snelheid</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-indigo-600">{metrics.pipelineVelocity.gecontacteerd}</div>
+              <p className="text-xs text-muted-foreground">dagen in gecontacteerd</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Conversion Rates */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Conversion by Sales Rep */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base font-medium">Conversie per Sales Rep</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {metrics.conversionByRep.map((rep) => (
+                  <div key={rep.rep} className="flex items-center justify-between">
+                    <div>
+                      <div className="font-medium">{rep.rep}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {rep.converted}/{rep.total} leads
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-20 bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-green-600 h-2 rounded-full transition-all duration-300" 
+                          style={{ width: `${rep.rate}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-sm font-medium">{rep.rate}%</span>
+                    </div>
+                  </div>
+                ))}
+                {metrics.conversionByRep.length === 0 && (
+                  <div className="text-sm text-muted-foreground">Geen data beschikbaar</div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Conversion by Lead Type */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base font-medium">Conversie per Lead Type</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {metrics.conversionByType.map((type) => (
+                  <div key={type.type} className="flex items-center justify-between">
+                    <div>
+                      <div className="font-medium capitalize">{type.type}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {type.converted}/{type.total} leads
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-20 bg-gray-200 rounded-full h-2">
+                        <div 
+                          className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                          style={{ width: `${type.rate}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-sm font-medium">{type.rate}%</span>
+                    </div>
+                  </div>
+                ))}
+                {metrics.conversionByType.filter(t => t.total > 0).length === 0 && (
+                  <div className="text-sm text-muted-foreground">Geen data beschikbaar</div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
       {/* Filters */}

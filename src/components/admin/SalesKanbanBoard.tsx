@@ -75,10 +75,16 @@ export const SalesKanbanBoard: React.FC<SalesKanbanBoardProps> = ({
   onLeadClick
 }) => {
   const getSubmissionsByStatus = (status: string) => {
-    return submissions.filter(submission => {
+    const allSubmissions = submissions.filter(submission => {
       const salesStatus = submission.sales_status || 'te_contacteren';
       return salesStatus === status;
     });
+    // Return both limited and total count
+    return {
+      displayed: allSubmissions.slice(0, 20),
+      total: allSubmissions.length,
+      hasMore: allSubmissions.length > 20
+    };
   };
 
   const handleDragEnd = async (result: DropResult) => {
@@ -99,30 +105,42 @@ export const SalesKanbanBoard: React.FC<SalesKanbanBoardProps> = ({
     <DragDropContext onDragEnd={handleDragEnd}>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         {salesStatuses.map((status) => {
-          const statusSubmissions = getSubmissionsByStatus(status.id);
+          const statusData = getSubmissionsByStatus(status.id);
           
           return (
-            <Card key={status.id} className={`${status.color} min-h-[600px]`}>
-              <CardHeader className={`${status.headerColor} rounded-t-lg`}>
+            <Card key={status.id} className={`${status.color} h-[600px] flex flex-col`}>
+              <CardHeader className={`${status.headerColor} rounded-t-lg flex-shrink-0`}>
                 <CardTitle className="text-sm font-medium flex items-center justify-between">
                   {status.title}
                   <span className="bg-white rounded-full px-2 py-1 text-xs font-bold">
-                    {statusSubmissions.length}
+                    {statusData.total}
+                    {statusData.hasMore && (
+                      <span className="text-orange-600 ml-1">*</span>
+                    )}
                   </span>
                 </CardTitle>
+                {statusData.hasMore && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Toont eerste 20 van {statusData.total} leads
+                  </p>
+                )}
               </CardHeader>
-              <CardContent className="p-3">
+              <CardContent className="p-3 flex-1 overflow-hidden">
                 <Droppable droppableId={status.id}>
                   {(provided, snapshot) => (
                     <div
                       ref={provided.innerRef}
                       {...provided.droppableProps}
-                      className={`min-h-[500px] rounded-md ${
+                      className={`h-full rounded-md overflow-y-auto ${
                         snapshot.isDraggingOver ? 'bg-white/50' : ''
                       }`}
+                      style={{ 
+                        scrollbarWidth: 'thin',
+                        scrollbarColor: '#cbd5e1 transparent'
+                      }}
                     >
-                      <div className="space-y-3">
-                        {statusSubmissions.map((submission, index) => (
+                      <div className="space-y-3 pb-4">
+                        {statusData.displayed.map((submission, index) => (
                           <Draggable
                             key={submission.id}
                             draggableId={submission.id}
@@ -146,6 +164,16 @@ export const SalesKanbanBoard: React.FC<SalesKanbanBoardProps> = ({
                             )}
                           </Draggable>
                         ))}
+                        {statusData.hasMore && (
+                          <div className="p-3 bg-white/60 rounded-lg border-2 border-dashed border-gray-300 text-center">
+                            <p className="text-sm text-muted-foreground">
+                              +{statusData.total - 20} meer leads...
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Gebruik filters om minder leads te tonen
+                            </p>
+                          </div>
+                        )}
                       </div>
                       {provided.placeholder}
                     </div>
