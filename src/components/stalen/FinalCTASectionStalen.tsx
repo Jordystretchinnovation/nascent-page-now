@@ -221,24 +221,6 @@ const FinalCTASectionStalen = () => {
                 />
               </div>
             </div>
-
-            <div>
-              <Label className="text-stone-700 font-medium">Ik ben een... *</Label>
-              <RadioGroup value={typeBedrijf} onValueChange={setTypeBedrijf} className="mt-2" disabled={isSubmitting}>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="particulier" id="particulier" />
-                  <Label htmlFor="particulier" className="text-stone-700">Particulier</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="keukenbouwer" id="keukenbouwer" />
-                  <Label htmlFor="keukenbouwer" className="text-stone-700">Keukenbouwer</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="interieurarchitect" id="interieurarchitect" />
-                  <Label htmlFor="interieurarchitect" className="text-stone-700">Interieurarchitect</Label>
-                </div>
-              </RadioGroup>
-            </div>
             
             <div>
               <Label htmlFor="bedrijf" className="text-stone-700 font-medium">Bedrijf *</Label>
@@ -313,6 +295,24 @@ const FinalCTASectionStalen = () => {
                   disabled={isSubmitting}
                 />
               </div>
+            </div>
+            
+            <div>
+              <Label className="text-stone-700 font-medium">Ik ben een... *</Label>
+              <RadioGroup value={typeBedrijf} onValueChange={setTypeBedrijf} className="mt-2" disabled={isSubmitting}>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="particulier" id="particulier" />
+                  <Label htmlFor="particulier" className="text-stone-700">Particulier</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="keukenbouwer" id="keukenbouwer" />
+                  <Label htmlFor="keukenbouwer" className="text-stone-700">Keukenbouwer</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="interieurarchitect" id="interieurarchitect" />
+                  <Label htmlFor="interieurarchitect" className="text-stone-700">Interieurarchitect</Label>
+                </div>
+              </RadioGroup>
             </div>
             
             {/* Marketing Opt-in */}
