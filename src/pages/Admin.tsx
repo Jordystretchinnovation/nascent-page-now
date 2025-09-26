@@ -331,125 +331,129 @@ const Admin = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base font-medium">Totaal</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-foreground">{stats.total}</div>
-              <p className="text-xs text-muted-foreground">formulierinzendingen</p>
-            </CardContent>
-          </Card>
+        {activeTab !== "sales" && (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base font-medium">Totaal</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-foreground">{stats.total}</div>
+                  <p className="text-xs text-muted-foreground">formulierinzendingen</p>
+                </CardContent>
+              </Card>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base font-medium flex items-center gap-2">
-                <Badge variant={getTypeBadgeVariant('stalen')} className="text-xs">
-                  {getTypeLabel('stalen')}
-                </Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-foreground">{stats.stalen}</div>
-              <p className="text-xs text-muted-foreground">inzendingen</p>
-            </CardContent>
-          </Card>
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base font-medium flex items-center gap-2">
+                    <Badge variant={getTypeBadgeVariant('stalen')} className="text-xs">
+                      {getTypeLabel('stalen')}
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-foreground">{stats.stalen}</div>
+                  <p className="text-xs text-muted-foreground">inzendingen</p>
+                </CardContent>
+              </Card>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base font-medium flex items-center gap-2">
-                <Badge variant={getTypeBadgeVariant('renderboek')} className="text-xs">
-                  {getTypeLabel('renderboek')}
-                </Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-foreground">{stats.renderboek}</div>
-              <p className="text-xs text-muted-foreground">inzendingen</p>
-            </CardContent>
-          </Card>
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base font-medium flex items-center gap-2">
+                    <Badge variant={getTypeBadgeVariant('renderboek')} className="text-xs">
+                      {getTypeLabel('renderboek')}
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-foreground">{stats.renderboek}</div>
+                  <p className="text-xs text-muted-foreground">inzendingen</p>
+                </CardContent>
+              </Card>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base font-medium flex items-center gap-2">
-                <Badge variant={getTypeBadgeVariant('korting')} className="text-xs">
-                  {getTypeLabel('korting')}
-                </Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-foreground">{stats.korting}</div>
-              <p className="text-xs text-muted-foreground">inzendingen</p>
-            </CardContent>
-          </Card>
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base font-medium flex items-center gap-2">
+                    <Badge variant={getTypeBadgeVariant('korting')} className="text-xs">
+                      {getTypeLabel('korting')}
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-foreground">{stats.korting}</div>
+                  <p className="text-xs text-muted-foreground">inzendingen</p>
+                </CardContent>
+              </Card>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base font-medium flex items-center gap-2">
-                <Badge variant={getTypeBadgeVariant('keukentrends')} className="text-xs">
-                  {getTypeLabel('keukentrends')}
-                </Badge>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-foreground">{stats.keukentrends}</div>
-              <p className="text-xs text-muted-foreground">inzendingen</p>
-            </CardContent>
-          </Card>
-        </div>
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base font-medium flex items-center gap-2">
+                    <Badge variant={getTypeBadgeVariant('keukentrends')} className="text-xs">
+                      {getTypeLabel('keukentrends')}
+                    </Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-foreground">{stats.keukentrends}</div>
+                  <p className="text-xs text-muted-foreground">inzendingen</p>
+                </CardContent>
+              </Card>
+            </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base font-medium">Ongekwalificeerd</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-foreground">{qualityStats.ongekwalificeerd}</div>
-              <p className="text-xs text-muted-foreground">inzendingen</p>
-            </CardContent>
-          </Card>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base font-medium">Ongekwalificeerd</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-foreground">{qualityStats.ongekwalificeerd}</div>
+                  <p className="text-xs text-muted-foreground">inzendingen</p>
+                </CardContent>
+              </Card>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base font-medium">Goed</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-foreground">{qualityStats.goed}</div>
-              <p className="text-xs text-muted-foreground">inzendingen</p>
-            </CardContent>
-          </Card>
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base font-medium">Goed</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-foreground">{qualityStats.goed}</div>
+                  <p className="text-xs text-muted-foreground">inzendingen</p>
+                </CardContent>
+              </Card>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base font-medium">Goed - Klant</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-foreground">{qualityStats.goedKlant}</div>
-              <p className="text-xs text-muted-foreground">inzendingen</p>
-            </CardContent>
-          </Card>
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base font-medium">Goed - Klant</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-foreground">{qualityStats.goedKlant}</div>
+                  <p className="text-xs text-muted-foreground">inzendingen</p>
+                </CardContent>
+              </Card>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base font-medium">Redelijk</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-foreground">{qualityStats.redelijk}</div>
-              <p className="text-xs text-muted-foreground">inzendingen</p>
-            </CardContent>
-          </Card>
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base font-medium">Redelijk</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-foreground">{qualityStats.redelijk}</div>
+                  <p className="text-xs text-muted-foreground">inzendingen</p>
+                </CardContent>
+              </Card>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base font-medium">Slecht</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-foreground">{qualityStats.slecht}</div>
-              <p className="text-xs text-muted-foreground">inzendingen</p>
-            </CardContent>
-          </Card>
-        </div>
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base font-medium">Slecht</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-foreground">{qualityStats.slecht}</div>
+                  <p className="text-xs text-muted-foreground">inzendingen</p>
+                </CardContent>
+              </Card>
+            </div>
+          </>
+        )}
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="flex items-center justify-between mb-4">
