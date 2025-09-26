@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -27,6 +28,7 @@ const FinalCTASectionStalen = () => {
     utm_term: "",
     utm_content: ""
   });
+  const [typeBedrijf, setTypeBedrijf] = useState("particulier");
   const [marketingOptin, setMarketingOptin] = useState(false);
   const [marketingOptinError, setMarketingOptinError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -93,6 +95,7 @@ const FinalCTASectionStalen = () => {
         postcode: formData.postcode || null,
         gemeente: formData.gemeente || null,
         renderbook_type: null,
+        type_bedrijf: typeBedrijf,
         marketing_optin: marketingOptin,
         language: "nl",
         utm_source: utmParams.utm_source || null,
@@ -134,6 +137,7 @@ const FinalCTASectionStalen = () => {
         postcode: "",
         gemeente: ""
       });
+      setTypeBedrijf("particulier");
       setMarketingOptin(false);
 
       // Redirect to thank you page
@@ -216,6 +220,24 @@ const FinalCTASectionStalen = () => {
                   disabled={isSubmitting}
                 />
               </div>
+            </div>
+
+            <div>
+              <Label className="text-stone-700 font-medium">Ik ben een... *</Label>
+              <RadioGroup value={typeBedrijf} onValueChange={setTypeBedrijf} className="mt-2" disabled={isSubmitting}>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="particulier" id="particulier" />
+                  <Label htmlFor="particulier" className="text-stone-700">Particulier</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="keukenbouwer" id="keukenbouwer" />
+                  <Label htmlFor="keukenbouwer" className="text-stone-700">Keukenbouwer</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="interieurarchitect" id="interieurarchitect" />
+                  <Label htmlFor="interieurarchitect" className="text-stone-700">Interieurarchitect</Label>
+                </div>
+              </RadioGroup>
             </div>
             
             <div>
