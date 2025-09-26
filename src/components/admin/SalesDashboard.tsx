@@ -34,10 +34,16 @@ interface FormSubmission {
   toelichting: string | null;
 }
 
-export const SalesDashboard = () => {
-  const [submissions, setSubmissions] = useState<FormSubmission[]>([]);
+interface SalesDashboardProps {
+  submissions: FormSubmission[];
+  onUpdate: () => Promise<void>;
+}
+
+export const SalesDashboard: React.FC<SalesDashboardProps> = ({ 
+  submissions, 
+  onUpdate 
+}) => {
   const [filteredSubmissions, setFilteredSubmissions] = useState<FormSubmission[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [selectedLead, setSelectedLead] = useState<FormSubmission | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { toast } = useToast();
@@ -48,42 +54,8 @@ export const SalesDashboard = () => {
   const [marketingStatusFilter, setMarketingStatusFilter] = useState<string>('all');
 
   useEffect(() => {
-    fetchSubmissions();
-  }, []);
-
-  useEffect(() => {
     applyFilters();
   }, [submissions, salesRepFilter, typeFilter, marketingStatusFilter]);
-
-  const fetchSubmissions = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('form_submissions')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Error fetching submissions:', error);
-        toast({
-          title: "Fout bij ophalen gegevens",
-          description: "Er is een fout opgetreden bij het ophalen van de leads.",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      setSubmissions(data || []);
-    } catch (error) {
-      console.error('Error:', error);
-      toast({
-        title: "Fout",
-        description: "Er is een onverwachte fout opgetreden.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const applyFilters = () => {
     let filtered = submissions;
@@ -142,12 +114,8 @@ export const SalesDashboard = () => {
         return;
       }
 
-      // Update local state
-      setSubmissions(prev => 
-        prev.map(sub => 
-          sub.id === id ? { ...sub, sales_status: newStatus } : sub
-        )
-      );
+      // Refresh shared data
+      await onUpdate();
 
       toast({
         title: "Status bijgewerkt",
@@ -275,14 +243,6 @@ export const SalesDashboard = () => {
     setSelectedLead(lead);
     setIsModalOpen(true);
   };
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="text-muted-foreground">Laden...</div>
-      </div>
-    );
-  }
 
   const stats = getSalesStats();
   const metrics = getSalesMetrics();
@@ -482,7 +442,7 @@ export const SalesDashboard = () => {
         lead={selectedLead}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onUpdate={fetchSubmissions}
+        onUpdate={onUpdate}
       />
     </div>
   );

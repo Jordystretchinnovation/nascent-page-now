@@ -35,6 +35,10 @@ interface FormSubmission {
   utm_content: string | null;
   utm_term: string | null;
   created_at: string;
+  sales_status: string | null;
+  sales_rep: string | null;
+  sales_comment: string | null;
+  toelichting: string | null;
 }
 
 const Admin = () => {
@@ -83,7 +87,11 @@ const Admin = () => {
           utm_campaign,
           utm_content,
           utm_term,
-          created_at
+          created_at,
+          sales_status,
+          sales_rep,
+          sales_comment,
+          toelichting
         `)
         .order('created_at', { ascending: false });
 
@@ -484,9 +492,12 @@ const Admin = () => {
             <LeadQualificationTable />
           </TabsContent>
           
-          <TabsContent value="sales" className="space-y-4 mt-4">
-            <SalesDashboard />
-          </TabsContent>
+           <TabsContent value="sales" className="space-y-4 mt-4">
+             <SalesDashboard 
+               submissions={submissions}
+               onUpdate={fetchSubmissions}
+             />
+           </TabsContent>
           
           <TabsContent value="utm" className="space-y-4 mt-4">
             {isLoading ? (
