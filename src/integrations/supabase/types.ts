@@ -28,6 +28,9 @@ export type Database = {
           message: string | null
           postcode: string | null
           renderbook_type: string | null
+          sales_comment: string | null
+          sales_rep: string | null
+          sales_status: string | null
           straat: string | null
           telefoon: string | null
           toelichting: string | null
@@ -53,6 +56,9 @@ export type Database = {
           message?: string | null
           postcode?: string | null
           renderbook_type?: string | null
+          sales_comment?: string | null
+          sales_rep?: string | null
+          sales_status?: string | null
           straat?: string | null
           telefoon?: string | null
           toelichting?: string | null
@@ -78,6 +84,9 @@ export type Database = {
           message?: string | null
           postcode?: string | null
           renderbook_type?: string | null
+          sales_comment?: string | null
+          sales_rep?: string | null
+          sales_status?: string | null
           straat?: string | null
           telefoon?: string | null
           toelichting?: string | null

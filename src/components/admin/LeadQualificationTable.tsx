@@ -23,6 +23,9 @@ interface FormSubmission {
   language: string;
   kwaliteit: string | null;
   toelichting: string | null;
+  sales_status: string | null;
+  sales_rep: string | null;
+  sales_comment: string | null;
 }
 
 const LeadQualificationTable: React.FC = () => {
@@ -55,7 +58,7 @@ const LeadQualificationTable: React.FC = () => {
     }
   };
 
-  const updateSubmission = async (id: string, field: 'kwaliteit' | 'toelichting', value: string | null) => {
+  const updateSubmission = async (id: string, field: 'kwaliteit' | 'toelichting' | 'sales_status' | 'sales_rep' | 'sales_comment', value: string | null) => {
     setUpdatingId(id);
     try {
       const { error } = await supabase
@@ -71,9 +74,17 @@ const LeadQualificationTable: React.FC = () => {
         )
       );
 
+      const fieldLabels = {
+        kwaliteit: 'Marketing status',
+        toelichting: 'Marketing comment',
+        sales_status: 'Sales status',
+        sales_rep: 'Sales rep',
+        sales_comment: 'Sales comment'
+      };
+
       toast({
         title: "Opgeslagen",
-        description: `${field === 'kwaliteit' ? 'Kwaliteit' : 'Toelichting'} is bijgewerkt`,
+        description: `${fieldLabels[field]} is bijgewerkt`,
       });
     } catch (error) {
       console.error('Error updating submission:', error);
@@ -149,18 +160,21 @@ const LeadQualificationTable: React.FC = () => {
         <CardTitle>Kwalificatie Leads ({submissions.length})</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="w-full">
-          <Table className="table-fixed w-full">
+        <div className="w-full overflow-x-auto">
+          <Table className="table-fixed w-full min-w-[1400px]">
             <colgroup>
               <col className="w-20" />
               <col className="w-16" />
               <col className="w-20" />
               <col className="w-20" />
-              <col className="w-48" />
-              <col className="w-24" />
+              <col className="w-44" />
+              <col className="w-20" />
               <col className="w-32" />  
               <col className="w-28" />
-              <col className="w-40" />
+              <col className="w-36" />
+              <col className="w-28" />
+              <col className="w-28" />
+              <col className="w-36" />
             </colgroup>
             <TableHeader>
               <TableRow>
@@ -171,8 +185,11 @@ const LeadQualificationTable: React.FC = () => {
                 <TableHead>Email</TableHead>
                 <TableHead>Tel</TableHead>
                 <TableHead>Adres</TableHead>
-                <TableHead>Kwaliteit</TableHead>
-                <TableHead>Toelichting</TableHead>
+                <TableHead>Marketing status</TableHead>
+                <TableHead>Marketing comment</TableHead>
+                <TableHead>Sales status</TableHead>
+                <TableHead>Sales rep</TableHead>
+                <TableHead>Sales comment</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -256,8 +273,53 @@ const LeadQualificationTable: React.FC = () => {
                     <Textarea
                       defaultValue={submission.toelichting || ""}
                       onBlur={(e) => updateSubmission(submission.id, 'toelichting', e.target.value)}
-                      placeholder="Toelichting..."
-                      className="w-44 text-xs resize-none"
+                      placeholder="Marketing comment..."
+                      className="w-36 text-xs resize-none"
+                      rows={3}
+                      disabled={updatingId === submission.id}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Select
+                      value={submission.sales_status || ""}
+                      onValueChange={(value) => updateSubmission(submission.id, 'sales_status', value)}
+                      disabled={updatingId === submission.id}
+                    >
+                      <SelectTrigger className="w-28 h-8 text-xs">
+                        <SelectValue placeholder="Kies" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Te contacteren">Te contacteren</SelectItem>
+                        <SelectItem value="Gecontacteerd">Gecontacteerd</SelectItem>
+                        <SelectItem value="Gesprek gepland">Gesprek gepland</SelectItem>
+                        <SelectItem value="Afgewezen">Afgewezen</SelectItem>
+                        <SelectItem value="Niet relevant">Niet relevant</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </TableCell>
+                  <TableCell>
+                    <Select
+                      value={submission.sales_rep || ""}
+                      onValueChange={(value) => updateSubmission(submission.id, 'sales_rep', value)}
+                      disabled={updatingId === submission.id}
+                    >
+                      <SelectTrigger className="w-28 h-8 text-xs">
+                        <SelectValue placeholder="Kies" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Dominique">Dominique</SelectItem>
+                        <SelectItem value="Pierre">Pierre</SelectItem>
+                        <SelectItem value="Michael">Michael</SelectItem>
+                        <SelectItem value="Alexander">Alexander</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </TableCell>
+                  <TableCell>
+                    <Textarea
+                      defaultValue={submission.sales_comment || ""}
+                      onBlur={(e) => updateSubmission(submission.id, 'sales_comment', e.target.value)}
+                      placeholder="Sales comment..."
+                      className="w-36 text-xs resize-none"
                       rows={3}
                       disabled={updatingId === submission.id}
                     />
