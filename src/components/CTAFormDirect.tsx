@@ -32,6 +32,7 @@ const CTAFormDirect = ({ type, title }: CTAFormDirectProps) => {
     utm_content: ""
   });
   const [renderbookType, setRenderbookType] = useState("digitaal");
+  const [typeBedrijf, setTypeBedrijf] = useState("particulier");
   const [marketingOptin, setMarketingOptin] = useState(false);
   const [marketingOptinError, setMarketingOptinError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -171,6 +172,7 @@ const CTAFormDirect = ({ type, title }: CTAFormDirectProps) => {
         postcode: formData.postcode || null,
         gemeente: formData.gemeente || null,
         renderbook_type: type === "renderboek" ? renderbookType : null,
+        type_bedrijf: type === "stalen" ? typeBedrijf : null,
         marketing_optin: marketingOptin,
         language: "nl",
         utm_source: utmParams.utm_source || null,
@@ -221,6 +223,7 @@ const CTAFormDirect = ({ type, title }: CTAFormDirectProps) => {
         gemeente: ""
       });
       setRenderbookType("digitaal");
+      setTypeBedrijf("particulier");
       setMarketingOptin(false);
 
       // Redirect to appropriate thank you page
@@ -325,6 +328,26 @@ const CTAFormDirect = ({ type, title }: CTAFormDirectProps) => {
           </div>
         </div>
         
+        {type === "stalen" && (
+          <div>
+            <Label className="text-stone-700 font-medium">Ik ben een... *</Label>
+            <RadioGroup value={typeBedrijf} onValueChange={setTypeBedrijf} className="mt-2" disabled={isSubmitting}>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="particulier" id="particulier" />
+                <Label htmlFor="particulier" className="text-stone-700">Particulier</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="keukenbouwer" id="keukenbouwer" />
+                <Label htmlFor="keukenbouwer" className="text-stone-700">Keukenbouwer</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="interieurarchitect" id="interieurarchitect" />
+                <Label htmlFor="interieurarchitect" className="text-stone-700">Interieurarchitect</Label>
+              </div>
+            </RadioGroup>
+          </div>
+        )}
+
         <div>
           <Label htmlFor="bedrijf" className="text-stone-700 font-medium">Bedrijf *</Label>
           <Input 
