@@ -312,6 +312,24 @@ export const SalesDashboard = () => {
         </Card>
       </div>
 
+      {/* Filters */}
+      <SalesFilters
+        salesRepFilter={salesRepFilter}
+        setSalesRepFilter={setSalesRepFilter}
+        typeFilter={typeFilter}
+        setTypeFilter={setTypeFilter}
+        marketingStatusFilter={marketingStatusFilter}
+        setMarketingStatusFilter={setMarketingStatusFilter}
+        salesReps={salesReps}
+      />
+
+      {/* Kanban Board */}
+      <SalesKanbanBoard
+        submissions={filteredSubmissions}
+        onStatusUpdate={updateSubmissionStatus}
+        onLeadClick={openLeadDetails}
+      />
+
       {/* Sales Metrics & Reporting */}
       <div className="space-y-4">
         <h3 className="text-lg font-semibold">Sales Metrics & Reporting</h3>
@@ -428,24 +446,6 @@ export const SalesDashboard = () => {
           </Card>
         </div>
       </div>
-
-      {/* Filters */}
-      <SalesFilters
-        salesRepFilter={salesRepFilter}
-        setSalesRepFilter={setSalesRepFilter}
-        typeFilter={typeFilter}
-        setTypeFilter={setTypeFilter}
-        marketingStatusFilter={marketingStatusFilter}
-        setMarketingStatusFilter={setMarketingStatusFilter}
-        salesReps={salesReps}
-      />
-
-      {/* Kanban Board */}
-      <SalesKanbanBoard
-        submissions={filteredSubmissions}
-        onStatusUpdate={updateSubmissionStatus}
-        onLeadClick={openLeadDetails}
-      />
 
       {/* Lead Details Modal */}
       <LeadDetailsModal
