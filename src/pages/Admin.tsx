@@ -10,6 +10,7 @@ import { SubmissionsTable } from "@/components/admin/SubmissionsTable";
 import { UTMAnalytics } from "@/components/admin/UTMAnalytics";
 import CampaignAnalytics from "@/components/admin/CampaignAnalytics";
 import LeadQualificationTable from "@/components/admin/LeadQualificationTable";
+import { SalesDashboard } from "@/components/admin/SalesDashboard";
 import { Download } from "lucide-react";
 import * as XLSX from 'xlsx';
 
@@ -452,9 +453,10 @@ const Admin = () => {
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="flex items-center justify-between mb-4">
-            <TabsList className="grid grid-cols-4 w-auto">
+            <TabsList className="grid grid-cols-5 w-auto">
               <TabsTrigger value="submissions">Inzendingen</TabsTrigger>
               <TabsTrigger value="qualification">Kwalificatie Leads</TabsTrigger>
+              <TabsTrigger value="sales">Sales Dashboard</TabsTrigger>
               <TabsTrigger value="utm">UTM Analytics</TabsTrigger>
               <TabsTrigger value="campaign">Campaign Analytics</TabsTrigger>
             </TabsList>
@@ -476,6 +478,10 @@ const Admin = () => {
           
           <TabsContent value="qualification" className="space-y-4 mt-4">
             <LeadQualificationTable />
+          </TabsContent>
+          
+          <TabsContent value="sales" className="space-y-4 mt-4">
+            <SalesDashboard />
           </TabsContent>
           
           <TabsContent value="utm" className="space-y-4 mt-4">
