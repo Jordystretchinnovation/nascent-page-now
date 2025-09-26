@@ -171,7 +171,7 @@ export const SalesDashboard = () => {
     // Calculate salesReps inside this function
     const salesReps = Array.from(new Set(filteredSubmissions.map(s => s.sales_rep).filter(Boolean)));
 
-    // Conversion rates by sales rep
+    // Conversion rates by sales rep (conversion = reaching gesprek_gepland)
     const conversionByRep = salesReps.map(rep => {
       const repLeads = filteredSubmissions.filter(s => s.sales_rep === rep);
       const converted = repLeads.filter(s => s.sales_status === 'gesprek_gepland').length;
@@ -184,7 +184,7 @@ export const SalesDashboard = () => {
       };
     });
 
-    // Conversion rates by lead type
+    // Conversion rates by lead type (conversion = reaching gesprek_gepland)
     const conversionByType = ['stalen', 'renderboek', 'korting', 'keukentrends'].map(type => {
       const typeLeads = filteredSubmissions.filter(s => s.type === type);
       const converted = typeLeads.filter(s => s.sales_status === 'gesprek_gepland').length;
@@ -197,7 +197,7 @@ export const SalesDashboard = () => {
       };
     });
 
-    // Response times - average days to first contact
+    // Response times - average days to first contact (from te_contacteren to gecontacteerd)
     const contactedLeads = filteredSubmissions.filter(s => 
       s.sales_status && s.sales_status !== 'te_contacteren'
     );
@@ -209,24 +209,26 @@ export const SalesDashboard = () => {
         }, 0) / contactedLeads.length)
       : 0;
 
-    // Pipeline velocity - average days in each status (only show if data exists)
+    // Pipeline velocity - time spent in each key status
+    const teContacterenLeads = filteredSubmissions.filter(s => 
+      !s.sales_status || s.sales_status === 'te_contacteren'
+    );
     const statusContactedLeads = filteredSubmissions.filter(s => s.sales_status === 'gecontacteerd');
-    const meetingLeads = filteredSubmissions.filter(s => s.sales_status === 'gesprek_gepland');
     
     const pipelineVelocity = {
+      te_contacteren: teContacterenLeads.length > 0 
+        ? Math.round(teContacterenLeads.reduce((acc, lead) => {
+            const createdDate = new Date(lead.created_at);
+            const daysSinceCreated = Math.floor((now.getTime() - createdDate.getTime()) / (24 * 60 * 60 * 1000));
+            return acc + daysSinceCreated;
+          }, 0) / teContacterenLeads.length)
+        : 0,
       gecontacteerd: statusContactedLeads.length > 0 
         ? Math.round(statusContactedLeads.reduce((acc, lead) => {
             const createdDate = new Date(lead.created_at);
             const daysSinceCreated = Math.floor((now.getTime() - createdDate.getTime()) / (24 * 60 * 60 * 1000));
             return acc + daysSinceCreated;
           }, 0) / statusContactedLeads.length)
-        : 0,
-      gesprek_gepland: meetingLeads.length > 0
-        ? Math.round(meetingLeads.reduce((acc, lead) => {
-            const createdDate = new Date(lead.created_at);
-            const daysSinceCreated = Math.floor((now.getTime() - createdDate.getTime()) / (24 * 60 * 60 * 1000));
-            return acc + daysSinceCreated;
-          }, 0) / meetingLeads.length)
         : 0
     };
 
@@ -353,11 +355,21 @@ export const SalesDashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium">Gemiddelde Responstijd</CardTitle>
+              <CardTitle className="text-sm font-medium">Gem. Tijd Te Contacteren</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">{metrics.avgResponseTime}</div>
-              <p className="text-xs text-muted-foreground">dagen tot contact</p>
+              <div className="text-2xl font-bold text-orange-600">{metrics.pipelineVelocity.te_contacteren}</div>
+              <p className="text-xs text-muted-foreground">dagen wachtend op contact</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm font-medium">Gem. Tijd Gecontacteerd</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-blue-600">{metrics.pipelineVelocity.gecontacteerd}</div>
+              <p className="text-xs text-muted-foreground">dagen sinds eerste contact</p>
             </CardContent>
           </Card>
 
@@ -366,28 +378,23 @@ export const SalesDashboard = () => {
               <CardTitle className="text-sm font-medium">Nieuwe Leads (7d)</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-blue-600">{metrics.recentLeads}</div>
+              <div className="text-2xl font-bold text-green-600">{metrics.recentLeads}</div>
               <p className="text-xs text-muted-foreground">laatste week</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium">Reactie Ratio (7d)</CardTitle>
+              <CardTitle className="text-sm font-medium">Totale Conversie Ratio</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-purple-600">{metrics.responseRate}%</div>
-              <p className="text-xs text-muted-foreground">leads gecontacteerd</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium">Pipeline Snelheid</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-indigo-600">{metrics.pipelineVelocity.gecontacteerd}</div>
-              <p className="text-xs text-muted-foreground">dagen in gecontacteerd</p>
+              <div className="text-2xl font-bold text-purple-600">
+                {filteredSubmissions.length > 0 
+                  ? Math.round((filteredSubmissions.filter(s => s.sales_status === 'gesprek_gepland').length / filteredSubmissions.length) * 100)
+                  : 0
+                }%
+              </div>
+              <p className="text-xs text-muted-foreground">naar gesprek gepland</p>
             </CardContent>
           </Card>
         </div>
