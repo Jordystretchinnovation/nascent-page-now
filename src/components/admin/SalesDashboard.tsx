@@ -168,6 +168,9 @@ export const SalesDashboard = () => {
     const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
     const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
+    // Calculate salesReps inside this function
+    const salesReps = Array.from(new Set(filteredSubmissions.map(s => s.sales_rep).filter(Boolean)));
+
     // Conversion rates by sales rep
     const conversionByRep = salesReps.map(rep => {
       const repLeads = filteredSubmissions.filter(s => s.sales_rep === rep);
