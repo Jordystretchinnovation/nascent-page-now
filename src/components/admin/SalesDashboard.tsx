@@ -43,6 +43,8 @@ export const SalesDashboard: React.FC<SalesDashboardProps> = ({
   submissions, 
   onUpdate 
 }) => {
+  console.log('SalesDashboard rendering with submissions:', submissions?.length);
+  
   const [filteredSubmissions, setFilteredSubmissions] = useState<FormSubmission[]>([]);
   const [selectedLead, setSelectedLead] = useState<FormSubmission | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
