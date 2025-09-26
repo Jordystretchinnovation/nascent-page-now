@@ -88,12 +88,22 @@ export const SalesDashboard = () => {
   const applyFilters = () => {
     let filtered = submissions;
 
+    // Debug: log all kwaliteit values to see what we have
+    console.log('All kwaliteit values:', submissions.map(s => s.kwaliteit).filter(Boolean));
+
     // Only show marketing qualified leads (goed, goed-klant, redelijk)
-    filtered = filtered.filter(sub => 
-      sub.kwaliteit === 'Goed' || 
-      sub.kwaliteit === 'Goed - Klant' || 
-      sub.kwaliteit === 'Redelijk'
-    );
+    // Make the filter case-insensitive and handle variations
+    filtered = filtered.filter(sub => {
+      if (!sub.kwaliteit) return false;
+      const kwaliteit = sub.kwaliteit.toLowerCase().trim();
+      const isQualified = kwaliteit === 'goed' || 
+             kwaliteit === 'goed - klant' || 
+             kwaliteit.includes('goed') && kwaliteit.includes('klant') ||
+             kwaliteit === 'redelijk';
+      
+      console.log(`Lead ${sub.voornaam} ${sub.achternaam}: kwaliteit="${sub.kwaliteit}" -> qualified: ${isQualified}`);
+      return isQualified;
+    });
 
     if (salesRepFilter !== 'all') {
       if (salesRepFilter === 'unassigned') {
@@ -111,6 +121,7 @@ export const SalesDashboard = () => {
       filtered = filtered.filter(sub => sub.kwaliteit === marketingStatusFilter);
     }
 
+    console.log(`Filtered leads count: ${filtered.length}`);
     setFilteredSubmissions(filtered);
   };
 
