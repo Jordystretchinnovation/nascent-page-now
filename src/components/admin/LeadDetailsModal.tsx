@@ -314,12 +314,18 @@ export const LeadDetailsModal: React.FC<LeadDetailsModalProps> = ({
 
               <div className="space-y-2">
                 <Label htmlFor="sales-rep">Sales Representative</Label>
-                <Input
-                  id="sales-rep"
-                  value={salesRep}
-                  onChange={(e) => setSalesRep(e.target.value)}
-                  placeholder="Naam van sales rep"
-                />
+                <Select value={salesRep} onValueChange={setSalesRep}>
+                  <SelectTrigger id="sales-rep">
+                    <SelectValue placeholder="Kies sales rep" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background border shadow-md z-50">
+                    <SelectItem value="">Geen sales rep</SelectItem>
+                    <SelectItem value="Dominique">Dominique</SelectItem>
+                    <SelectItem value="Pierre">Pierre</SelectItem>
+                    <SelectItem value="Michael">Michael</SelectItem>
+                    <SelectItem value="Alexander">Alexander</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="space-y-2">
