@@ -88,6 +88,13 @@ export const SalesDashboard = () => {
   const applyFilters = () => {
     let filtered = submissions;
 
+    // Only show marketing qualified leads (goed, goed-klant, redelijk)
+    filtered = filtered.filter(sub => 
+      sub.kwaliteit === 'Goed' || 
+      sub.kwaliteit === 'Goed - Klant' || 
+      sub.kwaliteit === 'Redelijk'
+    );
+
     if (salesRepFilter !== 'all') {
       if (salesRepFilter === 'unassigned') {
         filtered = filtered.filter(sub => !sub.sales_rep);
