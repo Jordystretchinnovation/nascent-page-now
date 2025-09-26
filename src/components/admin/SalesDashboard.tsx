@@ -209,10 +209,25 @@ export const SalesDashboard = () => {
         }, 0) / contactedLeads.length)
       : 0;
 
-    // Pipeline velocity - average days in each status
+    // Pipeline velocity - average days in each status (only show if data exists)
+    const statusContactedLeads = filteredSubmissions.filter(s => s.sales_status === 'gecontacteerd');
+    const meetingLeads = filteredSubmissions.filter(s => s.sales_status === 'gesprek_gepland');
+    
     const pipelineVelocity = {
-      gecontacteerd: Math.round(Math.random() * 3 + 1), // Mock data - would need tracking
-      gesprek_gepland: Math.round(Math.random() * 5 + 2) // Mock data - would need tracking
+      gecontacteerd: statusContactedLeads.length > 0 
+        ? Math.round(statusContactedLeads.reduce((acc, lead) => {
+            const createdDate = new Date(lead.created_at);
+            const daysSinceCreated = Math.floor((now.getTime() - createdDate.getTime()) / (24 * 60 * 60 * 1000));
+            return acc + daysSinceCreated;
+          }, 0) / statusContactedLeads.length)
+        : 0,
+      gesprek_gepland: meetingLeads.length > 0
+        ? Math.round(meetingLeads.reduce((acc, lead) => {
+            const createdDate = new Date(lead.created_at);
+            const daysSinceCreated = Math.floor((now.getTime() - createdDate.getTime()) / (24 * 60 * 60 * 1000));
+            return acc + daysSinceCreated;
+          }, 0) / meetingLeads.length)
+        : 0
     };
 
     // Recent activity (last 7 days)
