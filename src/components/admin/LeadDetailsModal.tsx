@@ -60,7 +60,7 @@ export const LeadDetailsModal: React.FC<LeadDetailsModalProps> = ({
   useEffect(() => {
     if (lead) {
       setSalesStatus(lead.sales_status || 'te_contacteren');
-      setSalesRep(lead.sales_rep || '');
+      setSalesRep(lead.sales_rep || 'none');
       setSalesComment(lead.sales_comment || '');
     }
   }, [lead]);
@@ -74,7 +74,7 @@ export const LeadDetailsModal: React.FC<LeadDetailsModalProps> = ({
         .from('form_submissions')
         .update({
           sales_status: salesStatus,
-          sales_rep: salesRep || null,
+          sales_rep: salesRep === 'none' ? null : salesRep,
           sales_comment: salesComment || null
         })
         .eq('id', lead.id);
@@ -319,7 +319,7 @@ export const LeadDetailsModal: React.FC<LeadDetailsModalProps> = ({
                     <SelectValue placeholder="Kies sales rep" />
                   </SelectTrigger>
                   <SelectContent className="bg-background border shadow-md z-50">
-                    <SelectItem value="">Geen sales rep</SelectItem>
+                    <SelectItem value="none">Geen sales rep</SelectItem>
                     <SelectItem value="Dominique">Dominique</SelectItem>
                     <SelectItem value="Pierre">Pierre</SelectItem>
                     <SelectItem value="Michael">Michael</SelectItem>
