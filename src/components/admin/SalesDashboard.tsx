@@ -352,7 +352,7 @@ export const SalesDashboard = () => {
         <h3 className="text-lg font-semibold">Sales Metrics & Reporting</h3>
         
         {/* Performance Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-sm font-medium">Gem. Tijd Te Contacteren</CardTitle>
@@ -370,16 +370,6 @@ export const SalesDashboard = () => {
             <CardContent>
               <div className="text-2xl font-bold text-blue-600">{metrics.pipelineVelocity.gecontacteerd}</div>
               <p className="text-xs text-muted-foreground">dagen sinds eerste contact</p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium">Nieuwe Leads (7d)</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">{metrics.recentLeads}</div>
-              <p className="text-xs text-muted-foreground">laatste week</p>
             </CardContent>
           </Card>
 
