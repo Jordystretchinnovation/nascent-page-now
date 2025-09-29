@@ -199,11 +199,11 @@ export const SalesDashboard = () => {
     }, {} as Record<string, number>);
 
     return {
-      te_contacteren: stats['Te contacteren'] || stats.te_contacteren || 0, // Handle both formats
-      gecontacteerd: stats.Gecontacteerd || 0, // Fixed: use capitalized 'Gecontacteerd'
-      gesprek_gepland: stats['Gesprek gepland'] || 0, // Fixed: use 'Gesprek gepland' with space
-      afgewezen: stats.Afgewezen || 0, // Fixed: use capitalized 'Afgewezen'
-      niet_relevant: stats['Niet relevant'] || 0, // Fixed: use 'Niet relevant' with space
+      te_contacteren: stats['Te contacteren'] || stats.te_contacteren || 0,
+      gecontacteerd: stats.Gecontacteerd || 0,
+      gesprek_gepland: stats['Gesprek gepland'] || 0,
+      afgewezen: stats.Afgewezen || 0,
+      niet_relevant: stats['Niet relevant'] || 0, // This should now show the correct count
       total: filteredSubmissions.length,
       unassigned: filteredSubmissions.filter(s => !s.sales_rep).length
     };
@@ -319,7 +319,7 @@ export const SalesDashboard = () => {
   return (
     <div className="space-y-6">
       {/* Overview Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4">
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium">Totaal Leads</CardTitle>
@@ -362,6 +362,15 @@ export const SalesDashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-gray-600">{stats.afgewezen}</div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium">Niet Relevant</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-slate-600">{stats.niet_relevant}</div>
           </CardContent>
         </Card>
 
