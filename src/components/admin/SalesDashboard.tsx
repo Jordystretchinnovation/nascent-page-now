@@ -172,7 +172,7 @@ export const SalesDashboard = () => {
 
     return {
       te_contacteren: stats.te_contacteren || 0,
-      gecontacteerd: stats.gecontacteerd || 0,
+      gecontacteerd: stats.Gecontacteerd || 0, // Fixed: use capitalized 'Gecontacteerd'
       gesprek_gepland: stats.gesprek_gepland || 0,
       afgewezen: stats.Afgewezen || 0, // Fixed: use capitalized 'Afgewezen'
       niet_relevant: stats.niet_relevant || 0,
