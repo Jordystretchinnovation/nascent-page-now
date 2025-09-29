@@ -28,13 +28,22 @@ interface FormSubmission {
   sales_comment: string | null;
 }
 
-const LeadQualificationTable: React.FC = () => {
+interface LeadQualificationTableProps {
+  submissions?: FormSubmission[];
+}
+
+const LeadQualificationTable: React.FC<LeadQualificationTableProps> = ({ submissions: propSubmissions }) => {
   const [submissions, setSubmissions] = useState<FormSubmission[]>([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchSubmissions();
+    if (propSubmissions) {
+      setSubmissions(propSubmissions);
+      setLoading(false);
+    } else {
+      fetchSubmissions();
+    }
     
     // Set up real-time listener
     const channel = supabase
@@ -63,7 +72,7 @@ const LeadQualificationTable: React.FC = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [propSubmissions]);
 
   const fetchSubmissions = async () => {
     try {

@@ -27,6 +27,10 @@ interface FormSubmission {
   gemeente: string | null;
   renderbook_type: string | null;
   kwaliteit: string | null;
+  toelichting: string | null;
+  sales_status: string | null;
+  sales_rep: string | null;
+  sales_comment: string | null;
   marketing_optin: boolean;
   language: string;
   utm_source: string | null;
@@ -105,6 +109,10 @@ const Admin = () => {
           gemeente,
           renderbook_type,
           kwaliteit,
+          toelichting,
+          sales_status,
+          sales_rep,
+          sales_comment,
           marketing_optin,
           language,
           utm_source,
@@ -565,7 +573,7 @@ const Admin = () => {
           
           <TabsContent value="submissions" className="space-y-4 mt-4">
             <SubmissionsTable 
-              submissions={submissions}
+              submissions={getSubmissionsFilteredData()}
               filterType={filterType}
               setFilterType={setFilterType}
               filterLanguage={filterLanguage}
@@ -574,7 +582,7 @@ const Admin = () => {
           </TabsContent>
           
           <TabsContent value="qualification" className="space-y-4 mt-4">
-            <LeadQualificationTable />
+            <LeadQualificationTable submissions={getSubmissionsFilteredData()} />
           </TabsContent>
           
           <TabsContent value="sales" className="space-y-4 mt-4">
