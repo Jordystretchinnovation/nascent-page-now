@@ -54,6 +54,7 @@ const Admin = () => {
   const [filterUTMTerm, setFilterUTMTerm] = useState<string[]>([]);
 
   const [activeTab, setActiveTab] = useState("submissions");
+  const [filterQuality, setFilterQuality] = useState<string>("all"); // Quality filter state
 
   useEffect(() => {
     fetchSubmissions();
@@ -147,6 +148,17 @@ const Admin = () => {
     
     if (filterLanguage !== "all") {
       filtered = filtered.filter(sub => sub.language === filterLanguage);
+    }
+    
+    // Add quality filtering
+    if (filterQuality !== "all") {
+      if (filterQuality === "ongekwalificeerd") {
+        filtered = filtered.filter(sub => !sub.kwaliteit);
+      } else if (filterQuality === "Goed - klant") {
+        filtered = filtered.filter(sub => sub.kwaliteit === "Goed - klant");
+      } else {
+        filtered = filtered.filter(sub => sub.kwaliteit === filterQuality);
+      }
     }
     
     return filtered;
@@ -432,7 +444,14 @@ const Admin = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-              <Card>
+              <Card 
+                className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
+                  filterQuality === "ongekwalificeerd" 
+                    ? "ring-2 ring-primary bg-primary/5" 
+                    : "hover:bg-muted/50"
+                }`}
+                onClick={() => setFilterQuality(filterQuality === "ongekwalificeerd" ? "all" : "ongekwalificeerd")}
+              >
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base font-medium">Ongekwalificeerd</CardTitle>
                 </CardHeader>
@@ -442,7 +461,14 @@ const Admin = () => {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card 
+                className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
+                  filterQuality === "Goed" 
+                    ? "ring-2 ring-primary bg-primary/5" 
+                    : "hover:bg-muted/50"
+                }`}
+                onClick={() => setFilterQuality(filterQuality === "Goed" ? "all" : "Goed")}
+              >
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base font-medium">Goed</CardTitle>
                 </CardHeader>
@@ -452,7 +478,14 @@ const Admin = () => {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card 
+                className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
+                  filterQuality === "Goed - klant" 
+                    ? "ring-2 ring-primary bg-primary/5" 
+                    : "hover:bg-muted/50"
+                }`}
+                onClick={() => setFilterQuality(filterQuality === "Goed - klant" ? "all" : "Goed - klant")}
+              >
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base font-medium">Goed - Klant</CardTitle>
                 </CardHeader>
@@ -462,7 +495,14 @@ const Admin = () => {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card 
+                className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
+                  filterQuality === "Redelijk" 
+                    ? "ring-2 ring-primary bg-primary/5" 
+                    : "hover:bg-muted/50"
+                }`}
+                onClick={() => setFilterQuality(filterQuality === "Redelijk" ? "all" : "Redelijk")}
+              >
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base font-medium">Redelijk</CardTitle>
                 </CardHeader>
@@ -472,7 +512,14 @@ const Admin = () => {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card 
+                className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
+                  filterQuality === "Slecht" 
+                    ? "ring-2 ring-primary bg-primary/5" 
+                    : "hover:bg-muted/50"
+                }`}
+                onClick={() => setFilterQuality(filterQuality === "Slecht" ? "all" : "Slecht")}
+              >
                 <CardHeader className="pb-3">
                   <CardTitle className="text-base font-medium">Slecht</CardTitle>
                 </CardHeader>
@@ -483,6 +530,22 @@ const Admin = () => {
               </Card>
             </div>
           </>
+        )}
+
+        {/* Active Filter Indicator */}
+        {filterQuality !== "all" && (
+          <div className="flex items-center gap-2 mb-4 p-3 bg-muted/50 rounded-lg border">
+            <span className="text-sm font-medium">Actief filter:</span>
+            <Badge variant="secondary" className="text-sm">
+              {filterQuality === "ongekwalificeerd" ? "Ongekwalificeerd" : filterQuality}
+            </Badge>
+            <button
+              onClick={() => setFilterQuality("all")}
+              className="ml-2 text-xs text-muted-foreground hover:text-foreground underline"
+            >
+              Filter wissen
+            </button>
+          </div>
         )}
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
