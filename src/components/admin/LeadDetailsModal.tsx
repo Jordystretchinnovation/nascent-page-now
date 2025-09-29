@@ -318,13 +318,14 @@ export const LeadDetailsModal: React.FC<LeadDetailsModalProps> = ({
                   <SelectTrigger id="sales-rep">
                     <SelectValue placeholder="Kies sales rep" />
                   </SelectTrigger>
-                  <SelectContent className="bg-background border shadow-md z-50">
-                    <SelectItem value="none">Geen sales rep</SelectItem>
-                    <SelectItem value="Dominique">Dominique</SelectItem>
-                    <SelectItem value="Pierre">Pierre</SelectItem>
-                    <SelectItem value="Michael">Michael</SelectItem>
-                    <SelectItem value="Alexander">Alexander</SelectItem>
-                  </SelectContent>
+                   <SelectContent className="bg-background border shadow-md z-50">
+                     <SelectItem value="none">Geen sales rep</SelectItem>
+                     <SelectItem value="Dominique">Dominique</SelectItem>
+                     <SelectItem value="Pierre">Pierre</SelectItem>
+                     <SelectItem value="Michael">Michael</SelectItem>
+                     <SelectItem value="Michaël">Michaël</SelectItem>
+                     <SelectItem value="Alexander">Alexander</SelectItem>
+                   </SelectContent>
                 </Select>
               </div>
 

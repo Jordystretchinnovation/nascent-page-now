@@ -306,12 +306,13 @@ const LeadQualificationTable: React.FC = () => {
                       <SelectTrigger className="w-28 h-8 text-xs">
                         <SelectValue placeholder="Kies" />
                       </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Dominique">Dominique</SelectItem>
-                        <SelectItem value="Pierre">Pierre</SelectItem>
-                        <SelectItem value="Michael">Michael</SelectItem>
-                        <SelectItem value="Alexander">Alexander</SelectItem>
-                      </SelectContent>
+                       <SelectContent>
+                         <SelectItem value="Dominique">Dominique</SelectItem>
+                         <SelectItem value="Pierre">Pierre</SelectItem>
+                         <SelectItem value="Michael">Michael</SelectItem>
+                         <SelectItem value="Michaël">Michaël</SelectItem>
+                         <SelectItem value="Alexander">Alexander</SelectItem>
+                       </SelectContent>
                     </Select>
                   </TableCell>
                   <TableCell>
