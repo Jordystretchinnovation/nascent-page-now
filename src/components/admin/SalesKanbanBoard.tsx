@@ -53,7 +53,7 @@ const salesStatuses = [
   },
   {
     id: 'gesprek_gepland',
-    dbValue: 'Gesprek_gepland', // Capitalized to match database pattern
+    dbValue: 'Gesprek gepland', // Fixed: use space instead of underscore
     title: 'Gesprek Gepland',
     color: 'border-amber-200 bg-amber-50',
     headerColor: 'bg-amber-100'
@@ -67,7 +67,7 @@ const salesStatuses = [
   },
   {
     id: 'niet_relevant',
-    dbValue: 'Niet_relevant', // Capitalized to match database pattern
+    dbValue: 'Niet relevant', // Fixed: use space instead of underscore
     title: 'Niet Relevant',
     color: 'border-slate-200 bg-slate-50',
     headerColor: 'bg-slate-100'
