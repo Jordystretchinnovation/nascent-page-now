@@ -186,6 +186,8 @@ const Admin = () => {
       return acc;
     }, {} as Record<string, number>);
     
+    console.log('Quality stats calculation:', stats, 'from data:', currentData.map(s => s.kwaliteit));
+    
     return {
       ongekwalificeerd: stats.ongekwalificeerd || 0,
       goed: stats.Goed || 0,
