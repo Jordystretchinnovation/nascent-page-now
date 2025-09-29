@@ -57,6 +57,34 @@ const Admin = () => {
 
   useEffect(() => {
     fetchSubmissions();
+    
+    // Set up real-time listener
+    const channel = supabase
+      .channel('admin_submissions_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'form_submissions'
+        },
+        (payload) => {
+          if (payload.eventType === 'UPDATE') {
+            setSubmissions(prev => prev.map(sub => 
+              sub.id === payload.new.id ? { ...sub, ...payload.new } : sub
+            ));
+          } else if (payload.eventType === 'INSERT') {
+            setSubmissions(prev => [payload.new as FormSubmission, ...prev]);
+          } else if (payload.eventType === 'DELETE') {
+            setSubmissions(prev => prev.filter(sub => sub.id !== payload.old.id));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const fetchSubmissions = async () => {
