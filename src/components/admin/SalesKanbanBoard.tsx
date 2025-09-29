@@ -39,7 +39,7 @@ interface SalesKanbanBoardProps {
 const salesStatuses = [
   {
     id: 'te_contacteren',
-    dbValue: 'te_contacteren', // This one stays lowercase as it's the default
+    dbValue: 'Te contacteren', // Fixed: use proper capitalization to match database
     title: 'Te Contacteren',
     color: 'border-orange-200 bg-orange-50',
     headerColor: 'bg-orange-100'
@@ -85,7 +85,7 @@ export const SalesKanbanBoard: React.FC<SalesKanbanBoardProps> = ({
     const dbValue = statusConfig?.dbValue || statusId;
     
     const allSubmissions = submissions.filter(submission => {
-      const salesStatus = submission.sales_status || 'te_contacteren';
+      const salesStatus = submission.sales_status || 'Te contacteren'; // Fixed: use proper case
       return salesStatus === dbValue;
     });
     // Return both limited and total count

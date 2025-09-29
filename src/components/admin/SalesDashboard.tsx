@@ -199,7 +199,7 @@ export const SalesDashboard = () => {
     }, {} as Record<string, number>);
 
     return {
-      te_contacteren: stats.te_contacteren || 0,
+      te_contacteren: stats['Te contacteren'] || stats.te_contacteren || 0, // Handle both formats
       gecontacteerd: stats.Gecontacteerd || 0, // Fixed: use capitalized 'Gecontacteerd'
       gesprek_gepland: stats['Gesprek gepland'] || 0, // Fixed: use 'Gesprek gepland' with space
       afgewezen: stats.Afgewezen || 0, // Fixed: use capitalized 'Afgewezen'
