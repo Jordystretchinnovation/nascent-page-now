@@ -220,7 +220,7 @@ export const SalesDashboard = () => {
     // Conversion rates by sales rep (conversion = reaching gesprek_gepland)
     const conversionByRep = salesReps.map(rep => {
       const repLeads = filteredSubmissions.filter(s => s.sales_rep === rep);
-      const converted = repLeads.filter(s => s.sales_status === 'gesprek_gepland').length;
+      const converted = repLeads.filter(s => s.sales_status === 'Gesprek gepland').length;
       const total = repLeads.length;
       return {
         rep,
@@ -233,7 +233,7 @@ export const SalesDashboard = () => {
     // Conversion rates by lead type (conversion = reaching gesprek_gepland)
     const conversionByType = ['stalen', 'renderboek', 'korting', 'keukentrends'].map(type => {
       const typeLeads = filteredSubmissions.filter(s => s.type === type);
-      const converted = typeLeads.filter(s => s.sales_status === 'gesprek_gepland').length;
+      const converted = typeLeads.filter(s => s.sales_status === 'Gesprek gepland').length;
       const total = typeLeads.length;
       return {
         type,
@@ -245,7 +245,7 @@ export const SalesDashboard = () => {
 
     // Response times - average days to first contact (from te_contacteren to gecontacteerd)
     const contactedLeads = filteredSubmissions.filter(s => 
-      s.sales_status && s.sales_status !== 'te_contacteren'
+      s.sales_status && s.sales_status !== 'Te contacteren'
     );
     const avgResponseTime = contactedLeads.length > 0 
       ? Math.round(contactedLeads.reduce((acc, lead) => {
@@ -257,9 +257,9 @@ export const SalesDashboard = () => {
 
     // Pipeline velocity - time spent in each key status
     const teContacterenLeads = filteredSubmissions.filter(s => 
-      !s.sales_status || s.sales_status === 'te_contacteren'
+      !s.sales_status || s.sales_status === 'Te contacteren'
     );
-    const statusContactedLeads = filteredSubmissions.filter(s => s.sales_status === 'gecontacteerd');
+    const statusContactedLeads = filteredSubmissions.filter(s => s.sales_status === 'Gecontacteerd');
     
     const pipelineVelocity = {
       te_contacteren: teContacterenLeads.length > 0 
@@ -284,7 +284,7 @@ export const SalesDashboard = () => {
     ).length;
 
     const recentContacted = filteredSubmissions.filter(s => 
-      s.sales_status && s.sales_status !== 'te_contacteren' && 
+      s.sales_status && s.sales_status !== 'Te contacteren' && 
       new Date(s.created_at) >= sevenDaysAgo
     ).length;
 
@@ -433,12 +433,12 @@ export const SalesDashboard = () => {
               <CardTitle className="text-sm font-medium">Totale Conversie Ratio</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-purple-600">
-                {filteredSubmissions.length > 0 
-                  ? Math.round((filteredSubmissions.filter(s => s.sales_status === 'gesprek_gepland').length / filteredSubmissions.length) * 100)
-                  : 0
-                }%
-              </div>
+               <div className="text-2xl font-bold text-purple-600">
+                 {filteredSubmissions.length > 0 
+                   ? Math.round((filteredSubmissions.filter(s => s.sales_status === 'Gesprek gepland').length / filteredSubmissions.length) * 100)
+                   : 0
+                 }%
+               </div>
               <p className="text-xs text-muted-foreground">naar gesprek gepland</p>
             </CardContent>
           </Card>
