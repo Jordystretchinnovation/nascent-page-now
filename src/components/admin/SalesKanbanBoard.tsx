@@ -39,30 +39,35 @@ interface SalesKanbanBoardProps {
 const salesStatuses = [
   {
     id: 'te_contacteren',
+    dbValue: 'te_contacteren', // This one stays lowercase as it's the default
     title: 'Te Contacteren',
     color: 'border-orange-200 bg-orange-50',
     headerColor: 'bg-orange-100'
   },
   {
     id: 'gecontacteerd',
+    dbValue: 'Gecontacteerd', // Capitalized to match database
     title: 'Gecontacteerd',
     color: 'border-blue-200 bg-blue-50',
     headerColor: 'bg-blue-100'
   },
   {
     id: 'gesprek_gepland',
+    dbValue: 'Gesprek_gepland', // Capitalized to match database pattern
     title: 'Gesprek Gepland',
     color: 'border-amber-200 bg-amber-50',
     headerColor: 'bg-amber-100'
   },
   {
     id: 'afgewezen',
+    dbValue: 'Afgewezen', // Capitalized to match database
     title: 'Afgewezen',
     color: 'border-gray-200 bg-gray-50',
     headerColor: 'bg-gray-100'
   },
   {
     id: 'niet_relevant',
+    dbValue: 'Niet_relevant', // Capitalized to match database pattern
     title: 'Niet Relevant',
     color: 'border-slate-200 bg-slate-50',
     headerColor: 'bg-slate-100'
@@ -74,10 +79,14 @@ export const SalesKanbanBoard: React.FC<SalesKanbanBoardProps> = ({
   onStatusUpdate,
   onLeadClick
 }) => {
-  const getSubmissionsByStatus = (status: string) => {
+  const getSubmissionsByStatus = (statusId: string) => {
+    // Find the correct database value for this status
+    const statusConfig = salesStatuses.find(s => s.id === statusId);
+    const dbValue = statusConfig?.dbValue || statusId;
+    
     const allSubmissions = submissions.filter(submission => {
       const salesStatus = submission.sales_status || 'te_contacteren';
-      return salesStatus === status;
+      return salesStatus === dbValue;
     });
     // Return both limited and total count
     return {
@@ -98,7 +107,11 @@ export const SalesKanbanBoard: React.FC<SalesKanbanBoardProps> = ({
       return;
     }
 
-    await onStatusUpdate(draggableId, destination.droppableId);
+    // Find the correct database value for the destination status
+    const statusConfig = salesStatuses.find(s => s.id === destination.droppableId);
+    const dbValue = statusConfig?.dbValue || destination.droppableId;
+
+    await onStatusUpdate(draggableId, dbValue);
   };
 
   return (
