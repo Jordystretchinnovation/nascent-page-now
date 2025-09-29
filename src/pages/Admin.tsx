@@ -191,7 +191,7 @@ const Admin = () => {
     return {
       ongekwalificeerd: stats.ongekwalificeerd || 0,
       goed: stats.Goed || 0,
-      goedKlant: stats['Goed - Klant'] || 0,
+      goedKlant: stats['Goed - klant'] || 0,
       redelijk: stats.Redelijk || 0,
       slecht: stats.Slecht || 0
     };
