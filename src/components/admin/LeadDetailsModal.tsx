@@ -303,11 +303,11 @@ export const LeadDetailsModal: React.FC<LeadDetailsModalProps> = ({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="te_contacteren">Te Contacteren</SelectItem>
-                    <SelectItem value="gecontacteerd">Gecontacteerd</SelectItem>
-                    <SelectItem value="gesprek_gepland">Gesprek Gepland</SelectItem>
-                    <SelectItem value="afgewezen">Afgewezen</SelectItem>
-                    <SelectItem value="niet_relevant">Niet Relevant</SelectItem>
+                    <SelectItem value="Te contacteren">Te Contacteren</SelectItem>
+                    <SelectItem value="Gecontacteerd">Gecontacteerd</SelectItem>
+                    <SelectItem value="Gesprek gepland">Gesprek Gepland</SelectItem>
+                    <SelectItem value="Afgewezen">Afgewezen</SelectItem>
+                    <SelectItem value="Niet relevant">Niet Relevant</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
