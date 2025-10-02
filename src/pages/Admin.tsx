@@ -20,11 +20,13 @@ interface FormSubmission {
   voornaam: string;
   achternaam: string;
   bedrijf: string;
+  type_bedrijf: string | null;
   email: string;
   telefoon: string | null;
   straat: string | null;
   postcode: string | null;
   gemeente: string | null;
+  message: string | null;
   renderbook_type: string | null;
   kwaliteit: string | null;
   toelichting: string | null;
@@ -94,35 +96,37 @@ const Admin = () => {
 
   const fetchSubmissions = async () => {
     try {
-      const { data, error } = await supabase
-        .from('form_submissions')
-        .select(`
-          id,
-          type,
-          voornaam,
-          achternaam,
-          bedrijf,
-          email,
-          telefoon,
-          straat,
-          postcode,
-          gemeente,
-          renderbook_type,
-          kwaliteit,
-          toelichting,
-          sales_status,
-          sales_rep,
-          sales_comment,
-          marketing_optin,
-          language,
-          utm_source,
-          utm_medium,
-          utm_campaign,
-          utm_content,
-          utm_term,
-          created_at
-        `)
-        .order('created_at', { ascending: false });
+        const { data, error } = await supabase
+          .from('form_submissions')
+          .select(`
+            id,
+            type,
+            voornaam,
+            achternaam,
+            bedrijf,
+            type_bedrijf,
+            email,
+            telefoon,
+            straat,
+            postcode,
+            gemeente,
+            message,
+            renderbook_type,
+            kwaliteit,
+            toelichting,
+            sales_status,
+            sales_rep,
+            sales_comment,
+            marketing_optin,
+            language,
+            utm_source,
+            utm_medium,
+            utm_campaign,
+            utm_content,
+            utm_term,
+            created_at
+          `)
+          .order('created_at', { ascending: false });
 
       if (error) {
         console.error('Error fetching submissions:', error);
@@ -284,12 +288,19 @@ const Admin = () => {
         'Voornaam': submission.voornaam,
         'Achternaam': submission.achternaam,
         'Bedrijf': submission.bedrijf,
+        'Type Bedrijf': submission.type_bedrijf || '',
         'Email': submission.email,
         'Telefoon': submission.telefoon || '',
         'Straat': submission.straat || '',
         'Postcode': submission.postcode || '',
         'Gemeente': submission.gemeente || '',
+        'Bericht': submission.message || '',
         'Renderbook Type': submission.renderbook_type || '',
+        'Kwaliteit': submission.kwaliteit || '',
+        'Toelichting': submission.toelichting || '',
+        'Sales Status': submission.sales_status || '',
+        'Sales Rep': submission.sales_rep || '',
+        'Sales Opmerking': submission.sales_comment || '',
         'Marketing Optin': submission.marketing_optin ? 'Ja' : 'Nee',
         'Taal': submission.language === 'nl' ? 'Nederlands' : 'Frans',
         'UTM Source': submission.utm_source || '',
@@ -317,12 +328,19 @@ const Admin = () => {
         { wch: 15 }, // Voornaam
         { wch: 15 }, // Achternaam
         { wch: 20 }, // Bedrijf
+        { wch: 20 }, // Type Bedrijf
         { wch: 25 }, // Email
         { wch: 15 }, // Telefoon
         { wch: 25 }, // Straat
         { wch: 10 }, // Postcode
         { wch: 15 }, // Gemeente
+        { wch: 30 }, // Bericht
         { wch: 15 }, // Renderbook Type
+        { wch: 15 }, // Kwaliteit
+        { wch: 30 }, // Toelichting
+        { wch: 20 }, // Sales Status
+        { wch: 20 }, // Sales Rep
+        { wch: 30 }, // Sales Opmerking
         { wch: 12 }, // Marketing Optin
         { wch: 10 }, // Taal
         { wch: 15 }, // UTM Source
