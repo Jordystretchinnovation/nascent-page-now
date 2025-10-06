@@ -193,7 +193,7 @@ export const SalesDashboard = () => {
 
   const getSalesStats = () => {
     const stats = filteredSubmissions.reduce((acc, submission) => {
-      const status = submission.sales_status || 'te_contacteren';
+      const status = submission.sales_status || 'Te contacteren';
       acc[status] = (acc[status] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
