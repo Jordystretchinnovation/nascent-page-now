@@ -11,8 +11,9 @@ import { UTMAnalytics } from "@/components/admin/UTMAnalytics";
 import CampaignAnalytics from "@/components/admin/CampaignAnalytics";
 import LeadQualificationTable from "@/components/admin/LeadQualificationTable";
 import { SalesDashboard } from "@/components/admin/SalesDashboard";
-import { Download } from "lucide-react";
+import { Download, RefreshCw } from "lucide-react";
 import * as XLSX from 'xlsx';
+import { processLeadUpdates } from "@/utils/processLeadUpdates";
 
 interface FormSubmission {
   id: string;
@@ -46,6 +47,7 @@ interface FormSubmission {
 const Admin = () => {
   const [submissions, setSubmissions] = useState<FormSubmission[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isUpdatingLeads, setIsUpdatingLeads] = useState(false);
   const { toast } = useToast();
 
   // Filter states for submissions
@@ -276,6 +278,44 @@ const Admin = () => {
         return 'Keukentrends';
       default:
         return type;
+    }
+  };
+
+  const handleUpdateLeadsFromSheet = async () => {
+    try {
+      setIsUpdatingLeads(true);
+      toast({
+        title: "Lead updates starten...",
+        description: "Dit kan enkele seconden duren.",
+      });
+      
+      const result = await processLeadUpdates();
+      
+      toast({
+        title: "Leads bijgewerkt!",
+        description: `${result.updated} succesvol, ${result.notFound} niet gevonden`,
+      });
+      
+      if (result.errors.length > 0) {
+        console.error("Update errors:", result.errors);
+        toast({
+          title: "Let op",
+          description: `${result.errors.length} fouten opgetreden. Check console voor details.`,
+          variant: "destructive"
+        });
+      }
+      
+      // Refresh de data
+      await fetchSubmissions();
+    } catch (error) {
+      console.error("Error updating leads:", error);
+      toast({
+        title: "Fout",
+        description: "Er is een fout opgetreden bij het updaten van leads",
+        variant: "destructive"
+      });
+    } finally {
+      setIsUpdatingLeads(false);
     }
   };
 
@@ -583,10 +623,21 @@ const Admin = () => {
               <TabsTrigger value="utm">UTM Analytics</TabsTrigger>
               <TabsTrigger value="campaign">Campaign Analytics</TabsTrigger>
             </TabsList>
-            <Button onClick={exportToExcel} variant="outline" className="flex items-center gap-2">
-              <Download className="h-4 w-4" />
-              Exporteer naar Excel
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button 
+                onClick={handleUpdateLeadsFromSheet}
+                disabled={isUpdatingLeads}
+                variant="default"
+                className="flex items-center gap-2"
+              >
+                <RefreshCw className={`h-4 w-4 ${isUpdatingLeads ? 'animate-spin' : ''}`} />
+                {isUpdatingLeads ? "Bezig met updaten..." : "Update Leads vanuit Spreadsheet"}
+              </Button>
+              <Button onClick={exportToExcel} variant="outline" className="flex items-center gap-2">
+                <Download className="h-4 w-4" />
+                Exporteer naar Excel
+              </Button>
+            </div>
           </div>
           
           <TabsContent value="submissions" className="space-y-4 mt-4">
