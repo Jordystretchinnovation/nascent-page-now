@@ -71,6 +71,7 @@ export const SalesFilters: React.FC<SalesFiltersProps> = ({
                 <SelectItem value="Goed">Goed</SelectItem>
                 <SelectItem value="Goed - Klant">Goed - Klant</SelectItem>
                 <SelectItem value="Redelijk">Redelijk</SelectItem>
+                <SelectItem value="MQL">MQL</SelectItem>
               </SelectContent>
             </Select>
           </div>
