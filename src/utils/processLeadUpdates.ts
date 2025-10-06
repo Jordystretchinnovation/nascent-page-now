@@ -12,12 +12,35 @@ export const processLeadUpdates = async () => {
   // Helper function to normalize quality values
   const normalizeKwaliteit = (value: string | null): string | null => {
     if (!value) return null;
-    const normalized = value.toLowerCase();
+    const normalized = value.toLowerCase().trim();
     if (normalized === "slecht") return "Slecht";
     if (normalized === "goed") return "Goed";
     if (normalized === "redelijk") return "Redelijk";
     if (normalized.includes("goed") && normalized.includes("klant")) return "Goed - klant";
     return null;
+  };
+
+  // Helper function to normalize sales status values
+  const normalizeSalesStatus = (value: string | null): string | null => {
+    if (!value) return null;
+    const normalized = value.trim();
+    // Return as-is, but trimmed for consistency
+    return normalized;
+  };
+
+  // Helper function to normalize sales rep values
+  const normalizeSalesRep = (value: string | null): string | null => {
+    if (!value) return null;
+    const normalized = value.trim();
+    // Normalize common variations
+    if (normalized.toLowerCase() === "michäel" || normalized.toLowerCase() === "michael") {
+      return "Michael";
+    }
+    if (normalized.toLowerCase() === "jpierre") {
+      return "JPierre";
+    }
+    // Return as-is for others (Dominique, Alexander)
+    return normalized;
   };
 
   // Data from the spreadsheet - mapping columns correctly
@@ -379,10 +402,12 @@ export const processLeadUpdates = async () => {
     { email: "Zico.zico@outlook.be", sales_status: null, sales_rep: null, kwaliteit: null, toelichting: null }
   ];
 
-  // Normalize all kwaliteit values
+  // Normalize all field values
   const updates: LeadUpdate[] = rawUpdates.map(update => ({
     ...update,
-    kwaliteit: normalizeKwaliteit(update.kwaliteit)
+    kwaliteit: normalizeKwaliteit(update.kwaliteit),
+    sales_status: normalizeSalesStatus(update.sales_status),
+    sales_rep: normalizeSalesRep(update.sales_rep)
   }));
 
   try {
