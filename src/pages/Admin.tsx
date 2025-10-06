@@ -624,15 +624,6 @@ const Admin = () => {
               <TabsTrigger value="campaign">Campaign Analytics</TabsTrigger>
             </TabsList>
             <div className="flex items-center gap-2">
-              <Button 
-                onClick={handleUpdateLeadsFromSheet}
-                disabled={isUpdatingLeads}
-                variant="default"
-                className="flex items-center gap-2"
-              >
-                <RefreshCw className={`h-4 w-4 ${isUpdatingLeads ? 'animate-spin' : ''}`} />
-                {isUpdatingLeads ? "Bezig met updaten..." : "Update Leads vanuit Spreadsheet"}
-              </Button>
               <Button onClick={exportToExcel} variant="outline" className="flex items-center gap-2">
                 <Download className="h-4 w-4" />
                 Exporteer naar Excel
