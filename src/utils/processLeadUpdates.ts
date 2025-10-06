@@ -9,8 +9,19 @@ interface LeadUpdate {
 }
 
 export const processLeadUpdates = async () => {
+  // Helper function to normalize quality values
+  const normalizeKwaliteit = (value: string | null): string | null => {
+    if (!value) return null;
+    const normalized = value.toLowerCase();
+    if (normalized === "slecht") return "Slecht";
+    if (normalized === "goed") return "Goed";
+    if (normalized === "redelijk") return "Redelijk";
+    if (normalized.includes("goed") && normalized.includes("klant")) return "Goed - klant";
+    return null;
+  };
+
   // Data from the spreadsheet - mapping columns correctly
-  const updates: LeadUpdate[] = [
+  const rawUpdates = [
     { email: "tahirilina809@gmail.com", sales_status: "Niet relevant", sales_rep: "Michäel", kwaliteit: "slecht", toelichting: "particulier denk ik" },
     { email: "morkosnixo@gmail.com", sales_status: "Niet relevant", sales_rep: "Michäel", kwaliteit: "slecht", toelichting: "particulier" },
     { email: "atelier43.wood@gmail.com", sales_status: "Gecontacteerd", sales_rep: "Dominique", kwaliteit: "goed", toelichting: "kleine zelfstandige keukenbouwer" },
@@ -367,6 +378,12 @@ export const processLeadUpdates = async () => {
     { email: "charissa_diels@msn.com", sales_status: null, sales_rep: null, kwaliteit: null, toelichting: null },
     { email: "Zico.zico@outlook.be", sales_status: null, sales_rep: null, kwaliteit: null, toelichting: null }
   ];
+
+  // Normalize all kwaliteit values
+  const updates: LeadUpdate[] = rawUpdates.map(update => ({
+    ...update,
+    kwaliteit: normalizeKwaliteit(update.kwaliteit)
+  }));
 
   try {
     const response = await supabase.functions.invoke('update-leads-from-sheet', {
