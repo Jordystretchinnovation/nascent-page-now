@@ -11,6 +11,7 @@ interface LeadUpdate {
   sales_rep: string | null;
   kwaliteit: string | null;
   toelichting: string | null;
+  sales_comment: string | null;
 }
 
 Deno.serve(async (req) => {
@@ -37,38 +38,37 @@ Deno.serve(async (req) => {
     // Process updates in batches
     for (const update of updates) {
       try {
-        // Find the submission by email
-        const { data: existing, error: fetchError } = await supabaseClient
+        // Find ALL submissions by email (not just the most recent one)
+        const { data: existingSubmissions, error: fetchError } = await supabaseClient
           .from('form_submissions')
           .select('id, email')
           .eq('email', update.email)
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .single()
 
-        if (fetchError || !existing) {
+        if (fetchError || !existingSubmissions || existingSubmissions.length === 0) {
           console.log(`No submission found for ${update.email}`)
           results.notFound++
           continue
         }
 
-        // Update the submission
+        // Update ALL submissions with the same email to keep sync fields consistent
+        const submissionIds = existingSubmissions.map(s => s.id)
         const { error: updateError } = await supabaseClient
           .from('form_submissions')
           .update({
             sales_status: update.sales_status || null,
             sales_rep: update.sales_rep || null,
             kwaliteit: update.kwaliteit || null,
-            toelichting: update.toelichting || null
+            toelichting: update.toelichting || null,
+            sales_comment: update.sales_comment || null
           })
-          .eq('id', existing.id)
+          .in('id', submissionIds)
 
         if (updateError) {
           console.error(`Error updating ${update.email}:`, updateError)
           results.errors.push(`${update.email}: ${updateError.message}`)
         } else {
-          results.updated++
-          console.log(`Updated ${update.email}`)
+          results.updated += existingSubmissions.length
+          console.log(`Updated ${existingSubmissions.length} submission(s) for ${update.email}`)
         }
       } catch (error) {
         console.error(`Error processing ${update.email}:`, error)

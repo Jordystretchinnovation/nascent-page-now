@@ -6,6 +6,7 @@ interface LeadUpdate {
   sales_rep: string | null;
   kwaliteit: string | null;
   toelichting: string | null;
+  sales_comment: string | null;
 }
 
 export const processLeadUpdates = async () => {
@@ -420,7 +421,8 @@ export const processLeadUpdates = async () => {
     ...update,
     kwaliteit: normalizeKwaliteit(update.kwaliteit),
     sales_status: normalizeSalesStatus(update.sales_status),
-    sales_rep: normalizeSalesRep(update.sales_rep)
+    sales_rep: normalizeSalesRep(update.sales_rep),
+    sales_comment: (update as any).sales_comment || null
   }));
 
   try {
