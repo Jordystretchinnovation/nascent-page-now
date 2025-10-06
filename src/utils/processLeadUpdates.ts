@@ -23,9 +23,18 @@ export const processLeadUpdates = async () => {
   // Helper function to normalize sales status values
   const normalizeSalesStatus = (value: string | null): string | null => {
     if (!value) return null;
-    const normalized = value.trim();
-    // Return as-is, but trimmed for consistency
-    return normalized;
+    const normalized = value.trim().toLowerCase();
+    
+    // Normalize to consistent capitalization
+    if (normalized === "te contacteren") return "Te contacteren";
+    if (normalized === "gecontacteerd") return "Gecontacteerd";
+    if (normalized === "niet relevant") return "Niet relevant";
+    if (normalized === "afgewezen") return "Afgewezen";
+    if (normalized === "gesprek gepland") return "Gesprek gepland";
+    if (normalized === "fysiek") return "fysiek";
+    
+    // Return trimmed value if no match
+    return value.trim();
   };
 
   // Helper function to normalize sales rep values
