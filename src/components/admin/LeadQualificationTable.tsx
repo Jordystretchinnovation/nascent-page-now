@@ -170,6 +170,7 @@ const LeadQualificationTable: React.FC<LeadQualificationTableProps> = ({ submiss
       case 'Goed': return 'default';
       case 'Goed - klant': return 'secondary';
       case 'Redelijk': return 'outline';
+      case 'MQL': return 'default';
       case 'Slecht': return 'destructive';
       default: return 'outline';
     }
@@ -299,6 +300,9 @@ const LeadQualificationTable: React.FC<LeadQualificationTableProps> = ({ submiss
                         </SelectItem>
                         <SelectItem value="Redelijk">
                           <Badge variant="outline" className="text-xs">Redelijk</Badge>
+                        </SelectItem>
+                        <SelectItem value="MQL">
+                          <Badge variant="default" className="text-xs">MQL</Badge>
                         </SelectItem>
                         <SelectItem value="Slecht">
                           <Badge variant="destructive" className="text-xs">Slecht</Badge>
