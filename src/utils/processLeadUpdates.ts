@@ -32,12 +32,16 @@ export const processLeadUpdates = async () => {
   const normalizeSalesRep = (value: string | null): string | null => {
     if (!value) return null;
     const normalized = value.trim();
-    // Normalize common variations
-    if (normalized.toLowerCase() === "michäel" || normalized.toLowerCase() === "michael") {
-      return "Michael";
-    }
+    // Keep Michaël and Michael separate
+    // Only normalize obvious typos or case variations
     if (normalized.toLowerCase() === "jpierre") {
       return "JPierre";
+    }
+    if (normalized === "michael") {
+      return "Michael";
+    }
+    if (normalized === "michäel") {
+      return "Michäel";
     }
     // Return as-is for others (Dominique, Alexander)
     return normalized;
