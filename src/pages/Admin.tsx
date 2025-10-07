@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -11,7 +10,8 @@ import { UTMAnalytics } from "@/components/admin/UTMAnalytics";
 import CampaignAnalytics from "@/components/admin/CampaignAnalytics";
 import LeadQualificationTable from "@/components/admin/LeadQualificationTable";
 import { SalesDashboard } from "@/components/admin/SalesDashboard";
-import { Download, RefreshCw } from "lucide-react";
+import { AdminLogin } from "@/components/admin/AdminLogin";
+import { Download, RefreshCw, LogOut } from "lucide-react";
 import * as XLSX from 'xlsx';
 import { processLeadUpdates } from "@/utils/processLeadUpdates";
 
@@ -45,9 +45,15 @@ interface FormSubmission {
 }
 
 const Admin = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [submissions, setSubmissions] = useState<FormSubmission[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdatingLeads, setIsUpdatingLeads] = useState(false);
+
+  useEffect(() => {
+    const authenticated = sessionStorage.getItem('adminAuthenticated') === 'true';
+    setIsAuthenticated(authenticated);
+  }, []);
   const { toast } = useToast();
 
   // Filter states for submissions
@@ -416,6 +422,15 @@ const Admin = () => {
     }
   };
 
+  const handleLogout = () => {
+    sessionStorage.removeItem('adminAuthenticated');
+    setIsAuthenticated(false);
+  };
+
+  if (!isAuthenticated) {
+    return <AdminLogin onSuccess={() => setIsAuthenticated(true)} />;
+  }
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -430,13 +445,24 @@ const Admin = () => {
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="w-full space-y-6">
-        <div>
-          <h1 className="text-3xl font-semibold text-foreground">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-semibold text-foreground">
             Admin Dashboard
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
             Beheer en analyseer formulierinzendingen
           </p>
+          </div>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleLogout}
+            className="flex items-center gap-2"
+          >
+            <LogOut className="h-4 w-4" />
+            Uitloggen
+          </Button>
         </div>
 
         {activeTab !== "sales" && (
