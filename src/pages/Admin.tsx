@@ -256,6 +256,7 @@ const Admin = () => {
     return {
       ongekwalificeerd: stats.ongekwalificeerd || 0,
       goed: stats.Goed || 0,
+      mql: stats.MQL || 0,
       goedKlant: stats['Goed - klant'] || 0,
       redelijk: stats.Redelijk || 0,
       slecht: stats.Slecht || 0
@@ -540,7 +541,7 @@ const Admin = () => {
               </Card>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
               <Card 
                 className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
                   filterQuality === "ongekwalificeerd" 
@@ -571,6 +572,23 @@ const Admin = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold text-foreground">{qualityStats.goed}</div>
+                  <p className="text-xs text-muted-foreground">inzendingen</p>
+                </CardContent>
+              </Card>
+
+              <Card 
+                className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
+                  filterQuality === "MQL" 
+                    ? "ring-2 ring-primary bg-primary/5" 
+                    : "hover:bg-muted/50"
+                }`}
+                onClick={() => setFilterQuality(filterQuality === "MQL" ? "all" : "MQL")}
+              >
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base font-medium">MQL</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold text-foreground">{qualityStats.mql}</div>
                   <p className="text-xs text-muted-foreground">inzendingen</p>
                 </CardContent>
               </Card>
