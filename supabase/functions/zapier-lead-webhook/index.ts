@@ -59,6 +59,7 @@ serve(async (req) => {
       straat,
       postcode,
       gemeente,
+      type_bedrijf,
       utm_content, // This will be the ad set name from Zapier
     } = payload;
 
@@ -83,6 +84,7 @@ serve(async (req) => {
       straat: straat?.trim() || null,
       postcode: postcode?.trim() || null,
       gemeente: gemeente?.trim() || null,
+      type_bedrijf: type_bedrijf?.trim() || null,
       type: 'stalen',
       marketing_optin: true,
       language: 'nl',
