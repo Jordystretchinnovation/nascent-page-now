@@ -24,6 +24,7 @@ interface FormSubmissionWithUTM {
   voornaam: string;
   achternaam: string;
   email: string;
+  type_bedrijf: string | null;
   utm_source: string | null;
   utm_medium: string | null;
   utm_campaign: string | null;
@@ -244,6 +245,7 @@ export const UTMAnalytics = ({
                     <TableHead className="text-xs font-medium text-muted-foreground">Type</TableHead>
                     <TableHead className="text-xs font-medium text-muted-foreground">Naam</TableHead>
                     <TableHead className="text-xs font-medium text-muted-foreground">Email</TableHead>
+                    <TableHead className="text-xs font-medium text-muted-foreground">Type Bedrijf</TableHead>
                     <TableHead className="text-xs font-medium text-muted-foreground">UTM Source</TableHead>
                     <TableHead className="text-xs font-medium text-muted-foreground">UTM Medium</TableHead>
                     <TableHead className="text-xs font-medium text-muted-foreground">UTM Campaign</TableHead>
@@ -267,6 +269,9 @@ export const UTMAnalytics = ({
                       </TableCell>
                       <TableCell className="text-sm text-muted-foreground">
                         {submission.email}
+                      </TableCell>
+                      <TableCell className="text-sm text-foreground">
+                        {submission.type_bedrijf || '—'}
                       </TableCell>
                       <TableCell className="text-sm text-foreground">
                         {submission.utm_source || '—'}

@@ -30,6 +30,7 @@ interface FormSubmission {
   postcode: string | null;
   gemeente: string | null;
   renderbook_type: string | null;
+  type_bedrijf: string | null;
   kwaliteit: string | null;
   marketing_optin: boolean;
   language: string;
@@ -181,6 +182,7 @@ export const SubmissionsTable = ({
                     <TableHead className="text-xs font-medium text-muted-foreground">Telefoon</TableHead>
                     <TableHead className="text-xs font-medium text-muted-foreground">Adres</TableHead>
                     <TableHead className="text-xs font-medium text-muted-foreground">Renderbook Type</TableHead>
+                    <TableHead className="text-xs font-medium text-muted-foreground">Type Bedrijf</TableHead>
                     <TableHead className="text-xs font-medium text-muted-foreground">Marketing</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -231,6 +233,9 @@ export const SubmissionsTable = ({
                         ) : (
                           <span className="text-sm text-muted-foreground">—</span>
                         )}
+                      </TableCell>
+                      <TableCell className="text-sm text-foreground">
+                        {submission.type_bedrijf || '—'}
                       </TableCell>
                       <TableCell>
                         <Badge 
