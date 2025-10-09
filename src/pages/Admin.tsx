@@ -66,6 +66,7 @@ const Admin = () => {
   const [filterUTMCampaign, setFilterUTMCampaign] = useState<string[]>([]);
   const [filterUTMContent, setFilterUTMContent] = useState<string[]>([]);
   const [filterUTMTerm, setFilterUTMTerm] = useState<string[]>([]);
+  const [filterTypeBedrijf, setFilterTypeBedrijf] = useState<string[]>([]);
 
   const [activeTab, setActiveTab] = useState("submissions");
   const [filterQuality, setFilterQuality] = useState<string>("all"); // Quality filter state
@@ -209,6 +210,10 @@ const Admin = () => {
 
     if (filterUTMTerm.length > 0) {
       filtered = filtered.filter(sub => sub.utm_term && filterUTMTerm.includes(sub.utm_term));
+    }
+
+    if (filterTypeBedrijf.length > 0) {
+      filtered = filtered.filter(sub => sub.type_bedrijf && filterTypeBedrijf.includes(sub.type_bedrijf));
     }
     
     return filtered;
@@ -695,6 +700,8 @@ const Admin = () => {
                 setFilterUTMContent={setFilterUTMContent}
                 filterUTMTerm={filterUTMTerm}
                 setFilterUTMTerm={setFilterUTMTerm}
+                filterTypeBedrijf={filterTypeBedrijf}
+                setFilterTypeBedrijf={setFilterTypeBedrijf}
               />
             )}
           </TabsContent>

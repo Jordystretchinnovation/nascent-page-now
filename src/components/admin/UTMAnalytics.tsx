@@ -47,6 +47,8 @@ interface UTMAnalyticsProps {
   setFilterUTMContent: (value: string[]) => void;
   filterUTMTerm: string[];
   setFilterUTMTerm: (value: string[]) => void;
+  filterTypeBedrijf: string[];
+  setFilterTypeBedrijf: (value: string[]) => void;
 }
 
 export const UTMAnalytics = ({ 
@@ -62,7 +64,9 @@ export const UTMAnalytics = ({
   filterUTMContent,
   setFilterUTMContent,
   filterUTMTerm,
-  setFilterUTMTerm
+  setFilterUTMTerm,
+  filterTypeBedrijf,
+  setFilterTypeBedrijf
 }: UTMAnalyticsProps) => {
   const [filteredSubmissions, setFilteredSubmissions] = useState<FormSubmissionWithUTM[]>([]);
 
@@ -80,6 +84,8 @@ export const UTMAnalytics = ({
     .map(content => ({ label: content!, value: content! }));
   const uniqueUTMTerms: Option[] = Array.from(new Set(safeSubmissions.map(s => s?.utm_term).filter(Boolean)))
     .map(term => ({ label: term!, value: term! }));
+  const uniqueTypeBedrijf: Option[] = Array.from(new Set(safeSubmissions.map(s => s?.type_bedrijf).filter(Boolean)))
+    .map(type => ({ label: type!, value: type! }));
 
   useEffect(() => {
     let filtered = safeSubmissions;
@@ -108,8 +114,12 @@ export const UTMAnalytics = ({
       filtered = filtered.filter(sub => sub?.utm_term && filterUTMTerm.includes(sub.utm_term));
     }
 
+    if (filterTypeBedrijf.length > 0) {
+      filtered = filtered.filter(sub => sub?.type_bedrijf && filterTypeBedrijf.includes(sub.type_bedrijf));
+    }
+
     setFilteredSubmissions(filtered);
-  }, [safeSubmissions, filterType, filterUTMSource, filterUTMMedium, filterUTMCampaign, filterUTMContent, filterUTMTerm]);
+  }, [safeSubmissions, filterType, filterUTMSource, filterUTMMedium, filterUTMCampaign, filterUTMContent, filterUTMTerm, filterTypeBedrijf]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('nl-NL', {
@@ -216,6 +226,15 @@ export const UTMAnalytics = ({
                   selected={filterUTMTerm}
                   onChange={setFilterUTMTerm}
                   placeholder="Filter op UTM Term"
+                />
+              )}
+
+              {uniqueTypeBedrijf.length > 0 && (
+                <MultiSelect
+                  options={uniqueTypeBedrijf}
+                  selected={filterTypeBedrijf}
+                  onChange={setFilterTypeBedrijf}
+                  placeholder="Filter op Type Bedrijf"
                 />
               )}
             </div>
