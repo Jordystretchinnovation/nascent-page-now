@@ -14,6 +14,93 @@ export type Database = {
   }
   public: {
     Tables: {
+      colbloc_submissions: {
+        Row: {
+          achternaam: string
+          bedrijf: string
+          created_at: string
+          email: string
+          gemeente: string | null
+          id: string
+          kwaliteit: string | null
+          language: string
+          marketing_optin: boolean
+          message: string | null
+          postcode: string | null
+          renderbook_type: string | null
+          sales_comment: string | null
+          sales_rep: string | null
+          sales_status: string | null
+          straat: string | null
+          telefoon: string | null
+          toelichting: string | null
+          type: string
+          type_bedrijf: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
+          voornaam: string
+        }
+        Insert: {
+          achternaam: string
+          bedrijf: string
+          created_at?: string
+          email: string
+          gemeente?: string | null
+          id?: string
+          kwaliteit?: string | null
+          language?: string
+          marketing_optin?: boolean
+          message?: string | null
+          postcode?: string | null
+          renderbook_type?: string | null
+          sales_comment?: string | null
+          sales_rep?: string | null
+          sales_status?: string | null
+          straat?: string | null
+          telefoon?: string | null
+          toelichting?: string | null
+          type: string
+          type_bedrijf?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+          voornaam: string
+        }
+        Update: {
+          achternaam?: string
+          bedrijf?: string
+          created_at?: string
+          email?: string
+          gemeente?: string | null
+          id?: string
+          kwaliteit?: string | null
+          language?: string
+          marketing_optin?: boolean
+          message?: string | null
+          postcode?: string | null
+          renderbook_type?: string | null
+          sales_comment?: string | null
+          sales_rep?: string | null
+          sales_status?: string | null
+          straat?: string | null
+          telefoon?: string | null
+          toelichting?: string | null
+          type?: string
+          type_bedrijf?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
+          voornaam?: string
+        }
+        Relationships: []
+      }
       form_submissions: {
         Row: {
           achternaam: string
