@@ -158,7 +158,18 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
     return acc;
   }, {} as Record<string, CampaignGroup>);
 
-  const sortedCampaigns = (Object.values(campaignGroups) as CampaignGroup[]).sort((a, b) => b.total - a.total);
+  const sortedCampaigns = (Object.values(campaignGroups) as CampaignGroup[]).sort((a, b) => {
+    // Extract gh number from campaign name (e.g., "2506_gh5_leads" -> 5)
+    const extractGh = (campaign: string): number => {
+      const match = campaign.match(/gh(\d+)/i);
+      return match ? parseInt(match[1]) : 999; // Unknown campaigns go to end
+    };
+    
+    const ghA = extractGh(a.campaign);
+    const ghB = extractGh(b.campaign);
+    
+    return ghA - ghB;
+  });
 
   const toggleCampaign = (campaign: string) => {
     const newExpanded = new Set(expandedCampaigns);
