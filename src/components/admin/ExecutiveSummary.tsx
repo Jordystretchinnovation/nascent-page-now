@@ -18,12 +18,9 @@ export const ExecutiveSummary = ({ submissions }: ExecutiveSummaryProps) => {
     s.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(s.kwaliteit)
   ).length;
   
-  const leadsWithSalesActivity = submissions.filter(s => s.sales_status).length;
-  
   const conversions = submissions.filter(s => s.sales_status === 'Gesprek gepland').length;
 
   const qualificationRate = totalLeads > 0 ? ((qualifiedLeads / totalLeads) * 100).toFixed(1) : '0';
-  const engagementRate = totalLeads > 0 ? ((leadsWithSalesActivity / totalLeads) * 100).toFixed(1) : '0';
   const conversionRate = totalLeads > 0 ? ((conversions / totalLeads) * 100).toFixed(1) : '0';
 
   // Campaign type performance
@@ -54,7 +51,7 @@ export const ExecutiveSummary = ({ submissions }: ExecutiveSummaryProps) => {
         <h2 className="text-2xl font-semibold mb-4">Executive Summary</h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-muted-foreground">Total Leads</CardTitle>
@@ -72,16 +69,6 @@ export const ExecutiveSummary = ({ submissions }: ExecutiveSummaryProps) => {
           <CardContent>
             <div className="text-3xl font-bold text-foreground">{qualifiedLeads}</div>
             <Badge variant="secondary" className="mt-2">{qualificationRate}% qualification rate</Badge>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Sales Engagement</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-foreground">{leadsWithSalesActivity}</div>
-            <Badge variant="secondary" className="mt-2">{engagementRate}% engagement rate</Badge>
           </CardContent>
         </Card>
 
