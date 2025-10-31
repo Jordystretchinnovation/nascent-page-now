@@ -5,10 +5,12 @@ interface Submission {
   type: string;
   kwaliteit: string | null;
   sales_status: string | null;
+  utm_campaign: string | null;
 }
 
 interface CampaignBudget {
   utm_source: string[] | null;
+  utm_campaign: string[] | null;
   budget: number;
 }
 
@@ -51,20 +53,18 @@ export const ExecutiveSummary = ({ submissions, budgets }: ExecutiveSummaryProps
     return labels[type] || type;
   };
 
-  // Get budget for a campaign type by matching utm_source
+  // Get budget for a campaign type by matching utm_campaign from submissions
   const getTypeBudget = (type: string) => {
-    const typeKeywords: Record<string, string[]> = {
-      stalen: ['stalen', 'sample'],
-      renderboek: ['lookbook', 'renderboek'],
-      keukentrends: ['keukentrends', 'trends'],
-      korting: ['korting', 'discount']
-    };
+    // Get all unique utm_campaign values for this type
+    const campaignsForType = submissions
+      .filter(s => s.type === type && s.utm_campaign)
+      .map(s => s.utm_campaign as string);
     
-    const keywords = typeKeywords[type] || [type];
+    const uniqueCampaigns = [...new Set(campaignsForType)];
+    
+    // Find budgets that include any of these campaigns
     const relevantBudgets = budgets.filter(b => 
-      b.utm_source?.some(source => 
-        keywords.some(keyword => source.toLowerCase().includes(keyword.toLowerCase()))
-      )
+      b.utm_campaign?.some(campaign => uniqueCampaigns.includes(campaign))
     );
     
     return relevantBudgets.reduce((sum, b) => sum + b.budget, 0);
