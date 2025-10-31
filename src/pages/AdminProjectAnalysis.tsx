@@ -8,6 +8,7 @@ import { ExecutiveSummary } from "@/components/admin/ExecutiveSummary";
 import { CampaignPerformanceTable } from "@/components/admin/CampaignPerformanceTable";
 import { BudgetInput } from "@/components/admin/BudgetInput";
 import { ChannelBreakdown } from "@/components/admin/ChannelBreakdown";
+import { EmailCampaignMetrics } from "@/components/admin/EmailCampaignMetrics";
 import { RecommendationsSection } from "@/components/admin/RecommendationsSection";
 import { PerformanceCharts } from "@/components/admin/PerformanceCharts";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -162,6 +163,8 @@ const AdminProjectAnalysis = () => {
         <ExecutiveSummary submissions={submissions} />
 
         <PerformanceCharts submissions={submissions} />
+
+        <EmailCampaignMetrics submissions={submissions} budgets={budgets} />
 
         <ChannelBreakdown submissions={submissions} budgets={budgets} />
 

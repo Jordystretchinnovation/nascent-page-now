@@ -23,8 +23,13 @@ interface ChannelBreakdownProps {
 }
 
 export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps) => {
+  // Filter out email sources - they have their own table
+  const nonEmailSubmissions = submissions.filter(sub => 
+    sub.utm_source?.toLowerCase() !== 'email'
+  );
+
   // Group by source (channel)
-  const channelStats = submissions.reduce((acc, sub) => {
+  const channelStats = nonEmailSubmissions.reduce((acc, sub) => {
     const source = sub.utm_source || 'Unknown';
     
     if (!acc[source]) {
@@ -89,7 +94,7 @@ export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-semibold">Channel Analysis</h2>
+      <h2 className="text-2xl font-semibold">Paid Channel Analysis</h2>
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card className="border-green-500/20">
