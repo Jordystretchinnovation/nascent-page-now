@@ -110,7 +110,18 @@ export const EmailCampaignMetrics = ({ submissions, budgets }: EmailCampaignMetr
       emailToLeadRate,
       clickToLeadRate
     };
-  }).sort((a, b) => b.leads - a.leads);
+  }).sort((a, b) => {
+    // Extract gh number from campaign name (e.g., "2506_gh5_leads" -> 5)
+    const extractGh = (campaign: string): number => {
+      const match = campaign.match(/gh(\d+)/i);
+      return match ? parseInt(match[1]) : 999; // Unknown campaigns go to end
+    };
+    
+    const ghA = extractGh(a.campaign);
+    const ghB = extractGh(b.campaign);
+    
+    return ghA - ghB;
+  });
 
   // Calculate totals
   const totals = enhancedEmailCampaigns.reduce((acc, campaign) => ({
