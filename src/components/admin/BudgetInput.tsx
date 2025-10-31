@@ -88,7 +88,7 @@ export const BudgetInput = ({ budgets, onBudgetUpdate }: BudgetInputProps) => {
           utm_campaign: formData.utm_campaign.length > 0 ? formData.utm_campaign : null,
           utm_source: formData.utm_source.length > 0 ? formData.utm_source : null,
           utm_medium: formData.utm_medium.length > 0 ? formData.utm_medium : null,
-          budget: parseFloat(formData.budget),
+          budget: formData.budget ? parseFloat(formData.budget) : 0,
           start_date: formData.start_date || null,
           end_date: formData.end_date || null,
           notes: formData.notes || null
@@ -177,14 +177,15 @@ export const BudgetInput = ({ budgets, onBudgetUpdate }: BudgetInputProps) => {
                 />
               </div>
               <div>
-                <Label htmlFor="budget">Budget (€) *</Label>
+                <Label htmlFor="budget">Budget (€) - Enter 0 for email campaigns</Label>
                 <Input
                   id="budget"
                   type="number"
                   step="0.01"
+                  min="0"
+                  placeholder="0 for email campaigns"
                   value={formData.budget}
                   onChange={(e) => setFormData({...formData, budget: e.target.value})}
-                  required
                 />
               </div>
               <div>
