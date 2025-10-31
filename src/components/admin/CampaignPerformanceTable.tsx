@@ -24,6 +24,9 @@ interface CampaignBudget {
   utm_source: string[] | null;
   utm_medium: string[] | null;
   budget: number;
+  emails_sent: number | null;
+  open_rate: number | null;
+  click_rate: number | null;
 }
 
 interface SourceStat {

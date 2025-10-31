@@ -18,10 +18,13 @@ export type Database = {
         Row: {
           budget: number
           campaign_name: string
+          click_rate: number | null
           created_at: string
+          emails_sent: number | null
           end_date: string | null
           id: string
           notes: string | null
+          open_rate: number | null
           start_date: string | null
           updated_at: string
           utm_campaign: string[] | null
@@ -31,10 +34,13 @@ export type Database = {
         Insert: {
           budget: number
           campaign_name: string
+          click_rate?: number | null
           created_at?: string
+          emails_sent?: number | null
           end_date?: string | null
           id?: string
           notes?: string | null
+          open_rate?: number | null
           start_date?: string | null
           updated_at?: string
           utm_campaign?: string[] | null
@@ -44,10 +50,13 @@ export type Database = {
         Update: {
           budget?: number
           campaign_name?: string
+          click_rate?: number | null
           created_at?: string
+          emails_sent?: number | null
           end_date?: string | null
           id?: string
           notes?: string | null
+          open_rate?: number | null
           start_date?: string | null
           updated_at?: string
           utm_campaign?: string[] | null

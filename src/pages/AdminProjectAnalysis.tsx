@@ -40,6 +40,9 @@ interface CampaignBudget {
   start_date: string | null;
   end_date: string | null;
   notes: string | null;
+  emails_sent: number | null;
+  open_rate: number | null;
+  click_rate: number | null;
 }
 
 const AdminProjectAnalysis = () => {

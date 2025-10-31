@@ -12,6 +12,9 @@ interface Submission {
 interface CampaignBudget {
   utm_source: string[] | null;
   budget: number;
+  emails_sent: number | null;
+  open_rate: number | null;
+  click_rate: number | null;
 }
 
 interface ChannelBreakdownProps {
@@ -41,11 +44,19 @@ export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps
     return acc;
   }, {} as Record<string, { total: number; qualified: number; conversions: number }>);
 
-  // Calculate totals for each channel with budgets
+  // Calculate totals for each channel with budgets and email metrics
   const enhancedChannels = Object.entries(channelStats).map(([source, stats]) => {
-    const channelBudget = budgets
-      .filter(b => b.utm_source?.includes(source))
-      .reduce((sum, b) => sum + b.budget, 0);
+    const relevantBudgets = budgets.filter(b => b.utm_source?.includes(source));
+    const channelBudget = relevantBudgets.reduce((sum, b) => sum + b.budget, 0);
+    
+    // Email-specific metrics
+    const totalEmailsSent = relevantBudgets.reduce((sum, b) => sum + (b.emails_sent || 0), 0);
+    const avgOpenRate = relevantBudgets.length > 0 
+      ? relevantBudgets.reduce((sum, b) => sum + (b.open_rate || 0), 0) / relevantBudgets.length 
+      : 0;
+    const avgClickRate = relevantBudgets.length > 0 
+      ? relevantBudgets.reduce((sum, b) => sum + (b.click_rate || 0), 0) / relevantBudgets.length 
+      : 0;
     
     const qualRate = stats.total > 0 ? ((stats.qualified / stats.total) * 100).toFixed(1) : '0';
     const convRate = stats.total > 0 ? ((stats.conversions / stats.total) * 100).toFixed(1) : '0';
@@ -59,7 +70,11 @@ export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps
       qualRate: parseFloat(qualRate),
       convRate: parseFloat(convRate),
       cpl: parseFloat(cpl),
-      cpql: parseFloat(cpql)
+      cpql: parseFloat(cpql),
+      emailsSent: totalEmailsSent,
+      openRate: avgOpenRate,
+      clickRate: avgClickRate,
+      isEmail: source.toLowerCase() === 'email'
     };
   }).sort((a, b) => b.total - a.total);
 
@@ -175,12 +190,27 @@ export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps
                     <div className="text-muted-foreground">Conversions</div>
                     <div className="font-medium">{channel.conversions} ({channel.convRate}%)</div>
                   </div>
-                  {channel.budget > 0 && (
+                  {channel.isEmail && channel.emailsSent > 0 ? (
+                    <>
+                      <div>
+                        <div className="text-muted-foreground">Emails Sent</div>
+                        <div className="font-medium">{channel.emailsSent.toLocaleString()}</div>
+                      </div>
+                      <div>
+                        <div className="text-muted-foreground">Open Rate</div>
+                        <div className="font-medium">{channel.openRate.toFixed(1)}%</div>
+                      </div>
+                      <div>
+                        <div className="text-muted-foreground">Click Rate</div>
+                        <div className="font-medium">{channel.clickRate.toFixed(1)}%</div>
+                      </div>
+                    </>
+                  ) : channel.budget > 0 ? (
                     <div>
                       <div className="text-muted-foreground">Budget / CPL</div>
                       <div className="font-medium">€{channel.budget.toFixed(0)} / €{channel.cpl}</div>
                     </div>
-                  )}
+                  ) : null}
                 </div>
               </div>
             ))}

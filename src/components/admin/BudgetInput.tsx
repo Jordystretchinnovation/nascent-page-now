@@ -19,6 +19,9 @@ interface CampaignBudget {
   start_date: string | null;
   end_date: string | null;
   notes: string | null;
+  emails_sent: number | null;
+  open_rate: number | null;
+  click_rate: number | null;
 }
 
 interface BudgetInputProps {
@@ -36,7 +39,10 @@ export const BudgetInput = ({ budgets, onBudgetUpdate }: BudgetInputProps) => {
     budget: '',
     start_date: '',
     end_date: '',
-    notes: ''
+    notes: '',
+    emails_sent: '',
+    open_rate: '',
+    click_rate: ''
   });
   const [utmOptions, setUtmOptions] = useState({
     campaigns: [] as { label: string; value: string }[],
@@ -91,7 +97,10 @@ export const BudgetInput = ({ budgets, onBudgetUpdate }: BudgetInputProps) => {
           budget: formData.budget ? parseFloat(formData.budget) : 0,
           start_date: formData.start_date || null,
           end_date: formData.end_date || null,
-          notes: formData.notes || null
+          notes: formData.notes || null,
+          emails_sent: formData.emails_sent ? parseInt(formData.emails_sent) : null,
+          open_rate: formData.open_rate ? parseFloat(formData.open_rate) : null,
+          click_rate: formData.click_rate ? parseFloat(formData.click_rate) : null
         }]);
 
       if (error) throw error;
@@ -109,7 +118,10 @@ export const BudgetInput = ({ budgets, onBudgetUpdate }: BudgetInputProps) => {
         budget: '',
         start_date: '',
         end_date: '',
-        notes: ''
+        notes: '',
+        emails_sent: '',
+        open_rate: '',
+        click_rate: ''
       });
       setShowForm(false);
       onBudgetUpdate();
@@ -234,6 +246,49 @@ export const BudgetInput = ({ budgets, onBudgetUpdate }: BudgetInputProps) => {
                 />
               </div>
             </div>
+            
+            {formData.utm_source.includes('email') && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t pt-4">
+                <div>
+                  <Label htmlFor="emails_sent">Emails Sent</Label>
+                  <Input
+                    id="emails_sent"
+                    type="number"
+                    min="0"
+                    placeholder="e.g., 5000"
+                    value={formData.emails_sent}
+                    onChange={(e) => setFormData({...formData, emails_sent: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="open_rate">Open Rate (%)</Label>
+                  <Input
+                    id="open_rate"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    max="100"
+                    placeholder="e.g., 25.5"
+                    value={formData.open_rate}
+                    onChange={(e) => setFormData({...formData, open_rate: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="click_rate">Click Rate (%)</Label>
+                  <Input
+                    id="click_rate"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    max="100"
+                    placeholder="e.g., 5.2"
+                    value={formData.click_rate}
+                    onChange={(e) => setFormData({...formData, click_rate: e.target.value})}
+                  />
+                </div>
+              </div>
+            )}
+            
             <div>
               <Label htmlFor="notes">Notes</Label>
               <Textarea
@@ -265,6 +320,13 @@ export const BudgetInput = ({ budgets, onBudgetUpdate }: BudgetInputProps) => {
                     {budget.utm_medium && budget.utm_medium.length > 0 && 
                       ` • Mediums: ${budget.utm_medium.join(', ')}`}
                   </div>
+                  {budget.utm_source?.includes('email') && budget.emails_sent && (
+                    <div className="text-sm text-muted-foreground mt-1">
+                      📧 {budget.emails_sent.toLocaleString()} emails
+                      {budget.open_rate && ` • Open: ${budget.open_rate}%`}
+                      {budget.click_rate && ` • Click: ${budget.click_rate}%`}
+                    </div>
+                  )}
                   {budget.notes && (
                     <div className="text-xs text-muted-foreground mt-1">{budget.notes}</div>
                   )}
