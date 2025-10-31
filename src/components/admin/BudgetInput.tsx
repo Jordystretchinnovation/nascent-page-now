@@ -247,7 +247,11 @@ export const BudgetInput = ({ budgets, onBudgetUpdate }: BudgetInputProps) => {
               </div>
             </div>
             
-            {formData.utm_source.includes('email') && (
+            {/* Show email metrics for email sources */}
+            {formData.utm_source.some(source => {
+              const emailSources = ['email', 'activecampaign', 'lemlist', 'mailchimp', 'sendgrid', 'hubspot'];
+              return emailSources.some(emailSource => source.toLowerCase().includes(emailSource));
+            }) && (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t pt-4">
                 <div>
                   <Label htmlFor="emails_sent">Emails Sent</Label>
