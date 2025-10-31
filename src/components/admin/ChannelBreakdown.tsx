@@ -10,7 +10,7 @@ interface Submission {
 }
 
 interface CampaignBudget {
-  utm_source: string | null;
+  utm_source: string[] | null;
   budget: number;
 }
 
@@ -44,7 +44,7 @@ export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps
   // Calculate totals for each channel with budgets
   const enhancedChannels = Object.entries(channelStats).map(([source, stats]) => {
     const channelBudget = budgets
-      .filter(b => b.utm_source === source)
+      .filter(b => b.utm_source?.includes(source))
       .reduce((sum, b) => sum + b.budget, 0);
     
     const qualRate = stats.total > 0 ? ((stats.qualified / stats.total) * 100).toFixed(1) : '0';

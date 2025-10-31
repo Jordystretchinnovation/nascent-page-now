@@ -10,8 +10,8 @@ interface Submission {
 }
 
 interface CampaignBudget {
-  utm_source: string | null;
-  utm_campaign: string | null;
+  utm_source: string[] | null;
+  utm_campaign: string[] | null;
   budget: number;
 }
 

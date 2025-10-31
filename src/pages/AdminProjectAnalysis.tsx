@@ -32,9 +32,9 @@ interface FormSubmission {
 interface CampaignBudget {
   id: string;
   campaign_name: string;
-  utm_campaign: string | null;
-  utm_source: string | null;
-  utm_medium: string | null;
+  utm_campaign: string[] | null;
+  utm_source: string[] | null;
+  utm_medium: string[] | null;
   budget: number;
   start_date: string | null;
   end_date: string | null;

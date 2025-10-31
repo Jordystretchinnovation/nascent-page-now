@@ -12,9 +12,9 @@ interface Submission {
 }
 
 interface CampaignBudget {
-  utm_campaign: string | null;
-  utm_source: string | null;
-  utm_medium: string | null;
+  utm_campaign: string[] | null;
+  utm_source: string[] | null;
+  utm_medium: string[] | null;
   budget: number;
 }
 
@@ -74,8 +74,8 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
   // Match budgets to campaigns
   const enhancedStats = Object.values(campaignStats).map(stat => {
     const matchingBudget = budgets.find(b => 
-      b.utm_campaign === stat.campaign && 
-      b.utm_source === stat.source
+      b.utm_campaign?.includes(stat.campaign) && 
+      b.utm_source?.includes(stat.source)
     );
     
     const budget = matchingBudget?.budget || 0;

@@ -24,9 +24,9 @@ export type Database = {
           notes: string | null
           start_date: string | null
           updated_at: string
-          utm_campaign: string | null
-          utm_medium: string | null
-          utm_source: string | null
+          utm_campaign: string[] | null
+          utm_medium: string[] | null
+          utm_source: string[] | null
         }
         Insert: {
           budget: number
@@ -37,9 +37,9 @@ export type Database = {
           notes?: string | null
           start_date?: string | null
           updated_at?: string
-          utm_campaign?: string | null
-          utm_medium?: string | null
-          utm_source?: string | null
+          utm_campaign?: string[] | null
+          utm_medium?: string[] | null
+          utm_source?: string[] | null
         }
         Update: {
           budget?: number
@@ -50,9 +50,9 @@ export type Database = {
           notes?: string | null
           start_date?: string | null
           updated_at?: string
-          utm_campaign?: string | null
-          utm_medium?: string | null
-          utm_source?: string | null
+          utm_campaign?: string[] | null
+          utm_medium?: string[] | null
+          utm_source?: string[] | null
         }
         Relationships: []
       }
