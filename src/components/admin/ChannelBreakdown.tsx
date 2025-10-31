@@ -34,7 +34,7 @@ export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps
       acc[source].qualified++;
     }
     
-    if (sub.sales_status === 'Gekocht') {
+    if (sub.sales_status === 'Gesprek gepland') {
       acc[source].conversions++;
     }
     

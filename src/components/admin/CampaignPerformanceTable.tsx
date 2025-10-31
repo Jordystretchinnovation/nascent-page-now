@@ -63,7 +63,7 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
     
     if (sub.sales_status) {
       acc[key].engaged++;
-      if (sub.sales_status === 'Gekocht') {
+      if (sub.sales_status === 'Gesprek gepland') {
         acc[key].conversions++;
       }
     }

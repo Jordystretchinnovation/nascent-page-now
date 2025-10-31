@@ -20,7 +20,7 @@ export const ExecutiveSummary = ({ submissions }: ExecutiveSummaryProps) => {
   
   const leadsWithSalesActivity = submissions.filter(s => s.sales_status).length;
   
-  const conversions = submissions.filter(s => s.sales_status === 'Gekocht').length;
+  const conversions = submissions.filter(s => s.sales_status === 'Gesprek gepland').length;
 
   const qualificationRate = totalLeads > 0 ? ((qualifiedLeads / totalLeads) * 100).toFixed(1) : '0';
   const engagementRate = totalLeads > 0 ? ((leadsWithSalesActivity / totalLeads) * 100).toFixed(1) : '0';
