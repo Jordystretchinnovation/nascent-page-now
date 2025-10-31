@@ -28,17 +28,27 @@ interface EmailCampaignMetricsProps {
 }
 
 export const EmailCampaignMetrics = ({ submissions, budgets }: EmailCampaignMetricsProps) => {
+  // Email sources to recognize
+  const emailSources = ['email', 'activecampaign', 'lemlist', 'mailchimp', 'sendgrid', 'hubspot'];
+  
+  const isEmailSource = (source: string | null): boolean => {
+    if (!source) return false;
+    const lowerSource = source.toLowerCase();
+    return emailSources.some(emailSource => lowerSource.includes(emailSource));
+  };
+
   // Filter email submissions
   const emailSubmissions = submissions.filter(sub => 
-    sub.utm_source?.toLowerCase() === 'email'
+    isEmailSource(sub.utm_source)
   );
 
   // Filter email budgets
   const emailBudgets = budgets.filter(b => 
-    b.utm_source?.some(s => s.toLowerCase() === 'email')
+    b.utm_source?.some(s => isEmailSource(s))
   );
 
-  if (emailBudgets.length === 0 && emailSubmissions.length === 0) {
+  // Show the table if there are any email submissions, even without budgets yet
+  if (emailSubmissions.length === 0) {
     return null;
   }
 

@@ -23,9 +23,18 @@ interface ChannelBreakdownProps {
 }
 
 export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps) => {
+  // Email sources to recognize
+  const emailSources = ['email', 'activecampaign', 'lemlist', 'mailchimp', 'sendgrid', 'hubspot'];
+  
+  const isEmailSource = (source: string | null): boolean => {
+    if (!source) return false;
+    const lowerSource = source.toLowerCase();
+    return emailSources.some(emailSource => lowerSource.includes(emailSource));
+  };
+
   // Filter out email sources - they have their own table
   const nonEmailSubmissions = submissions.filter(sub => 
-    sub.utm_source?.toLowerCase() !== 'email'
+    !isEmailSource(sub.utm_source)
   );
 
   // Group by source (channel)
