@@ -11,6 +11,7 @@ interface Submission {
 interface CampaignBudget {
   utm_source: string[] | null;
   utm_campaign: string[] | null;
+  campaign_name: string;
   budget: number;
 }
 
@@ -67,7 +68,15 @@ export const ExecutiveSummary = ({ submissions, budgets }: ExecutiveSummaryProps
       b.utm_campaign?.some(campaign => uniqueCampaigns.includes(campaign))
     );
     
-    return relevantBudgets.reduce((sum, b) => sum + b.budget, 0);
+    // Deduplicate by campaign_name to avoid counting same campaign with multiple sources (fb+ig) twice
+    const uniqueBudgets = relevantBudgets.reduce((acc, budget) => {
+      if (!acc.some(b => b.campaign_name === budget.campaign_name)) {
+        acc.push(budget);
+      }
+      return acc;
+    }, [] as CampaignBudget[]);
+    
+    return uniqueBudgets.reduce((sum, b) => sum + b.budget, 0);
   };
 
   return (
