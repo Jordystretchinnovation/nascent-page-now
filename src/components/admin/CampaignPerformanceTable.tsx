@@ -5,6 +5,11 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
+// Format currency in European style
+const formatCurrency = (amount: number): string => {
+  return `€ ${amount.toLocaleString('nl-BE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+};
+
 interface Submission {
   type: string;
   kwaliteit: string | null;
@@ -268,13 +273,13 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
                         </div>
                       </TableCell>
                       <TableCell className="text-right">
-                        {group.budget > 0 ? group.budget.toFixed(2) : '-'}
+                        {group.budget > 0 ? formatCurrency(group.budget) : '-'}
                       </TableCell>
                       <TableCell className="text-right">
-                        {cpl > 0 ? cpl.toFixed(2) : '-'}
+                        {cpl > 0 ? formatCurrency(cpl) : '-'}
                       </TableCell>
                       <TableCell className="text-right">
-                        {cpql > 0 ? cpql.toFixed(2) : '-'}
+                        {cpql > 0 ? formatCurrency(cpql) : '-'}
                       </TableCell>
                     </TableRow>
                     
@@ -313,13 +318,13 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
                             </div>
                           </TableCell>
                           <TableCell className="text-right">
-                            {source.budget > 0 ? source.budget.toFixed(2) : '-'}
+                            {source.budget > 0 ? formatCurrency(source.budget) : '-'}
                           </TableCell>
                           <TableCell className="text-right">
-                            {source.cpl > 0 ? source.cpl.toFixed(2) : '-'}
+                            {source.cpl > 0 ? formatCurrency(source.cpl) : '-'}
                           </TableCell>
                           <TableCell className="text-right">
-                            {source.cpql > 0 ? source.cpql.toFixed(2) : '-'}
+                            {source.cpql > 0 ? formatCurrency(source.cpql) : '-'}
                           </TableCell>
                         </TableRow>
                       );
@@ -356,13 +361,13 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
                   </div>
                 </TableCell>
                 <TableCell className="text-right">
-                  {totals.budget > 0 ? totals.budget.toFixed(2) : '-'}
+                  {totals.budget > 0 ? formatCurrency(totals.budget) : '-'}
                 </TableCell>
                 <TableCell className="text-right">
-                  {totals.budget > 0 && totals.total > 0 ? (totals.budget / totals.total).toFixed(2) : '-'}
+                  {totals.budget > 0 && totals.total > 0 ? formatCurrency(totals.budget / totals.total) : '-'}
                 </TableCell>
                 <TableCell className="text-right">
-                  {totals.budget > 0 && totals.qualified > 0 ? (totals.budget / totals.qualified).toFixed(2) : '-'}
+                  {totals.budget > 0 && totals.qualified > 0 ? formatCurrency(totals.budget / totals.qualified) : '-'}
                 </TableCell>
               </TableRow>
             </TableBody>
