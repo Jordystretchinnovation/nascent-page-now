@@ -160,7 +160,7 @@ const AdminProjectAnalysis = () => {
           </div>
         </div>
 
-        <ExecutiveSummary submissions={submissions} />
+        <ExecutiveSummary submissions={submissions} budgets={budgets} />
 
         <PerformanceCharts submissions={submissions} />
 

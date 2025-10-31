@@ -7,11 +7,17 @@ interface Submission {
   sales_status: string | null;
 }
 
-interface ExecutiveSummaryProps {
-  submissions: Submission[];
+interface CampaignBudget {
+  utm_source: string[] | null;
+  budget: number;
 }
 
-export const ExecutiveSummary = ({ submissions }: ExecutiveSummaryProps) => {
+interface ExecutiveSummaryProps {
+  submissions: Submission[];
+  budgets: CampaignBudget[];
+}
+
+export const ExecutiveSummary = ({ submissions, budgets }: ExecutiveSummaryProps) => {
   const totalLeads = submissions.length;
   
   const qualifiedLeads = submissions.filter(s => 
@@ -43,6 +49,25 @@ export const ExecutiveSummary = ({ submissions }: ExecutiveSummaryProps) => {
       korting: 'Korting'
     };
     return labels[type] || type;
+  };
+
+  // Get budget for a campaign type by matching utm_source
+  const getTypeBudget = (type: string) => {
+    const typeKeywords: Record<string, string[]> = {
+      stalen: ['stalen', 'sample'],
+      renderboek: ['lookbook', 'renderboek'],
+      keukentrends: ['keukentrends', 'trends'],
+      korting: ['korting', 'discount']
+    };
+    
+    const keywords = typeKeywords[type] || [type];
+    const relevantBudgets = budgets.filter(b => 
+      b.utm_source?.some(source => 
+        keywords.some(keyword => source.toLowerCase().includes(keyword.toLowerCase()))
+      )
+    );
+    
+    return relevantBudgets.reduce((sum, b) => sum + b.budget, 0);
   };
 
   return (
@@ -92,6 +117,9 @@ export const ExecutiveSummary = ({ submissions }: ExecutiveSummaryProps) => {
             {Object.entries(typeStats).map(([type, stats]) => {
               const qualRate = stats.total > 0 ? ((stats.qualified / stats.total) * 100).toFixed(0) : '0';
               const percentage = totalLeads > 0 ? ((stats.total / totalLeads) * 100).toFixed(0) : '0';
+              const budget = getTypeBudget(type);
+              const cpl = budget > 0 && stats.total > 0 ? (budget / stats.total).toFixed(2) : '0';
+              const cpql = budget > 0 && stats.qualified > 0 ? (budget / stats.qualified).toFixed(2) : '0';
               
               return (
                 <div key={type} className="border rounded-lg p-4">
@@ -100,7 +128,15 @@ export const ExecutiveSummary = ({ submissions }: ExecutiveSummaryProps) => {
                   <div className="text-sm text-muted-foreground mt-1">
                     {stats.qualified} qualified ({qualRate}%)
                   </div>
-                  <Badge variant="outline" className="mt-2">{percentage}% of total</Badge>
+                  <div className="flex gap-2 mt-2">
+                    <Badge variant="outline">{percentage}% of total</Badge>
+                  </div>
+                  {budget > 0 && (
+                    <div className="text-xs text-muted-foreground mt-2 space-y-1">
+                      <div>CPL: €{cpl}</div>
+                      <div>CPQL: €{cpql}</div>
+                    </div>
+                  )}
                 </div>
               );
             })}
