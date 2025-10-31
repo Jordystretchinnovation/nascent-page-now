@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import React from "react";
 
 // Format currency in European style
 const formatCurrency = (amount: number): string => {
@@ -20,6 +21,7 @@ interface Submission {
 }
 
 interface CampaignBudget {
+  campaign_name: string;
   utm_campaign: string[] | null;
   utm_source: string[] | null;
   utm_medium: string[] | null;
@@ -129,26 +131,41 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
     return acc;
   }, {} as Record<string, any>);
 
-  // Match budgets to sources
+  // Match budgets at campaign level first to avoid duplication
+  const campaignBudgetMap = new Map<string, number>();
+  
+  nonEmailSubmissions.forEach(sub => {
+    const campaign = sub.utm_campaign || 'Unknown';
+    if (!campaignBudgetMap.has(campaign)) {
+      // Find all budgets matching this campaign
+      const matchingBudgets = budgets.filter(b => 
+        b.utm_campaign?.includes(campaign)
+      );
+      
+      // Deduplicate by campaign_name to avoid counting same budget twice for fb+ig
+      const uniqueBudgets = matchingBudgets.reduce((acc, budget) => {
+        if (!acc.some(b => b.campaign_name === budget.campaign_name)) {
+          acc.push(budget);
+        }
+        return acc;
+      }, [] as CampaignBudget[]);
+      
+      const totalBudget = uniqueBudgets.reduce((sum, b) => sum + b.budget, 0);
+      campaignBudgetMap.set(campaign, totalBudget);
+    }
+  });
+
+  // Don't assign budget to individual sources, only to campaigns
   const enhancedSourceStats = Object.values(sourceStats).map(stat => {
-    const matchingBudget = budgets.find(b => 
-      b.utm_campaign?.includes(stat.campaign) && 
-      b.utm_source?.includes(stat.source)
-    );
-    
-    const budget = matchingBudget?.budget || 0;
-    const cpl = budget > 0 ? budget / stat.total : 0;
-    const cpql = budget > 0 && stat.qualified > 0 ? budget / stat.qualified : 0;
-    
     return {
       ...stat,
-      budget,
-      cpl,
-      cpql
+      budget: 0, // Budget shown at campaign level only
+      cpl: 0,
+      cpql: 0
     };
   });
 
-  // Group by campaign
+  // Group by campaign and assign deduplicated budget
   const campaignGroups = enhancedSourceStats.reduce((acc, stat) => {
     if (!acc[stat.campaign]) {
       acc[stat.campaign] = {
@@ -162,7 +179,7 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
         slecht: 0,
         engaged: 0,
         conversions: 0,
-        budget: 0
+        budget: campaignBudgetMap.get(stat.campaign) || 0 // Use deduplicated budget
       };
     }
     
@@ -175,7 +192,7 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
     acc[stat.campaign].slecht += stat.slecht;
     acc[stat.campaign].engaged += stat.engaged;
     acc[stat.campaign].conversions += stat.conversions;
-    acc[stat.campaign].budget += stat.budget;
+    // Don't add stat.budget since it's 0 and we already set campaign budget
     
     return acc;
   }, {} as Record<string, CampaignGroup>);
@@ -255,8 +272,8 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
                 const isExpanded = expandedCampaigns.has(group.campaign);
                 
                 return (
-                  <>
-                    <TableRow key={index} className="font-medium bg-muted/50">
+                  <React.Fragment key={group.campaign}>
+                    <TableRow className="font-medium bg-muted/50">
                       <TableCell>
                         <Button
                           variant="ghost"
@@ -346,7 +363,7 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
                         </TableRow>
                       );
                     })}
-                  </>
+                  </React.Fragment>
                 );
               })}
               

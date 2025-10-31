@@ -10,6 +10,7 @@ interface Submission {
 }
 
 interface CampaignBudget {
+  campaign_name: string;
   utm_source: string[] | null;
   budget: number;
   emails_sent: number | null;
@@ -61,15 +62,24 @@ export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps
   // Calculate totals for each channel with budgets and email metrics
   const enhancedChannels = Object.entries(channelStats).map(([source, stats]) => {
     const relevantBudgets = budgets.filter(b => b.utm_source?.includes(source));
-    const channelBudget = relevantBudgets.reduce((sum, b) => sum + b.budget, 0);
+    
+    // Deduplicate by campaign_name to avoid counting same budget twice for fb+ig
+    const uniqueBudgets = relevantBudgets.reduce((acc, budget) => {
+      if (!acc.some(b => b.campaign_name === budget.campaign_name)) {
+        acc.push(budget);
+      }
+      return acc;
+    }, [] as CampaignBudget[]);
+    
+    const channelBudget = uniqueBudgets.reduce((sum, b) => sum + b.budget, 0);
     
     // Email-specific metrics
-    const totalEmailsSent = relevantBudgets.reduce((sum, b) => sum + (b.emails_sent || 0), 0);
-    const avgOpenRate = relevantBudgets.length > 0 
-      ? relevantBudgets.reduce((sum, b) => sum + (b.open_rate || 0), 0) / relevantBudgets.length 
+    const totalEmailsSent = uniqueBudgets.reduce((sum, b) => sum + (b.emails_sent || 0), 0);
+    const avgOpenRate = uniqueBudgets.length > 0 
+      ? uniqueBudgets.reduce((sum, b) => sum + (b.open_rate || 0), 0) / uniqueBudgets.length 
       : 0;
-    const avgClickRate = relevantBudgets.length > 0 
-      ? relevantBudgets.reduce((sum, b) => sum + (b.click_rate || 0), 0) / relevantBudgets.length 
+    const avgClickRate = uniqueBudgets.length > 0 
+      ? uniqueBudgets.reduce((sum, b) => sum + (b.click_rate || 0), 0) / uniqueBudgets.length 
       : 0;
     
     const qualRate = stats.total > 0 ? ((stats.qualified / stats.total) * 100).toFixed(1) : '0';
