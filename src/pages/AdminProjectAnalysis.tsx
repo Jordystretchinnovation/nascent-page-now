@@ -3,13 +3,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { AdminLogin } from "@/components/admin/AdminLogin";
-import { LogOut, Download } from "lucide-react";
+import { LogOut, Download, ChevronDown, ChevronRight } from "lucide-react";
 import { ExecutiveSummary } from "@/components/admin/ExecutiveSummary";
 import { CampaignPerformanceTable } from "@/components/admin/CampaignPerformanceTable";
 import { BudgetInput } from "@/components/admin/BudgetInput";
 import { ChannelBreakdown } from "@/components/admin/ChannelBreakdown";
 import { RecommendationsSection } from "@/components/admin/RecommendationsSection";
 import { PerformanceCharts } from "@/components/admin/PerformanceCharts";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface FormSubmission {
   id: string;
@@ -46,6 +47,7 @@ const AdminProjectAnalysis = () => {
   const [submissions, setSubmissions] = useState<FormSubmission[]>([]);
   const [budgets, setBudgets] = useState<CampaignBudget[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isBudgetOpen, setIsBudgetOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -160,11 +162,24 @@ const AdminProjectAnalysis = () => {
 
         <ChannelBreakdown submissions={submissions} budgets={budgets} />
 
-        <BudgetInput budgets={budgets} onBudgetUpdate={handleBudgetUpdate} />
-
         <CampaignPerformanceTable submissions={submissions} budgets={budgets} />
 
         <RecommendationsSection submissions={submissions} budgets={budgets} />
+
+        <Collapsible open={isBudgetOpen} onOpenChange={setIsBudgetOpen}>
+          <CollapsibleTrigger asChild>
+            <Button 
+              variant="outline" 
+              className="w-full flex items-center justify-between"
+            >
+              <span className="font-semibold">Campaign Budgets</span>
+              {isBudgetOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="mt-4">
+            <BudgetInput budgets={budgets} onBudgetUpdate={handleBudgetUpdate} />
+          </CollapsibleContent>
+        </Collapsible>
       </div>
     </div>
   );
