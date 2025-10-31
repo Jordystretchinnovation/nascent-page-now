@@ -68,8 +68,22 @@ interface CampaignPerformanceTableProps {
 export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerformanceTableProps) => {
   const [expandedCampaigns, setExpandedCampaigns] = useState<Set<string>>(new Set());
 
+  // Email sources to recognize
+  const emailSources = ['email', 'activecampaign', 'lemlist', 'mailchimp', 'sendgrid', 'hubspot'];
+  
+  const isEmailSource = (source: string | null): boolean => {
+    if (!source) return false;
+    const lowerSource = source.toLowerCase();
+    return emailSources.some(emailSource => lowerSource.includes(emailSource));
+  };
+
+  // Filter out email submissions - they have their own table
+  const nonEmailSubmissions = submissions.filter(sub => 
+    !isEmailSource(sub.utm_source)
+  );
+
   // Group submissions by campaign and source
-  const sourceStats = submissions.reduce((acc, sub) => {
+  const sourceStats = nonEmailSubmissions.reduce((acc, sub) => {
     const key = `${sub.utm_campaign || 'Unknown'}-${sub.utm_source || 'Unknown'}-${sub.utm_medium || 'Unknown'}`;
     
     if (!acc[key]) {
@@ -213,7 +227,7 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Campaign Performance Details</CardTitle>
+        <CardTitle>Paid Campaign Performance Details</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
