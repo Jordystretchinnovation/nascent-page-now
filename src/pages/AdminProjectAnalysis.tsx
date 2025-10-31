@@ -164,11 +164,11 @@ const AdminProjectAnalysis = () => {
 
         <PerformanceCharts submissions={submissions} />
 
-        <EmailCampaignMetrics submissions={submissions} budgets={budgets} />
-
         <ChannelBreakdown submissions={submissions} budgets={budgets} />
 
         <CampaignPerformanceTable submissions={submissions} budgets={budgets} />
+
+        <EmailCampaignMetrics submissions={submissions} budgets={budgets} />
 
         <RecommendationsSection submissions={submissions} budgets={budgets} />
 
