@@ -50,38 +50,6 @@ export const RecommendationsSection = ({ submissions, budgets }: Recommendations
     .filter(item => item.total > 10)
     .sort((a, b) => a.rate - b.rate)[0];
 
-  // Channel analysis
-  const channelPerformance = submissions.reduce((acc, sub) => {
-    const source = sub.utm_source || 'Unknown';
-    if (!acc[source]) {
-      acc[source] = { total: 0, qualified: 0 };
-    }
-    acc[source].total++;
-    if (sub.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
-      acc[source].qualified++;
-    }
-    return acc;
-  }, {} as Record<string, { total: number; qualified: number }>);
-
-  const topChannels = Object.entries(channelPerformance)
-    .map(([source, stats]) => ({
-      source,
-      ...stats,
-      rate: stats.total > 0 ? (stats.qualified / stats.total) * 100 : 0
-    }))
-    .sort((a, b) => b.total - a.total)
-    .slice(0, 3);
-
-  const lowPerformingChannels = Object.entries(channelPerformance)
-    .map(([source, stats]) => ({
-      source,
-      ...stats,
-      rate: stats.total > 0 ? (stats.qualified / stats.total) * 100 : 0
-    }))
-    .filter(item => item.total > 10)
-    .sort((a, b) => a.rate - b.rate)
-    .slice(0, 2);
-
   const getTypeLabel = (type: string) => {
     const labels: Record<string, string> = {
       stalen: 'Stalen',
@@ -94,8 +62,6 @@ export const RecommendationsSection = ({ submissions, budgets }: Recommendations
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-semibold">Strategic Recommendations</h2>
-
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* What Worked */}
         <Card>
@@ -155,67 +121,6 @@ export const RecommendationsSection = ({ submissions, budgets }: Recommendations
           </CardContent>
         </Card>
       </div>
-
-      {/* Action Items */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Recommended Next Steps</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <div className="flex items-start gap-3">
-              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-sm font-semibold">1</div>
-              <div>
-                <div className="font-medium">Budget Reallocation</div>
-                <div className="text-sm text-muted-foreground">
-                  Increase investment in {bestLeadMagnet?.type && getTypeLabel(bestLeadMagnet.type)} and top-performing channels.
-                  Consider reducing spend on {worstLeadMagnet?.type && getTypeLabel(worstLeadMagnet.type)}.
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-sm font-semibold">2</div>
-              <div>
-                <div className="font-medium">Lead Magnet Optimization</div>
-                <div className="text-sm text-muted-foreground">
-                  {worstLeadMagnet && `Revise messaging and targeting for ${getTypeLabel(worstLeadMagnet.type)} to improve qualification rates or consider replacement with higher-performing offers.`}
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-sm font-semibold">3</div>
-              <div>
-                <div className="font-medium">Channel Strategy</div>
-                <div className="text-sm text-muted-foreground">
-                  Optimize or pause low-performing channels. Test new creative and messaging approaches before completely abandoning channels.
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-sm font-semibold">4</div>
-              <div>
-                <div className="font-medium">Lead Qualification Process</div>
-                <div className="text-sm text-muted-foreground">
-                  Implement stricter pre-qualification criteria on low-performing sources to improve overall lead quality.
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <div className="flex-shrink-0 w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-sm font-semibold">5</div>
-              <div>
-                <div className="font-medium">Tracking & Attribution</div>
-                <div className="text-sm text-muted-foreground">
-                  Ensure all campaigns have proper UTM parameters. Review and standardize tracking methodology for better insights.
-                </div>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };
