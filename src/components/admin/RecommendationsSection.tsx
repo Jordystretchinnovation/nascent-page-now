@@ -123,23 +123,6 @@ export const RecommendationsSection = ({ submissions, budgets }: Recommendations
                 </div>
               )}
             </div>
-
-            <div>
-              <h4 className="font-semibold mb-2">Top Performing Channels</h4>
-              <div className="space-y-2">
-                {topChannels.map((channel, idx) => (
-                  <div key={idx} className="border rounded-lg p-2">
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium">{channel.source}</span>
-                      <Badge variant="secondary">{channel.rate.toFixed(0)}%</Badge>
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      {channel.total} leads, {channel.qualified} qualified
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
           </CardContent>
         </Card>
 
@@ -168,23 +151,6 @@ export const RecommendationsSection = ({ submissions, budgets }: Recommendations
                   </Badge>
                 </div>
               )}
-            </div>
-
-            <div>
-              <h4 className="font-semibold mb-2">Low Performing Channels</h4>
-              <div className="space-y-2">
-                {lowPerformingChannels.map((channel, idx) => (
-                  <div key={idx} className="border rounded-lg p-2">
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium">{channel.source}</span>
-                      <Badge variant="outline">{channel.rate.toFixed(0)}%</Badge>
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      {channel.total} leads, only {channel.qualified} qualified
-                    </div>
-                  </div>
-                ))}
-              </div>
             </div>
           </CardContent>
         </Card>
