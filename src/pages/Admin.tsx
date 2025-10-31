@@ -11,9 +11,10 @@ import CampaignAnalytics from "@/components/admin/CampaignAnalytics";
 import LeadQualificationTable from "@/components/admin/LeadQualificationTable";
 import { SalesDashboard } from "@/components/admin/SalesDashboard";
 import { AdminLogin } from "@/components/admin/AdminLogin";
-import { Download, RefreshCw, LogOut } from "lucide-react";
+import { Download, RefreshCw, LogOut, BarChart3 } from "lucide-react";
 import * as XLSX from 'xlsx';
 import { processLeadUpdates } from "@/utils/processLeadUpdates";
+import { Link } from "react-router-dom";
 
 interface FormSubmission {
   id: string;
@@ -460,15 +461,27 @@ const Admin = () => {
             Beheer en analyseer formulierinzendingen
           </p>
           </div>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={handleLogout}
-            className="flex items-center gap-2"
-          >
-            <LogOut className="h-4 w-4" />
-            Uitloggen
-          </Button>
+          <div className="flex gap-2">
+            <Link to="/admin/project-analysis">
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <BarChart3 className="h-4 w-4" />
+                Project Analysis
+              </Button>
+            </Link>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleLogout}
+              className="flex items-center gap-2"
+            >
+              <LogOut className="h-4 w-4" />
+              Uitloggen
+            </Button>
+          </div>
         </div>
 
         {activeTab !== "sales" && (
