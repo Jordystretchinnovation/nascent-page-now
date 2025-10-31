@@ -92,90 +92,9 @@ export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps
     };
   }).sort((a, b) => b.total - a.total);
 
-  // Identify best and worst performers
-  const bestPerformer = enhancedChannels.reduce((best, channel) => 
-    channel.qualRate > (best?.qualRate || 0) ? channel : best
-  , enhancedChannels[0]);
-
-  const worstPerformer = enhancedChannels.reduce((worst, channel) => 
-    channel.qualRate < (worst?.qualRate || 100) && channel.total > 10 ? channel : worst
-  , enhancedChannels[enhancedChannels.length - 1]);
-
   return (
     <div className="space-y-6">
       <h2 className="text-2xl font-semibold">Paid Channel Analysis</h2>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <Card className="border-green-500/20">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <span className="text-green-500">✓</span> Best Performing Channel
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {bestPerformer && (
-              <div>
-                <div className="text-2xl font-bold mb-2">{bestPerformer.source}</div>
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div>
-                    <div className="text-muted-foreground">Total Leads</div>
-                    <div className="font-semibold">{bestPerformer.total}</div>
-                  </div>
-                  <div>
-                    <div className="text-muted-foreground">Qualified</div>
-                    <div className="font-semibold">{bestPerformer.qualified} ({bestPerformer.qualRate}%)</div>
-                  </div>
-                  <div>
-                    <div className="text-muted-foreground">Conversions</div>
-                    <div className="font-semibold">{bestPerformer.conversions} ({bestPerformer.convRate}%)</div>
-                  </div>
-                  {bestPerformer.budget > 0 && (
-                    <div>
-                      <div className="text-muted-foreground">CPL</div>
-                      <div className="font-semibold">€{bestPerformer.cpl}</div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card className="border-orange-500/20">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-base flex items-center gap-2">
-              <span className="text-orange-500">!</span> Needs Improvement
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {worstPerformer && (
-              <div>
-                <div className="text-2xl font-bold mb-2">{worstPerformer.source}</div>
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div>
-                    <div className="text-muted-foreground">Total Leads</div>
-                    <div className="font-semibold">{worstPerformer.total}</div>
-                  </div>
-                  <div>
-                    <div className="text-muted-foreground">Qualified</div>
-                    <div className="font-semibold">{worstPerformer.qualified} ({worstPerformer.qualRate}%)</div>
-                  </div>
-                  <div>
-                    <div className="text-muted-foreground">Conversions</div>
-                    <div className="font-semibold">{worstPerformer.conversions} ({worstPerformer.convRate}%)</div>
-                  </div>
-                  {worstPerformer.budget > 0 && (
-                    <div>
-                      <div className="text-muted-foreground">CPL</div>
-                      <div className="font-semibold">€{worstPerformer.cpl}</div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
 
       <Card>
         <CardHeader>
