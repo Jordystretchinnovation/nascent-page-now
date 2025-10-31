@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      campaign_budgets: {
+        Row: {
+          budget: number
+          campaign_name: string
+          created_at: string
+          end_date: string | null
+          id: string
+          notes: string | null
+          start_date: string | null
+          updated_at: string
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
+        }
+        Insert: {
+          budget: number
+          campaign_name: string
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          notes?: string | null
+          start_date?: string | null
+          updated_at?: string
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Update: {
+          budget?: number
+          campaign_name?: string
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          notes?: string | null
+          start_date?: string | null
+          updated_at?: string
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Relationships: []
+      }
       colbloc_submissions: {
         Row: {
           achternaam: string
