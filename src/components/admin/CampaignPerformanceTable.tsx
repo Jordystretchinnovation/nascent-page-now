@@ -171,6 +171,27 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
     return ghA - ghB;
   });
 
+  // Calculate totals
+  const totals = sortedCampaigns.reduce((acc, group) => ({
+    total: acc.total + group.total,
+    qualified: acc.qualified + group.qualified,
+    goed: acc.goed + group.goed,
+    mql: acc.mql + group.mql,
+    redelijk: acc.redelijk + group.redelijk,
+    engaged: acc.engaged + group.engaged,
+    conversions: acc.conversions + group.conversions,
+    budget: acc.budget + group.budget
+  }), {
+    total: 0,
+    qualified: 0,
+    goed: 0,
+    mql: 0,
+    redelijk: 0,
+    engaged: 0,
+    conversions: 0,
+    budget: 0
+  });
+
   const toggleCampaign = (campaign: string) => {
     const newExpanded = new Set(expandedCampaigns);
     if (newExpanded.has(campaign)) {
@@ -306,6 +327,44 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
                   </>
                 );
               })}
+              
+              {/* Totals Row */}
+              <TableRow className="font-bold bg-primary/5 border-t-2">
+                <TableCell></TableCell>
+                <TableCell className="font-bold">TOTAL</TableCell>
+                <TableCell className="text-right">{totals.total}</TableCell>
+                <TableCell className="text-right">
+                  <div>
+                    <div className="font-bold">{totals.qualified}</div>
+                    <div className="text-xs font-normal text-muted-foreground">
+                      G:{totals.goed} M:{totals.mql} R:{totals.redelijk}
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell className="text-right">
+                  <Badge variant={totals.total > 0 && ((totals.qualified / totals.total) * 100) > 30 ? "default" : "secondary"}>
+                    {totals.total > 0 ? ((totals.qualified / totals.total) * 100).toFixed(0) : '0'}%
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right">{totals.engaged}</TableCell>
+                <TableCell className="text-right">
+                  <div>
+                    <div className="font-bold">{totals.conversions}</div>
+                    <div className="text-xs font-normal text-muted-foreground">
+                      {totals.total > 0 ? ((totals.conversions / totals.total) * 100).toFixed(1) : '0'}%
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell className="text-right">
+                  {totals.budget > 0 ? totals.budget.toFixed(2) : '-'}
+                </TableCell>
+                <TableCell className="text-right">
+                  {totals.budget > 0 && totals.total > 0 ? (totals.budget / totals.total).toFixed(2) : '-'}
+                </TableCell>
+                <TableCell className="text-right">
+                  {totals.budget > 0 && totals.qualified > 0 ? (totals.budget / totals.qualified).toFixed(2) : '-'}
+                </TableCell>
+              </TableRow>
             </TableBody>
           </Table>
         </div>
