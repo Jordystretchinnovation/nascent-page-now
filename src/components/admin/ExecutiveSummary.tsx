@@ -128,7 +128,7 @@ export const ExecutiveSummary = ({ submissions, budgets }: ExecutiveSummaryProps
               const percentage = totalLeads > 0 ? ((stats.total / totalLeads) * 100).toFixed(0) : '0';
               const budget = getTypeBudget(type);
               const cpl = budget > 0 && stats.total > 0 ? (budget / stats.total).toFixed(2) : '0';
-              const cpql = budget > 0 && stats.qualified > 0 ? (budget / stats.qualified).toFixed(2) : '0';
+              const cpsql = budget > 0 && stats.qualified > 0 ? (budget / stats.qualified).toFixed(2) : '0';
               
               return (
                 <div key={type} className="border rounded-lg p-4">
@@ -143,7 +143,7 @@ export const ExecutiveSummary = ({ submissions, budgets }: ExecutiveSummaryProps
                   {budget > 0 && (
                     <div className="text-xs text-muted-foreground mt-2 space-y-1">
                       <div>CPL: €{cpl}</div>
-                      <div>CPQL: €{cpql}</div>
+                      <div>CPSQL: €{cpsql}</div>
                     </div>
                   )}
                 </div>

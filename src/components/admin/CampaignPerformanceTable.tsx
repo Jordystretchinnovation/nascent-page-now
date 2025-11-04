@@ -45,7 +45,7 @@ interface SourceStat {
   conversions: number;
   budget: number;
   cpl: number;
-  cpql: number;
+  cpsql: number;
 }
 
 interface CampaignGroup {
@@ -161,7 +161,7 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
       ...stat,
       budget: 0, // Budget shown at campaign level only
       cpl: 0,
-      cpql: 0
+      cpsql: 0
     };
   });
 
@@ -260,7 +260,7 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
                 <TableHead className="text-right">Conversions</TableHead>
                 <TableHead className="text-right">Budget (€)</TableHead>
                 <TableHead className="text-right">CPL (€)</TableHead>
-                <TableHead className="text-right">CPQL (€)</TableHead>
+                <TableHead className="text-right">CPSQL (€)</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -268,7 +268,7 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
                 const qualRate = group.total > 0 ? ((group.qualified / group.total) * 100).toFixed(0) : '0';
                 const convRate = group.total > 0 ? ((group.conversions / group.total) * 100).toFixed(1) : '0';
                 const cpl = group.budget > 0 ? group.budget / group.total : 0;
-                const cpql = group.budget > 0 && group.qualified > 0 ? group.budget / group.qualified : 0;
+                const cpsql = group.budget > 0 && group.qualified > 0 ? group.budget / group.qualified : 0;
                 const isExpanded = expandedCampaigns.has(group.campaign);
                 
                 return (
@@ -313,7 +313,7 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
                         {cpl > 0 ? formatCurrency(cpl) : '-'}
                       </TableCell>
                       <TableCell className="text-right">
-                        {cpql > 0 ? formatCurrency(cpql) : '-'}
+                        {cpsql > 0 ? formatCurrency(cpsql) : '-'}
                       </TableCell>
                     </TableRow>
                     
@@ -358,7 +358,7 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
                             {source.cpl > 0 ? formatCurrency(source.cpl) : '-'}
                           </TableCell>
                           <TableCell className="text-right">
-                            {source.cpql > 0 ? formatCurrency(source.cpql) : '-'}
+                            {source.cpsql > 0 ? formatCurrency(source.cpsql) : '-'}
                           </TableCell>
                         </TableRow>
                       );

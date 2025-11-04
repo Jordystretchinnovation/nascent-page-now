@@ -85,7 +85,7 @@ export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps
     const qualRate = stats.total > 0 ? ((stats.qualified / stats.total) * 100).toFixed(1) : '0';
     const convRate = stats.total > 0 ? ((stats.conversions / stats.total) * 100).toFixed(1) : '0';
     const cpl = channelBudget > 0 ? (channelBudget / stats.total).toFixed(2) : '0';
-    const cpql = channelBudget > 0 && stats.qualified > 0 ? (channelBudget / stats.qualified).toFixed(2) : '0';
+    const cpsql = channelBudget > 0 && stats.qualified > 0 ? (channelBudget / stats.qualified).toFixed(2) : '0';
     
     return {
       source,
@@ -94,7 +94,7 @@ export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps
       qualRate: parseFloat(qualRate),
       convRate: parseFloat(convRate),
       cpl: parseFloat(cpl),
-      cpql: parseFloat(cpql),
+      cpsql: parseFloat(cpsql),
       emailsSent: totalEmailsSent,
       openRate: avgOpenRate,
       clickRate: avgClickRate,
@@ -120,7 +120,7 @@ export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps
                     {channel.qualRate}% qualified
                   </Badge>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-sm">
                   <div>
                     <div className="text-muted-foreground">Leads</div>
                     <div className="font-medium">{channel.total}</div>
@@ -149,10 +149,16 @@ export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps
                       </div>
                     </>
                   ) : channel.budget > 0 ? (
-                    <div>
-                      <div className="text-muted-foreground">Budget / CPL</div>
-                      <div className="font-medium">€{channel.budget.toFixed(0)} / €{channel.cpl}</div>
-                    </div>
+                    <>
+                      <div>
+                        <div className="text-muted-foreground">Budget</div>
+                        <div className="font-medium">€{channel.budget.toFixed(0)}</div>
+                      </div>
+                      <div>
+                        <div className="text-muted-foreground">CPL / CPSQL</div>
+                        <div className="font-medium">€{channel.cpl} / €{channel.cpsql}</div>
+                      </div>
+                    </>
                   ) : null}
                 </div>
               </div>
