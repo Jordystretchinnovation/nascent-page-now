@@ -76,8 +76,8 @@ export const InsightsSection = ({ submissions, budgets }: InsightsSectionProps) 
 
   const bestChannel = channelsWithMetrics[0];
 
-  // Best Campaign Analysis
-  const campaignStats = submissions.reduce((acc, sub) => {
+  // Best Campaign Analysis (paid campaigns only, exclude email)
+  const campaignStats = nonEmailSubmissions.reduce((acc, sub) => {
     const campaign = sub.utm_campaign || 'Unknown';
     if (!acc[campaign]) {
       acc[campaign] = { total: 0, qualified: 0, conversions: 0 };
