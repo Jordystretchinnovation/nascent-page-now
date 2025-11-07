@@ -1,7 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { TrendingUp, TrendingDown, Award, Mail, Calendar } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { useState } from "react";
 
 interface Submission {
   type: string;
@@ -29,6 +31,8 @@ interface InsightsSectionProps {
 }
 
 export const InsightsSection = ({ submissions, budgets }: InsightsSectionProps) => {
+  const [selectedCampaign, setSelectedCampaign] = useState<string>("all");
+  
   const emailSources = ['email', 'activecampaign', 'lemlist', 'mailchimp', 'sendgrid', 'hubspot'];
   
   const isEmailSource = (source: string | null): boolean => {
@@ -170,7 +174,21 @@ export const InsightsSection = ({ submissions, budgets }: InsightsSectionProps) 
     new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
   );
 
-  const weeklyData = sortedSubmissions.reduce((acc, sub) => {
+  // Filter submissions by selected campaign if not "all"
+  const filteredSubmissionsForCPL = selectedCampaign === "all" 
+    ? sortedSubmissions.filter(sub => !isEmailSource(sub.utm_source))
+    : sortedSubmissions.filter(sub => 
+        sub.utm_campaign === selectedCampaign && !isEmailSource(sub.utm_source)
+      );
+
+  // Get unique campaigns for filter dropdown (paid campaigns only)
+  const uniqueCampaigns = [...new Set(
+    submissions
+      .filter(sub => sub.utm_campaign && !isEmailSource(sub.utm_source))
+      .map(sub => sub.utm_campaign as string)
+  )].sort();
+
+  const weeklyData = filteredSubmissionsForCPL.reduce((acc, sub) => {
     const date = new Date(sub.created_at);
     const weekStart = new Date(date);
     weekStart.setDate(date.getDate() - date.getDay());
@@ -193,7 +211,7 @@ export const InsightsSection = ({ submissions, budgets }: InsightsSectionProps) 
       }, [] as CampaignBudget[]);
       
       const weekBudget = uniqueBudgets.reduce((sum, b) => sum + b.budget, 0);
-      acc[weekKey].budget += weekBudget / relevantBudgets.length;
+      acc[weekKey].budget += weekBudget / (relevantBudgets.length || 1);
     }
 
     return acc;
@@ -344,9 +362,24 @@ export const InsightsSection = ({ submissions, budgets }: InsightsSectionProps) 
       {cplTrendData.length > 0 && (
         <Card>
           <CardHeader>
-            <div className="flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-primary" />
-              <CardTitle>CPL Evolution Over Time</CardTitle>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Calendar className="h-5 w-5 text-primary" />
+                <CardTitle>CPL Evolution Over Time</CardTitle>
+              </div>
+              <Select value={selectedCampaign} onValueChange={setSelectedCampaign}>
+                <SelectTrigger className="w-[250px]">
+                  <SelectValue placeholder="Select campaign" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Campaigns</SelectItem>
+                  {uniqueCampaigns.map((campaign) => (
+                    <SelectItem key={campaign} value={campaign}>
+                      {campaign}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </CardHeader>
           <CardContent>
