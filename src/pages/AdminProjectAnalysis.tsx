@@ -11,6 +11,7 @@ import { ChannelBreakdown } from "@/components/admin/ChannelBreakdown";
 import { EmailCampaignMetrics } from "@/components/admin/EmailCampaignMetrics";
 import { RecommendationsSection } from "@/components/admin/RecommendationsSection";
 import { PerformanceCharts } from "@/components/admin/PerformanceCharts";
+import { InsightsSection } from "@/components/admin/InsightsSection";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 interface FormSubmission {
@@ -171,6 +172,8 @@ const AdminProjectAnalysis = () => {
         <EmailCampaignMetrics submissions={submissions} budgets={budgets} />
 
         <RecommendationsSection submissions={submissions} budgets={budgets} />
+
+        <InsightsSection submissions={submissions} budgets={budgets} />
 
         <Collapsible open={isBudgetOpen} onOpenChange={setIsBudgetOpen}>
           <CollapsibleTrigger asChild>
