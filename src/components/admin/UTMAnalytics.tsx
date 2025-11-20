@@ -139,6 +139,8 @@ export const UTMAnalytics = ({
         return 'secondary';
       case 'korting':
         return 'destructive';
+      case 'keukentrends':
+        return 'outline';
       default:
         return 'outline';
     }
@@ -152,6 +154,8 @@ export const UTMAnalytics = ({
         return 'Collection Lookbook';
       case 'korting':
         return 'Korting';
+      case 'keukentrends':
+        return 'Keukentrends';
       default:
         return type;
     }
@@ -181,6 +185,7 @@ export const UTMAnalytics = ({
                   <SelectItem value="stalen">Stalen</SelectItem>
                   <SelectItem value="renderboek">Collection Lookbook</SelectItem>
                   <SelectItem value="korting">Korting</SelectItem>
+                  <SelectItem value="keukentrends">Keukentrends</SelectItem>
                 </SelectContent>
               </Select>
 
