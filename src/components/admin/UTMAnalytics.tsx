@@ -73,6 +73,22 @@ export const UTMAnalytics = ({
   // Ensure submissions is always an array to prevent iteration errors
   const safeSubmissions = Array.isArray(submissions) ? submissions : [];
 
+  // Helper function to get type labels
+  const getTypeLabel = (type: string) => {
+    switch (type) {
+      case 'stalen':
+        return 'Stalen';
+      case 'renderboek':
+        return 'Collection Lookbook';
+      case 'korting':
+        return 'Korting';
+      case 'keukentrends':
+        return 'Keukentrends';
+      default:
+        return type;
+    }
+  };
+
   // Get unique values for filter options - with proper safety checks
   const uniqueTypes: Option[] = Array.from(new Set(safeSubmissions.map(s => s?.type).filter(Boolean)))
     .map(type => ({ label: getTypeLabel(type!), value: type! }));
@@ -148,20 +164,6 @@ export const UTMAnalytics = ({
     }
   };
 
-  const getTypeLabel = (type: string) => {
-    switch (type) {
-      case 'stalen':
-        return 'Stalen';
-      case 'renderboek':
-        return 'Collection Lookbook';
-      case 'korting':
-        return 'Korting';
-      case 'keukentrends':
-        return 'Keukentrends';
-      default:
-        return type;
-    }
-  };
 
   return (
     <div className="space-y-6">
