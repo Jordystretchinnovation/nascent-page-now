@@ -58,7 +58,7 @@ const Admin = () => {
   const { toast } = useToast();
 
   // Filter states for submissions
-  const [filterType, setFilterType] = useState<string>("all");
+  const [filterType, setFilterType] = useState<string[]>([]);
   const [filterLanguage, setFilterLanguage] = useState<string>("all");
 
   // Filter states for UTM Analytics
@@ -164,8 +164,8 @@ const Admin = () => {
   const getSubmissionsFilteredData = () => {
     let filtered = submissions;
     
-    if (filterType !== "all") {
-      filtered = filtered.filter(sub => sub.type === filterType);
+    if (filterType.length > 0) {
+      filtered = filtered.filter(sub => filterType.includes(sub.type));
     }
     
     if (filterLanguage !== "all") {
@@ -189,8 +189,8 @@ const Admin = () => {
   const getUTMFilteredData = () => {
     let filtered = submissions;
     
-    if (filterType !== "all") {
-      filtered = filtered.filter(sub => sub.type === filterType);
+    if (filterType.length > 0) {
+      filtered = filtered.filter(sub => filterType.includes(sub.type));
     }
 
     if (filterUTMSource.length > 0) {
