@@ -35,8 +35,8 @@ interface FormSubmissionWithUTM {
 
 interface UTMAnalyticsProps {
   submissions: FormSubmissionWithUTM[];
-  filterType: string;
-  setFilterType: (value: string) => void;
+  filterType: string[];
+  setFilterType: (value: string[]) => void;
   filterUTMSource: string[];
   setFilterUTMSource: (value: string[]) => void;
   filterUTMMedium: string[];
@@ -74,6 +74,8 @@ export const UTMAnalytics = ({
   const safeSubmissions = Array.isArray(submissions) ? submissions : [];
 
   // Get unique values for filter options - with proper safety checks
+  const uniqueTypes: Option[] = Array.from(new Set(safeSubmissions.map(s => s?.type).filter(Boolean)))
+    .map(type => ({ label: getTypeLabel(type!), value: type! }));
   const uniqueUTMSources: Option[] = Array.from(new Set(safeSubmissions.map(s => s?.utm_source).filter(Boolean)))
     .map(source => ({ label: source!, value: source! }));
   const uniqueUTMMediums: Option[] = Array.from(new Set(safeSubmissions.map(s => s?.utm_medium).filter(Boolean)))
@@ -90,8 +92,8 @@ export const UTMAnalytics = ({
   useEffect(() => {
     let filtered = safeSubmissions;
 
-    if (filterType !== "all") {
-      filtered = filtered.filter(sub => sub?.type === filterType);
+    if (filterType.length > 0) {
+      filtered = filtered.filter(sub => sub?.type && filterType.includes(sub.type));
     }
 
     if (filterUTMSource.length > 0) {
@@ -176,18 +178,12 @@ export const UTMAnalytics = ({
           
           {safeSubmissions.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Filter op type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Alle types</SelectItem>
-                  <SelectItem value="stalen">Stalen</SelectItem>
-                  <SelectItem value="renderboek">Collection Lookbook</SelectItem>
-                  <SelectItem value="korting">Korting</SelectItem>
-                  <SelectItem value="keukentrends">Keukentrends</SelectItem>
-                </SelectContent>
-              </Select>
+              <MultiSelect
+                options={uniqueTypes}
+                selected={filterType}
+                onChange={setFilterType}
+                placeholder="Filter op type"
+              />
 
               {uniqueUTMSources.length > 0 && (
                 <MultiSelect

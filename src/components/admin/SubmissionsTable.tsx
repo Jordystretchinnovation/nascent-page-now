@@ -1,5 +1,5 @@
-
 import { useState, useEffect } from "react";
+import { SimpleMultiSelect as MultiSelect, type Option } from "@/components/ui/simple-multi-select";
 import {
   Table,
   TableBody,
@@ -40,8 +40,8 @@ interface FormSubmission {
 
 interface SubmissionsTableProps {
   submissions: FormSubmission[];
-  filterType: string;
-  setFilterType: (value: string) => void;
+  filterType: string[];
+  setFilterType: (value: string[]) => void;
   filterLanguage: string;
   setFilterLanguage: (value: string) => void;
 }
@@ -58,8 +58,8 @@ export const SubmissionsTable = ({
   useEffect(() => {
     let filtered = submissions;
     
-    if (filterType !== "all") {
-      filtered = filtered.filter(sub => sub.type === filterType);
+    if (filterType.length > 0) {
+      filtered = filtered.filter(sub => filterType.includes(sub.type));
     }
     
     if (filterLanguage !== "all") {
@@ -109,6 +109,10 @@ export const SubmissionsTable = ({
     }
   };
 
+  // Get unique types for filter
+  const uniqueTypes: Option[] = Array.from(new Set(submissions.map(s => s.type)))
+    .map(type => ({ label: getTypeLabel(type), value: type }));
+
   const getLanguageLabel = (language: string) => {
     return language === 'nl' ? 'Nederlands' : 'Français';
   };
@@ -131,18 +135,12 @@ export const SubmissionsTable = ({
           </div>
           
           <div className="flex gap-3">
-            <Select value={filterType} onValueChange={setFilterType}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Filter op type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Alle types</SelectItem>
-                <SelectItem value="stalen">Stalen</SelectItem>
-                <SelectItem value="renderboek">Collection Lookbook</SelectItem>
-                <SelectItem value="korting">Korting</SelectItem>
-                <SelectItem value="keukentrends">Keukentrends</SelectItem>
-              </SelectContent>
-            </Select>
+            <MultiSelect
+              options={uniqueTypes}
+              selected={filterType}
+              onChange={setFilterType}
+              placeholder="Filter op type"
+            />
 
             <Select value={filterLanguage} onValueChange={setFilterLanguage}>
               <SelectTrigger className="w-40">
