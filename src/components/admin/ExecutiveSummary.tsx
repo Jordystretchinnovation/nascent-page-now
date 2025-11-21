@@ -35,6 +35,21 @@ export const ExecutiveSummary = ({ submissions, budgets }: ExecutiveSummaryProps
   
   const conversions = submissions.filter(s => s.sales_status === 'Gesprek gepland').length;
 
+  // Calculate total media budget (deduplicated by campaign_name)
+  const uniqueBudgets = budgets.reduce((acc, budget) => {
+    if (!acc.some(b => b.campaign_name === budget.campaign_name)) {
+      acc.push(budget);
+    }
+    return acc;
+  }, [] as CampaignBudget[]);
+  
+  const totalBudget = uniqueBudgets.reduce((sum, b) => sum + b.budget, 0);
+  
+  // Cost metrics using total budget
+  const cpl = totalBudget > 0 && totalLeads > 0 ? (totalBudget / totalLeads).toFixed(2) : '0';
+  const cpql = totalBudget > 0 && qualifiedLeads > 0 ? (totalBudget / qualifiedLeads).toFixed(2) : '0';
+  const cpsql = totalBudget > 0 && sqlLeads > 0 ? (totalBudget / sqlLeads).toFixed(2) : '0';
+
   const qualificationRate = totalLeads > 0 ? ((qualifiedLeads / totalLeads) * 100).toFixed(1) : '0';
   const sqlRate = totalLeads > 0 ? ((sqlLeads / totalLeads) * 100).toFixed(1) : '0';
   const conversionRate = totalLeads > 0 ? ((conversions / totalLeads) * 100).toFixed(1) : '0';
@@ -70,31 +85,6 @@ export const ExecutiveSummary = ({ submissions, budgets }: ExecutiveSummaryProps
     return labels[type] || type;
   };
 
-  // Get budget for a campaign type by matching utm_campaign from submissions
-  const getTypeBudget = (type: string) => {
-    // Get all unique utm_campaign values for this type
-    const campaignsForType = submissions
-      .filter(s => s.type === type && s.utm_campaign)
-      .map(s => s.utm_campaign as string);
-    
-    const uniqueCampaigns = [...new Set(campaignsForType)];
-    
-    // Find budgets that include any of these campaigns
-    const relevantBudgets = budgets.filter(b => 
-      b.utm_campaign?.some(campaign => uniqueCampaigns.includes(campaign))
-    );
-    
-    // Deduplicate by campaign_name to avoid counting same campaign with multiple sources (fb+ig) twice
-    const uniqueBudgets = relevantBudgets.reduce((acc, budget) => {
-      if (!acc.some(b => b.campaign_name === budget.campaign_name)) {
-        acc.push(budget);
-      }
-      return acc;
-    }, [] as CampaignBudget[]);
-    
-    return uniqueBudgets.reduce((sum, b) => sum + b.budget, 0);
-  };
-
   return (
     <div className="space-y-6">
       <div>
@@ -109,6 +99,9 @@ export const ExecutiveSummary = ({ submissions, budgets }: ExecutiveSummaryProps
           <CardContent>
             <div className="text-3xl font-bold text-foreground">{totalLeads}</div>
             <p className="text-xs text-muted-foreground mt-1">All form submissions</p>
+            {totalBudget > 0 && (
+              <div className="text-xs font-medium mt-2">CPL: €{cpl}</div>
+            )}
           </CardContent>
         </Card>
 
@@ -120,6 +113,9 @@ export const ExecutiveSummary = ({ submissions, budgets }: ExecutiveSummaryProps
             <div className="text-3xl font-bold text-foreground">{qualifiedLeads}</div>
             <Badge variant="secondary" className="mt-2">{qualificationRate}% of total</Badge>
             <p className="text-xs text-muted-foreground mt-1">Includes MQL</p>
+            {totalBudget > 0 && (
+              <div className="text-xs font-medium mt-2">CPQL: €{cpql}</div>
+            )}
           </CardContent>
         </Card>
 
@@ -131,6 +127,9 @@ export const ExecutiveSummary = ({ submissions, budgets }: ExecutiveSummaryProps
             <div className="text-3xl font-bold text-foreground">{sqlLeads}</div>
             <Badge variant="secondary" className="mt-2">{sqlRate}% of total</Badge>
             <p className="text-xs text-muted-foreground mt-1">Goed + Redelijk</p>
+            {totalBudget > 0 && (
+              <div className="text-xs font-medium mt-2">CPSQL: €{cpsql}</div>
+            )}
           </CardContent>
         </Card>
 
@@ -152,10 +151,10 @@ export const ExecutiveSummary = ({ submissions, budgets }: ExecutiveSummaryProps
         <CardContent>
           <div className="space-y-4">
             {Object.entries(typeStats).map(([type, stats]) => {
-              const budget = getTypeBudget(type);
-              const cpl = budget > 0 && stats.total > 0 ? (budget / stats.total).toFixed(2) : '0';
-              const cpql = budget > 0 && stats.qualified > 0 ? (budget / stats.qualified).toFixed(2) : '0';
-              const cpsql = budget > 0 && stats.salesQualified > 0 ? (budget / stats.salesQualified).toFixed(2) : '0';
+              // Use total budget for all types
+              const typeCpl = totalBudget > 0 && stats.total > 0 ? (totalBudget / stats.total).toFixed(2) : '0';
+              const typeCpql = totalBudget > 0 && stats.qualified > 0 ? (totalBudget / stats.qualified).toFixed(2) : '0';
+              const typeCpsql = totalBudget > 0 && stats.salesQualified > 0 ? (totalBudget / stats.salesQualified).toFixed(2) : '0';
               
               return (
                 <div key={type} className="border rounded-lg p-4">
@@ -191,23 +190,23 @@ export const ExecutiveSummary = ({ submissions, budgets }: ExecutiveSummaryProps
                   </div>
 
                   {/* Cost metrics */}
-                  {budget > 0 && (
+                  {totalBudget > 0 && (
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-3 border-t">
                       <div>
                         <div className="text-xs text-muted-foreground">CPL</div>
-                        <div className="text-sm font-medium">€{cpl}</div>
+                        <div className="text-sm font-medium">€{typeCpl}</div>
                       </div>
                       <div>
                         <div className="text-xs text-muted-foreground">CPQL</div>
-                        <div className="text-sm font-medium">€{cpql}</div>
+                        <div className="text-sm font-medium">€{typeCpql}</div>
                       </div>
                       <div>
                         <div className="text-xs text-muted-foreground">CPSQL</div>
-                        <div className="text-sm font-medium">€{cpsql}</div>
+                        <div className="text-sm font-medium">€{typeCpsql}</div>
                       </div>
                       <div>
-                        <div className="text-xs text-muted-foreground">Budget</div>
-                        <div className="text-sm font-medium">€{budget.toFixed(0)}</div>
+                        <div className="text-xs text-muted-foreground">Total Budget</div>
+                        <div className="text-sm font-medium">€{totalBudget.toFixed(0)}</div>
                       </div>
                     </div>
                   )}
