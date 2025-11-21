@@ -13,6 +13,7 @@ interface Submission {
 interface CampaignBudget {
   campaign_name: string;
   utm_source: string[] | null;
+  utm_campaign: string[] | null;
   budget: number;
   emails_sent: number | null;
   open_rate: number | null;
@@ -47,9 +48,16 @@ export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps
   
   const totalBudget = uniqueBudgets.reduce((sum, b) => sum + b.budget, 0);
 
-  // Filter out email sources - they have their own table
+  // Get list of email campaign names from budgets
+  const emailCampaignNames = new Set(
+    budgets
+      .filter(b => b.utm_source?.some(s => isEmailSource(s)))
+      .flatMap(b => b.utm_campaign || [])
+  );
+
+  // Filter out email sources AND campaigns that are defined as email campaigns
   const nonEmailSubmissions = submissions.filter(sub => 
-    !isEmailSource(sub.utm_source)
+    !isEmailSource(sub.utm_source) && !emailCampaignNames.has(sub.utm_campaign || '')
   );
 
   // Group by source (channel) with type tracking

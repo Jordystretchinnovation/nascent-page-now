@@ -88,9 +88,16 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
     return emailSources.some(emailSource => lowerSource.includes(emailSource));
   };
 
-  // Filter out email submissions - they have their own table
+  // Get list of email campaign names from budgets
+  const emailCampaignNames = new Set(
+    budgets
+      .filter(b => b.utm_source?.some(s => isEmailSource(s)))
+      .flatMap(b => b.utm_campaign || [])
+  );
+
+  // Filter out email submissions AND campaigns that are defined as email campaigns
   const nonEmailSubmissions = submissions.filter(sub => 
-    !isEmailSource(sub.utm_source)
+    !isEmailSource(sub.utm_source) && !emailCampaignNames.has(sub.utm_campaign || '')
   );
 
   // Group submissions by campaign and source
