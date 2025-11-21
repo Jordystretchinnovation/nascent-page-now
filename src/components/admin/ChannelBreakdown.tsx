@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 interface Submission {
+  type: string;
   kwaliteit: string | null;
   sales_status: string | null;
   utm_source: string | null;
@@ -24,6 +25,9 @@ interface ChannelBreakdownProps {
 }
 
 export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps) => {
+  // Helper to create type counter
+  const createTypeCounter = () => ({ stalen: 0, renderboek: 0, keukentrends: 0, korting: 0 });
+
   // Email sources to recognize
   const emailSources = ['email', 'activecampaign', 'lemlist', 'mailchimp', 'sendgrid', 'hubspot'];
   
@@ -48,32 +52,65 @@ export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps
     !isEmailSource(sub.utm_source)
   );
 
-  // Group by source (channel)
+  // Group by source (channel) with type tracking
   const channelStats = nonEmailSubmissions.reduce((acc, sub) => {
     const source = sub.utm_source || 'Unknown';
     
     if (!acc[source]) {
-      acc[source] = { total: 0, qualified: 0, salesQualified: 0, conversions: 0 };
+      acc[source] = { 
+        total: 0, 
+        qualified: 0, 
+        salesQualified: 0, 
+        conversions: 0,
+        byType: createTypeCounter(),
+        qualifiedByType: createTypeCounter(),
+        sqlByType: createTypeCounter(),
+        conversionsByType: createTypeCounter()
+      };
     }
     
     acc[source].total++;
     
+    // Track by type for total leads
+    const leadType = sub.type as keyof ReturnType<typeof createTypeCounter>;
+    if (leadType in acc[source].byType) {
+      acc[source].byType[leadType]++;
+    }
+    
     // Qualified includes MQL
     if (sub.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
       acc[source].qualified++;
+      if (leadType in acc[source].qualifiedByType) {
+        acc[source].qualifiedByType[leadType]++;
+      }
     }
     
     // Sales Qualified excludes MQL (for CPSQL calculation)
     if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
       acc[source].salesQualified++;
+      if (leadType in acc[source].sqlByType) {
+        acc[source].sqlByType[leadType]++;
+      }
     }
     
     if (sub.sales_status === 'Gesprek gepland') {
       acc[source].conversions++;
+      if (leadType in acc[source].conversionsByType) {
+        acc[source].conversionsByType[leadType]++;
+      }
     }
     
     return acc;
-  }, {} as Record<string, { total: number; qualified: number; salesQualified: number; conversions: number }>);
+  }, {} as Record<string, { 
+    total: number; 
+    qualified: number; 
+    salesQualified: number; 
+    conversions: number;
+    byType: ReturnType<typeof createTypeCounter>;
+    qualifiedByType: ReturnType<typeof createTypeCounter>;
+    sqlByType: ReturnType<typeof createTypeCounter>;
+    conversionsByType: ReturnType<typeof createTypeCounter>;
+  }>);
 
   // Calculate totals for each channel with budgets and email metrics
   const enhancedChannels = Object.entries(channelStats).map(([source, stats]) => {
@@ -109,7 +146,14 @@ export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps
     
     return {
       source,
-      ...stats,
+      total: stats.total,
+      qualified: stats.qualified,
+      salesQualified: stats.salesQualified,
+      conversions: stats.conversions,
+      byType: stats.byType,
+      qualifiedByType: stats.qualifiedByType,
+      sqlByType: stats.sqlByType,
+      conversionsByType: stats.conversionsByType,
       channelBudget, // Budget specific to this channel
       qualRate: parseFloat(qualRate),
       sqlRate: parseFloat(sqlRate),
@@ -143,12 +187,18 @@ export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps
                   <div>
                     <div className="text-xs text-muted-foreground">Total Leads</div>
                     <div className="text-2xl font-bold">{channel.total}</div>
+                    <div className="text-xs text-muted-foreground">
+                      S:{channel.byType.stalen} L:{channel.byType.renderboek} T:{channel.byType.keukentrends} K:{channel.byType.korting}
+                    </div>
                   </div>
                   <div>
                     <div className="text-xs text-muted-foreground">Qualified</div>
                     <div className="text-xl font-bold">{channel.qualified}</div>
                     <div className="text-xs text-muted-foreground">
                       {channel.qualRate.toFixed(0)}% of total
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      S:{channel.qualifiedByType.stalen} L:{channel.qualifiedByType.renderboek} T:{channel.qualifiedByType.keukentrends} K:{channel.qualifiedByType.korting}
                     </div>
                   </div>
                   <div>
@@ -157,12 +207,18 @@ export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps
                     <div className="text-xs text-muted-foreground">
                       {channel.sqlRate.toFixed(0)}% of total
                     </div>
+                    <div className="text-xs text-muted-foreground">
+                      S:{channel.sqlByType.stalen} L:{channel.sqlByType.renderboek} T:{channel.sqlByType.keukentrends} K:{channel.sqlByType.korting}
+                    </div>
                   </div>
                   <div>
                     <div className="text-xs text-muted-foreground">Conversions</div>
                     <div className="text-xl font-bold">{channel.conversions}</div>
                     <div className="text-xs text-muted-foreground">
                       {channel.convRate}% of total
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      S:{channel.conversionsByType.stalen} L:{channel.conversionsByType.renderboek} T:{channel.conversionsByType.keukentrends} K:{channel.conversionsByType.korting}
                     </div>
                   </div>
                 </div>

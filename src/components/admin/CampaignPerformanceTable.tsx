@@ -27,6 +27,13 @@ interface CampaignBudget {
   click_rate: number | null;
 }
 
+interface TypeCounter {
+  stalen: number;
+  renderboek: number;
+  keukentrends: number;
+  korting: number;
+}
+
 interface SourceStat {
   campaign: string;
   source: string;
@@ -57,6 +64,10 @@ interface CampaignGroup {
   engaged: number;
   conversions: number;
   budget: number;
+  byType: TypeCounter;
+  qualifiedByType: TypeCounter;
+  sqlByType: TypeCounter;
+  conversionsByType: TypeCounter;
 }
 
 interface CampaignPerformanceTableProps {
@@ -65,6 +76,9 @@ interface CampaignPerformanceTableProps {
 }
 
 export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerformanceTableProps) => {
+  // Helper to create type counter
+  const createTypeCounter = (): TypeCounter => ({ stalen: 0, renderboek: 0, keukentrends: 0, korting: 0 });
+
   // Email sources to recognize
   const emailSources = ['email', 'activecampaign', 'lemlist', 'mailchimp', 'sendgrid', 'hubspot'];
   
@@ -160,39 +174,86 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
     };
   });
 
-  // Group by campaign and assign deduplicated budget
-  const campaignGroups = enhancedSourceStats.reduce((acc, stat) => {
-    if (!acc[stat.campaign]) {
-      acc[stat.campaign] = {
-        campaign: stat.campaign,
+  // Group by campaign and assign deduplicated budget - also track by type
+  const campaignGroups = nonEmailSubmissions.reduce((acc, sub) => {
+    const campaign = sub.utm_campaign || 'Unknown';
+    
+    if (!acc[campaign]) {
+      acc[campaign] = {
+        campaign,
         sources: [],
         total: 0,
         qualified: 0,
-        salesQualified: 0, // Goed + Redelijk only
+        salesQualified: 0,
         goed: 0,
         mql: 0,
         redelijk: 0,
         slecht: 0,
         engaged: 0,
         conversions: 0,
-        budget: campaignBudgetMap.get(stat.campaign) || 0 // Use deduplicated budget
+        budget: campaignBudgetMap.get(campaign) || 0,
+        byType: createTypeCounter(),
+        qualifiedByType: createTypeCounter(),
+        sqlByType: createTypeCounter(),
+        conversionsByType: createTypeCounter()
       };
     }
     
-    acc[stat.campaign].sources.push(stat);
-    acc[stat.campaign].total += stat.total;
-    acc[stat.campaign].qualified += stat.qualified;
-    acc[stat.campaign].salesQualified += stat.goed + stat.redelijk; // For CPSQL
-    acc[stat.campaign].goed += stat.goed;
-    acc[stat.campaign].mql += stat.mql;
-    acc[stat.campaign].redelijk += stat.redelijk;
-    acc[stat.campaign].slecht += stat.slecht;
-    acc[stat.campaign].engaged += stat.engaged;
-    acc[stat.campaign].conversions += stat.conversions;
-    // Don't add stat.budget since it's 0 and we already set campaign budget
+    acc[campaign].total++;
+    
+    // Track by type for total leads
+    const leadType = sub.type as keyof TypeCounter;
+    if (leadType in acc[campaign].byType) {
+      acc[campaign].byType[leadType]++;
+    }
+    
+    // Qualified includes MQL, Goed, Redelijk
+    if (sub.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
+      acc[campaign].qualified++;
+      if (leadType in acc[campaign].qualifiedByType) {
+        acc[campaign].qualifiedByType[leadType]++;
+      }
+      
+      if (['Goed', 'Goed - klant', 'Goed - Klant'].includes(sub.kwaliteit)) {
+        acc[campaign].goed++;
+      } else if (sub.kwaliteit === 'MQL') {
+        acc[campaign].mql++;
+      } else if (sub.kwaliteit === 'Redelijk') {
+        acc[campaign].redelijk++;
+      }
+    }
+    
+    // SQL includes only Goed and Redelijk (excludes MQL)
+    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
+      acc[campaign].salesQualified++;
+      if (leadType in acc[campaign].sqlByType) {
+        acc[campaign].sqlByType[leadType]++;
+      }
+    }
+    
+    if (sub.kwaliteit === 'Slecht') {
+      acc[campaign].slecht++;
+    }
+    
+    if (sub.sales_status) {
+      acc[campaign].engaged++;
+      if (sub.sales_status === 'Gesprek gepland') {
+        acc[campaign].conversions++;
+        if (leadType in acc[campaign].conversionsByType) {
+          acc[campaign].conversionsByType[leadType]++;
+        }
+      }
+    }
     
     return acc;
   }, {} as Record<string, CampaignGroup>);
+  
+  // Add source breakdown to campaign groups
+  enhancedSourceStats.forEach(stat => {
+    if (campaignGroups[stat.campaign]) {
+      campaignGroups[stat.campaign].sources.push(stat);
+    }
+  });
 
   const sortedCampaigns = (Object.values(campaignGroups) as CampaignGroup[]).sort((a, b) => {
     // Extract gh number from campaign name (e.g., "2506_gh5_leads" -> 5)
@@ -231,6 +292,9 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
                   <div>
                     <div className="text-xs text-muted-foreground">Total Leads</div>
                     <div className="text-2xl font-bold">{group.total}</div>
+                    <div className="text-xs text-muted-foreground">
+                      S:{group.byType.stalen} L:{group.byType.renderboek} T:{group.byType.keukentrends} K:{group.byType.korting}
+                    </div>
                   </div>
                   <div>
                     <div className="text-xs text-muted-foreground">Qualified</div>
@@ -241,6 +305,9 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
                     <div className="text-xs text-muted-foreground">
                       G:{group.goed} M:{group.mql} R:{group.redelijk}
                     </div>
+                    <div className="text-xs text-muted-foreground">
+                      S:{group.qualifiedByType.stalen} L:{group.qualifiedByType.renderboek} T:{group.qualifiedByType.keukentrends} K:{group.qualifiedByType.korting}
+                    </div>
                   </div>
                   <div>
                     <div className="text-xs text-muted-foreground">SQL</div>
@@ -248,12 +315,18 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
                     <div className="text-xs text-muted-foreground">
                       {sqlRate}% of total
                     </div>
+                    <div className="text-xs text-muted-foreground">
+                      S:{group.sqlByType.stalen} L:{group.sqlByType.renderboek} T:{group.sqlByType.keukentrends} K:{group.sqlByType.korting}
+                    </div>
                   </div>
                   <div>
                     <div className="text-xs text-muted-foreground">Conversions</div>
                     <div className="text-xl font-bold">{group.conversions}</div>
                     <div className="text-xs text-muted-foreground">
                       {convRate}% of total
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      S:{group.conversionsByType.stalen} L:{group.conversionsByType.renderboek} T:{group.conversionsByType.keukentrends} K:{group.conversionsByType.korting}
                     </div>
                   </div>
                 </div>
