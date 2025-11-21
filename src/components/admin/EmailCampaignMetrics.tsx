@@ -8,6 +8,7 @@ interface Submission {
   utm_medium: string | null;
   utm_campaign: string | null;
   utm_term: string | null;
+  type: string;
 }
 
 interface CampaignBudget {
@@ -51,6 +52,9 @@ export const EmailCampaignMetrics = ({ submissions, budgets }: EmailCampaignMetr
     return null;
   }
 
+  // Type tracking helper
+  const createTypeCounter = () => ({ stalen: 0, renderboek: 0, keukentrends: 0, korting: 0 });
+
   // Group email submissions by campaign
   const emailCampaignStats = emailSubmissions.reduce((acc, sub) => {
     const campaign = sub.utm_campaign || 'Unknown';
@@ -61,44 +65,113 @@ export const EmailCampaignMetrics = ({ submissions, budgets }: EmailCampaignMetr
         qualified: 0,
         sql: 0,
         conversions: 0,
-        byTerm: {} as Record<string, { total: number; qualified: number; sql: number; conversions: number }>
+        byType: createTypeCounter(),
+        qualifiedByType: createTypeCounter(),
+        sqlByType: createTypeCounter(),
+        conversionsByType: createTypeCounter(),
+        byTerm: {} as Record<string, { 
+          total: number; 
+          qualified: number; 
+          sql: number; 
+          conversions: number;
+          byType: ReturnType<typeof createTypeCounter>;
+          qualifiedByType: ReturnType<typeof createTypeCounter>;
+          sqlByType: ReturnType<typeof createTypeCounter>;
+          conversionsByType: ReturnType<typeof createTypeCounter>;
+        }>
       };
     }
     
     acc[campaign].total++;
     
+    // Track by type for total leads
+    const leadType = sub.type as keyof ReturnType<typeof createTypeCounter>;
+    if (leadType in acc[campaign].byType) {
+      acc[campaign].byType[leadType]++;
+    }
+    
     // Qualified includes MQL, Goed, Redelijk
     if (sub.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
       acc[campaign].qualified++;
+      if (leadType in acc[campaign].qualifiedByType) {
+        acc[campaign].qualifiedByType[leadType]++;
+      }
     }
     
     // SQL includes only Goed and Redelijk (excludes MQL)
     if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
       acc[campaign].sql++;
+      if (leadType in acc[campaign].sqlByType) {
+        acc[campaign].sqlByType[leadType]++;
+      }
     }
     
     if (sub.sales_status === 'Gesprek gepland') {
       acc[campaign].conversions++;
+      if (leadType in acc[campaign].conversionsByType) {
+        acc[campaign].conversionsByType[leadType]++;
+      }
     }
 
     // Track by utm_term
     const term = sub.utm_term || 'No term';
     if (!acc[campaign].byTerm[term]) {
-      acc[campaign].byTerm[term] = { total: 0, qualified: 0, sql: 0, conversions: 0 };
+      acc[campaign].byTerm[term] = { 
+        total: 0, 
+        qualified: 0, 
+        sql: 0, 
+        conversions: 0,
+        byType: createTypeCounter(),
+        qualifiedByType: createTypeCounter(),
+        sqlByType: createTypeCounter(),
+        conversionsByType: createTypeCounter()
+      };
     }
     acc[campaign].byTerm[term].total++;
+    if (leadType in acc[campaign].byTerm[term].byType) {
+      acc[campaign].byTerm[term].byType[leadType]++;
+    }
+    
     if (sub.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
       acc[campaign].byTerm[term].qualified++;
+      if (leadType in acc[campaign].byTerm[term].qualifiedByType) {
+        acc[campaign].byTerm[term].qualifiedByType[leadType]++;
+      }
     }
     if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
       acc[campaign].byTerm[term].sql++;
+      if (leadType in acc[campaign].byTerm[term].sqlByType) {
+        acc[campaign].byTerm[term].sqlByType[leadType]++;
+      }
     }
     if (sub.sales_status === 'Gesprek gepland') {
       acc[campaign].byTerm[term].conversions++;
+      if (leadType in acc[campaign].byTerm[term].conversionsByType) {
+        acc[campaign].byTerm[term].conversionsByType[leadType]++;
+      }
     }
     
     return acc;
-  }, {} as Record<string, { total: number; qualified: number; sql: number; conversions: number; byTerm: Record<string, { total: number; qualified: number; sql: number; conversions: number }> }>);
+  }, {} as Record<string, { 
+    total: number; 
+    qualified: number; 
+    sql: number; 
+    conversions: number; 
+    byType: ReturnType<typeof createTypeCounter>;
+    qualifiedByType: ReturnType<typeof createTypeCounter>;
+    sqlByType: ReturnType<typeof createTypeCounter>;
+    conversionsByType: ReturnType<typeof createTypeCounter>;
+    byTerm: Record<string, { 
+      total: number; 
+      qualified: number; 
+      sql: number; 
+      conversions: number;
+      byType: ReturnType<typeof createTypeCounter>;
+      qualifiedByType: ReturnType<typeof createTypeCounter>;
+      sqlByType: ReturnType<typeof createTypeCounter>;
+      conversionsByType: ReturnType<typeof createTypeCounter>;
+    }> 
+  }>);
 
   // Enhance with budget data
   const enhancedEmailCampaigns = Object.entries(emailCampaignStats).map(([campaign, stats]) => {
@@ -123,6 +196,10 @@ export const EmailCampaignMetrics = ({ submissions, budgets }: EmailCampaignMetr
       qualified: stats.qualified,
       sql: stats.sql,
       conversions: stats.conversions,
+      byType: stats.byType,
+      qualifiedByType: stats.qualifiedByType,
+      sqlByType: stats.sqlByType,
+      conversionsByType: stats.conversionsByType,
       byTerm: stats.byTerm
     };
   }).sort((a, b) => {
@@ -163,12 +240,18 @@ export const EmailCampaignMetrics = ({ submissions, budgets }: EmailCampaignMetr
                   <div>
                     <div className="text-xs text-muted-foreground">Total Leads</div>
                     <div className="text-2xl font-bold">{campaign.leads}</div>
+                    <div className="text-xs text-muted-foreground">
+                      S:{campaign.byType.stalen} L:{campaign.byType.renderboek} T:{campaign.byType.keukentrends} K:{campaign.byType.korting}
+                    </div>
                   </div>
                   <div>
                     <div className="text-xs text-muted-foreground">Qualified</div>
                     <div className="text-xl font-bold">{campaign.qualified}</div>
                     <div className="text-xs text-muted-foreground">
                       {qualRate}% of total
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      S:{campaign.qualifiedByType.stalen} L:{campaign.qualifiedByType.renderboek} T:{campaign.qualifiedByType.keukentrends} K:{campaign.qualifiedByType.korting}
                     </div>
                   </div>
                   <div>
@@ -177,12 +260,18 @@ export const EmailCampaignMetrics = ({ submissions, budgets }: EmailCampaignMetr
                     <div className="text-xs text-muted-foreground">
                       {sqlRate}% of total
                     </div>
+                    <div className="text-xs text-muted-foreground">
+                      S:{campaign.sqlByType.stalen} L:{campaign.sqlByType.renderboek} T:{campaign.sqlByType.keukentrends} K:{campaign.sqlByType.korting}
+                    </div>
                   </div>
                   <div>
                     <div className="text-xs text-muted-foreground">Conversions</div>
                     <div className="text-xl font-bold">{campaign.conversions}</div>
                     <div className="text-xs text-muted-foreground">
                       {convRate}% of total
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      S:{campaign.conversionsByType.stalen} L:{campaign.conversionsByType.renderboek} T:{campaign.conversionsByType.keukentrends} K:{campaign.conversionsByType.korting}
                     </div>
                   </div>
                 </div>
@@ -228,18 +317,30 @@ export const EmailCampaignMetrics = ({ submissions, budgets }: EmailCampaignMetr
                                 <div>
                                   <div className="text-muted-foreground">Leads</div>
                                   <div className="font-semibold">{stats.total}</div>
+                                  <div className="text-muted-foreground text-[10px]">
+                                    S:{stats.byType.stalen} L:{stats.byType.renderboek} T:{stats.byType.keukentrends} K:{stats.byType.korting}
+                                  </div>
                                 </div>
                                 <div>
                                   <div className="text-muted-foreground">Qualified</div>
                                   <div className="font-semibold">{stats.qualified} ({termQualRate}%)</div>
+                                  <div className="text-muted-foreground text-[10px]">
+                                    S:{stats.qualifiedByType.stalen} L:{stats.qualifiedByType.renderboek} T:{stats.qualifiedByType.keukentrends} K:{stats.qualifiedByType.korting}
+                                  </div>
                                 </div>
                                 <div>
                                   <div className="text-muted-foreground">SQL</div>
                                   <div className="font-semibold">{stats.sql} ({termSqlRate}%)</div>
+                                  <div className="text-muted-foreground text-[10px]">
+                                    S:{stats.sqlByType.stalen} L:{stats.sqlByType.renderboek} T:{stats.sqlByType.keukentrends} K:{stats.sqlByType.korting}
+                                  </div>
                                 </div>
                                 <div>
                                   <div className="text-muted-foreground">Conv</div>
                                   <div className="font-semibold">{stats.conversions} ({termConvRate}%)</div>
+                                  <div className="text-muted-foreground text-[10px]">
+                                    S:{stats.conversionsByType.stalen} L:{stats.conversionsByType.renderboek} T:{stats.conversionsByType.keukentrends} K:{stats.conversionsByType.korting}
+                                  </div>
                                 </div>
                               </div>
                             </div>
