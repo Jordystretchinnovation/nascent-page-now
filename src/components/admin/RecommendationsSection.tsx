@@ -27,7 +27,7 @@ export const RecommendationsSection = ({ submissions, budgets }: Recommendations
       acc[sub.type] = { total: 0, qualified: 0 };
     }
     acc[sub.type].total++;
-    if (sub.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
+    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
       acc[sub.type].qualified++;
     }
     return acc;

@@ -49,7 +49,7 @@ export const InsightsSection = ({ submissions, budgets }: InsightsSectionProps) 
       acc[source] = { total: 0, qualified: 0, conversions: 0 };
     }
     acc[source].total++;
-    if (sub.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
+    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
       acc[source].qualified++;
     }
     if (sub.sales_status === 'Gesprek gepland') {
@@ -87,7 +87,7 @@ export const InsightsSection = ({ submissions, budgets }: InsightsSectionProps) 
       acc[campaign] = { total: 0, qualified: 0, conversions: 0 };
     }
     acc[campaign].total++;
-    if (sub.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
+    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
       acc[campaign].qualified++;
     }
     if (sub.sales_status === 'Gesprek gepland') {
@@ -123,7 +123,7 @@ export const InsightsSection = ({ submissions, budgets }: InsightsSectionProps) 
       acc[sub.type] = { total: 0, qualified: 0 };
     }
     acc[sub.type].total++;
-    if (sub.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
+    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
       acc[sub.type].qualified++;
     }
     return acc;
@@ -166,7 +166,7 @@ export const InsightsSection = ({ submissions, budgets }: InsightsSectionProps) 
   const emailSubmissions = submissions.filter(sub => isEmailSource(sub.utm_source));
   const emailLeads = emailSubmissions.length;
   const emailQualified = emailSubmissions.filter(s => 
-    s.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(s.kwaliteit)
+    s.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(s.kwaliteit)
   ).length;
 
   // CPL Evolution Over Time
