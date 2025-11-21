@@ -50,8 +50,9 @@ export const PerformanceCharts = ({ submissions }: PerformanceChartsProps) => {
   // Quality distribution - following the same logic as top cards (cumulative)
   const totalLeads = submissions.length;
   const slechtCount = submissions.filter(s => s.kwaliteit === 'Slecht').length;
+  // Exclude keukentrends leads from SQL count
   const sqlCount = submissions.filter(s => 
-    s.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(s.kwaliteit)
+    s.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(s.kwaliteit) && s.type !== 'keukentrends'
   ).length;
   const mqlCount = submissions.filter(s => s.kwaliteit === 'MQL').length + sqlCount; // MQL + SQL (cumulative)
   
@@ -70,7 +71,9 @@ export const PerformanceCharts = ({ submissions }: PerformanceChartsProps) => {
     const weekKey = weekStart.toISOString().split('T')[0];
     
     const existing = acc.find(item => item.week === weekKey);
-    const isQualified = sub.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit);
+    // Qualified includes MQL + SQL, but SQL excludes keukentrends
+    const isQualified = sub.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit) &&
+      (sub.kwaliteit === 'MQL' || sub.type !== 'keukentrends');
     
     if (existing) {
       existing.total++;
@@ -85,7 +88,9 @@ export const PerformanceCharts = ({ submissions }: PerformanceChartsProps) => {
   const channelData = submissions.reduce((acc, sub) => {
     const source = sub.utm_source || 'Unknown';
     const existing = acc.find(item => item.channel === source);
-    const isQualified = sub.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit);
+    // Qualified includes MQL + SQL, but SQL excludes keukentrends
+    const isQualified = sub.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit) &&
+      (sub.kwaliteit === 'MQL' || sub.type !== 'keukentrends');
     
     if (existing) {
       existing.total++;

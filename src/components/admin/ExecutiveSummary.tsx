@@ -46,7 +46,8 @@ export const ExecutiveSummary = ({ submissions, budgets }: ExecutiveSummaryProps
     }
     
     // SQL (Sales Qualified Leads) = Goed + Goed - klant/Klant + Redelijk (without MQL)
-    if (s.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(s.kwaliteit)) {
+    // Exclude keukentrends leads from SQL count
+    if (s.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(s.kwaliteit) && s.type !== 'keukentrends') {
       if (leadType in sqlByType) {
         sqlByType[leadType]++;
       }
@@ -65,8 +66,9 @@ export const ExecutiveSummary = ({ submissions, budgets }: ExecutiveSummaryProps
   ).length;
   
   // SQL (Sales Qualified Leads) = Goed + Goed - klant/Klant + Redelijk (without MQL)
+  // Exclude keukentrends leads from SQL count
   const sqlLeads = submissions.filter(s => 
-    s.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(s.kwaliteit)
+    s.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(s.kwaliteit) && s.type !== 'keukentrends'
   ).length;
   
   const conversions = submissions.filter(s => s.sales_status === 'Gesprek gepland').length;
@@ -101,7 +103,8 @@ export const ExecutiveSummary = ({ submissions, budgets }: ExecutiveSummaryProps
       acc[sub.type].qualified++;
     }
     // Sales Qualified excludes MQL (for CPSQL calculation)
-    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
+    // Exclude keukentrends leads from SQL count
+    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit) && sub.type !== 'keukentrends') {
       acc[sub.type].salesQualified++;
     }
     // Conversions

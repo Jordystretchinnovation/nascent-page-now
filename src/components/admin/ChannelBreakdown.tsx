@@ -94,7 +94,8 @@ export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps
     }
     
     // Sales Qualified excludes MQL (for CPSQL calculation)
-    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
+    // Exclude keukentrends leads from SQL count
+    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit) && sub.type !== 'keukentrends') {
       acc[source].salesQualified++;
       if (leadType in acc[source].sqlByType) {
         acc[source].sqlByType[leadType]++;

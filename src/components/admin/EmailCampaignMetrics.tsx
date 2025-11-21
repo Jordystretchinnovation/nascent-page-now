@@ -99,7 +99,8 @@ export const EmailCampaignMetrics = ({ submissions, budgets }: EmailCampaignMetr
     }
     
     // SQL includes only Goed and Redelijk (excludes MQL)
-    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
+    // Exclude keukentrends leads from SQL count
+    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit) && sub.type !== 'keukentrends') {
       acc[campaign].sql++;
       if (leadType in acc[campaign].sqlByType) {
         acc[campaign].sqlByType[leadType]++;
@@ -138,7 +139,8 @@ export const EmailCampaignMetrics = ({ submissions, budgets }: EmailCampaignMetr
         acc[campaign].byTerm[term].qualifiedByType[leadType]++;
       }
     }
-    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
+    // Exclude keukentrends leads from SQL count
+    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit) && sub.type !== 'keukentrends') {
       acc[campaign].byTerm[term].sql++;
       if (leadType in acc[campaign].byTerm[term].sqlByType) {
         acc[campaign].byTerm[term].sqlByType[leadType]++;
