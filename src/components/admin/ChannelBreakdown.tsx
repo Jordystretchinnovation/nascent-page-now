@@ -87,6 +87,8 @@ export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps
       return acc;
     }, [] as CampaignBudget[]);
     
+    const channelBudget = uniqueChannelBudgets.reduce((sum, b) => sum + b.budget, 0);
+    
     // Email-specific metrics
     const totalEmailsSent = uniqueChannelBudgets.reduce((sum, b) => sum + (b.emails_sent || 0), 0);
     const avgOpenRate = uniqueChannelBudgets.length > 0 
@@ -108,6 +110,7 @@ export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps
     return {
       source,
       ...stats,
+      channelBudget, // Budget specific to this channel
       qualRate: parseFloat(qualRate),
       sqlRate: parseFloat(sqlRate),
       convRate: parseFloat(convRate),
@@ -195,8 +198,8 @@ export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps
                       <div className="text-sm font-medium">€{channel.cpsql}</div>
                     </div>
                     <div>
-                      <div className="text-xs text-muted-foreground">Total Budget</div>
-                      <div className="text-sm font-medium">€{totalBudget.toFixed(0)}</div>
+                      <div className="text-xs text-muted-foreground">Channel Budget</div>
+                      <div className="text-sm font-medium">€{channel.channelBudget.toFixed(0)}</div>
                     </div>
                   </div>
                 ) : null}
