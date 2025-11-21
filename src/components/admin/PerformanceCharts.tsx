@@ -47,17 +47,20 @@ export const PerformanceCharts = ({ submissions }: PerformanceChartsProps) => {
     return acc;
   }, [] as { name: string; value: number }[]);
 
-  // Quality distribution
-  const qualityData = submissions.reduce((acc, sub) => {
-    const quality = sub.kwaliteit || 'Unqualified';
-    const existing = acc.find(item => item.name === quality);
-    if (existing) {
-      existing.count++;
-    } else {
-      acc.push({ name: quality, count: 1 });
-    }
-    return acc;
-  }, [] as { name: string; count: number }[]);
+  // Quality distribution - following the same logic as top cards
+  const totalLeads = submissions.length;
+  const slechtCount = submissions.filter(s => s.kwaliteit === 'Slecht').length;
+  const mqlCount = submissions.filter(s => s.kwaliteit === 'MQL').length;
+  const sqlCount = submissions.filter(s => 
+    s.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(s.kwaliteit)
+  ).length;
+  
+  const qualityData = [
+    { name: 'Leads', count: totalLeads },
+    { name: 'Slecht', count: slechtCount },
+    { name: 'MQL', count: mqlCount },
+    { name: 'SQL', count: sqlCount }
+  ];
 
   // Timeline data (by week)
   const timelineData = submissions.reduce((acc, sub) => {
