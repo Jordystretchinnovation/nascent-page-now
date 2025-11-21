@@ -28,9 +28,15 @@ export const ExecutiveSummary = ({ submissions, budgets }: ExecutiveSummaryProps
     s.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(s.kwaliteit)
   ).length;
   
+  // SQL (Sales Qualified Leads) = Goed + Goed - klant/Klant + Redelijk (without MQL)
+  const sqlLeads = submissions.filter(s => 
+    s.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(s.kwaliteit)
+  ).length;
+  
   const conversions = submissions.filter(s => s.sales_status === 'Gesprek gepland').length;
 
   const qualificationRate = totalLeads > 0 ? ((qualifiedLeads / totalLeads) * 100).toFixed(1) : '0';
+  const sqlRate = totalLeads > 0 ? ((sqlLeads / totalLeads) * 100).toFixed(1) : '0';
   const conversionRate = totalLeads > 0 ? ((conversions / totalLeads) * 100).toFixed(1) : '0';
 
   // Campaign type performance
@@ -91,7 +97,7 @@ export const ExecutiveSummary = ({ submissions, budgets }: ExecutiveSummaryProps
         <h2 className="text-2xl font-semibold mb-4">Executive Summary</h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-muted-foreground">Total Leads</CardTitle>
@@ -108,7 +114,19 @@ export const ExecutiveSummary = ({ submissions, budgets }: ExecutiveSummaryProps
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-foreground">{qualifiedLeads}</div>
-            <Badge variant="secondary" className="mt-2">{qualificationRate}% qualification rate</Badge>
+            <Badge variant="secondary" className="mt-2">{qualificationRate}% of total</Badge>
+            <p className="text-xs text-muted-foreground mt-1">Includes MQL</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-muted-foreground">SQL (Sales Qualified)</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-foreground">{sqlLeads}</div>
+            <Badge variant="secondary" className="mt-2">{sqlRate}% of total</Badge>
+            <p className="text-xs text-muted-foreground mt-1">Goed + Redelijk</p>
           </CardContent>
         </Card>
 
