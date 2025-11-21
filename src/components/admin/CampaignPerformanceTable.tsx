@@ -260,6 +260,7 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
                 <TableHead>Campaign</TableHead>
                 <TableHead className="text-right">Total Leads</TableHead>
                 <TableHead className="text-right">Qualified</TableHead>
+                <TableHead className="text-right">SQL</TableHead>
                 <TableHead className="text-right">Qual. Rate</TableHead>
                 <TableHead className="text-right">Engaged</TableHead>
                 <TableHead className="text-right">Conversions</TableHead>
@@ -300,6 +301,9 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
                             G:{group.goed} M:{group.mql} R:{group.redelijk}
                           </div>
                         </div>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="font-medium">{group.salesQualified}</div>
                       </TableCell>
                       <TableCell className="text-right">
                         <Badge variant={parseInt(qualRate) > 30 ? "default" : "secondary"}>
@@ -350,6 +354,9 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
                             </div>
                           </TableCell>
                           <TableCell className="text-right">
+                            <div className="font-medium">{source.goed + source.redelijk}</div>
+                          </TableCell>
+                          <TableCell className="text-right">
                             <Badge variant={parseInt(sourceQualRate) > 30 ? "default" : "secondary"}>
                               {sourceQualRate}%
                             </Badge>
@@ -392,6 +399,9 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
                       G:{totals.goed} M:{totals.mql} R:{totals.redelijk}
                     </div>
                   </div>
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="font-bold">{totals.salesQualified}</div>
                 </TableCell>
                 <TableCell className="text-right">
                   <Badge variant={totals.total > 0 && ((totals.qualified / totals.total) * 100) > 30 ? "default" : "secondary"}>
