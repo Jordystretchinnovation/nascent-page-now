@@ -1,9 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { ChevronDown, ChevronRight } from "lucide-react";
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import React from "react";
 
 // Format currency in European style
@@ -69,8 +65,6 @@ interface CampaignPerformanceTableProps {
 }
 
 export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerformanceTableProps) => {
-  const [expandedCampaigns, setExpandedCampaigns] = useState<Set<string>>(new Set());
-
   // Email sources to recognize
   const emailSources = ['email', 'activecampaign', 'lemlist', 'mailchimp', 'sendgrid', 'hubspot'];
   
@@ -213,225 +207,81 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
     return ghA - ghB;
   });
 
-  // Calculate totals
-  const totals = sortedCampaigns.reduce((acc, group) => ({
-    total: acc.total + group.total,
-    qualified: acc.qualified + group.qualified,
-    salesQualified: acc.salesQualified + group.salesQualified,
-    goed: acc.goed + group.goed,
-    mql: acc.mql + group.mql,
-    redelijk: acc.redelijk + group.redelijk,
-    engaged: acc.engaged + group.engaged,
-    conversions: acc.conversions + group.conversions,
-    budget: acc.budget + group.budget
-  }), {
-    total: 0,
-    qualified: 0,
-    salesQualified: 0,
-    goed: 0,
-    mql: 0,
-    redelijk: 0,
-    engaged: 0,
-    conversions: 0,
-    budget: 0
-  });
-
-  const toggleCampaign = (campaign: string) => {
-    const newExpanded = new Set(expandedCampaigns);
-    if (newExpanded.has(campaign)) {
-      newExpanded.delete(campaign);
-    } else {
-      newExpanded.add(campaign);
-    }
-    setExpandedCampaigns(newExpanded);
-  };
-
   return (
     <Card>
       <CardHeader>
         <CardTitle>Paid Campaign Performance Details</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-12"></TableHead>
-                <TableHead>Campaign</TableHead>
-                <TableHead className="text-right">Total Leads</TableHead>
-                <TableHead className="text-right">Qualified</TableHead>
-                <TableHead className="text-right">SQL</TableHead>
-                <TableHead className="text-right">Qual. Rate</TableHead>
-                <TableHead className="text-right">Engaged</TableHead>
-                <TableHead className="text-right">Conversions</TableHead>
-                <TableHead className="text-right">Budget (€)</TableHead>
-                <TableHead className="text-right">CPL (€)</TableHead>
-                <TableHead className="text-right">CPQL (€)</TableHead>
-                <TableHead className="text-right">CPSQL (€)</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sortedCampaigns.map((group, index) => {
-                const qualRate = group.total > 0 ? ((group.qualified / group.total) * 100).toFixed(0) : '0';
-                const convRate = group.total > 0 ? ((group.conversions / group.total) * 100).toFixed(1) : '0';
-                const cpl = group.budget > 0 ? group.budget / group.total : 0;
-                const cpql = group.budget > 0 && group.qualified > 0 ? group.budget / group.qualified : 0;
-                const cpsql = group.budget > 0 && group.salesQualified > 0 ? group.budget / group.salesQualified : 0;
-                const isExpanded = expandedCampaigns.has(group.campaign);
+        <div className="space-y-4">
+          {sortedCampaigns.map((group) => {
+            const qualRate = group.total > 0 ? ((group.qualified / group.total) * 100).toFixed(0) : '0';
+            const sqlRate = group.total > 0 ? ((group.salesQualified / group.total) * 100).toFixed(0) : '0';
+            const convRate = group.total > 0 ? ((group.conversions / group.total) * 100).toFixed(1) : '0';
+            const cpl = group.budget > 0 ? (group.budget / group.total).toFixed(2) : '0';
+            const cpql = group.budget > 0 && group.qualified > 0 ? (group.budget / group.qualified).toFixed(2) : '0';
+            const cpsql = group.budget > 0 && group.salesQualified > 0 ? (group.budget / group.salesQualified).toFixed(2) : '0';
+            
+            return (
+              <div key={group.campaign} className="border rounded-lg p-4">
+                <div className="font-semibold text-lg mb-3">{group.campaign}</div>
                 
-                return (
-                  <React.Fragment key={group.campaign}>
-                    <TableRow className="font-medium bg-muted/50">
-                      <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-8 w-8 p-0"
-                          onClick={() => toggleCampaign(group.campaign)}
-                        >
-                          {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                        </Button>
-                      </TableCell>
-                      <TableCell className="font-semibold">{group.campaign}</TableCell>
-                      <TableCell className="text-right">{group.total}</TableCell>
-                      <TableCell className="text-right">
-                        <div>
-                          <div className="font-medium">{group.qualified}</div>
-                          <div className="text-xs text-muted-foreground">
-                            G:{group.goed} M:{group.mql} R:{group.redelijk}
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="font-medium">{group.salesQualified}</div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Badge variant={parseInt(qualRate) > 30 ? "default" : "secondary"}>
-                          {qualRate}%
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">{group.engaged}</TableCell>
-                      <TableCell className="text-right">
-                        <div>
-                          <div className="font-medium">{group.conversions}</div>
-                          <div className="text-xs text-muted-foreground">{convRate}%</div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {group.budget > 0 ? formatCurrency(group.budget) : '-'}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {cpl > 0 ? formatCurrency(cpl) : '-'}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {cpql > 0 ? formatCurrency(cpql) : '-'}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        {cpsql > 0 ? formatCurrency(cpsql) : '-'}
-                      </TableCell>
-                    </TableRow>
-                    
-                    {isExpanded && group.sources.map((source: SourceStat, sourceIndex: number) => {
-                      const sourceQualRate = source.total > 0 ? ((source.qualified / source.total) * 100).toFixed(0) : '0';
-                      const sourceConvRate = source.total > 0 ? ((source.conversions / source.total) * 100).toFixed(1) : '0';
-                      
-                      return (
-                        <TableRow key={`${index}-${sourceIndex}`} className="bg-background">
-                          <TableCell></TableCell>
-                          <TableCell className="pl-12">
-                            <div className="flex items-center gap-2">
-                              <Badge variant="outline">{source.source}</Badge>
-                              <Badge variant="secondary">{source.medium}</Badge>
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-right">{source.total}</TableCell>
-                          <TableCell className="text-right">
-                            <div>
-                              <div className="font-medium">{source.qualified}</div>
-                              <div className="text-xs text-muted-foreground">
-                                G:{source.goed} M:{source.mql} R:{source.redelijk}
-                              </div>
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <div className="font-medium">{source.goed + source.redelijk}</div>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <Badge variant={parseInt(sourceQualRate) > 30 ? "default" : "secondary"}>
-                              {sourceQualRate}%
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-right">{source.engaged}</TableCell>
-                          <TableCell className="text-right">
-                            <div>
-                              <div className="font-medium">{source.conversions}</div>
-                              <div className="text-xs text-muted-foreground">{sourceConvRate}%</div>
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {source.budget > 0 ? formatCurrency(source.budget) : '-'}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {source.cpl > 0 ? formatCurrency(source.cpl) : '-'}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {source.cpl > 0 ? '-' : '-'}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {source.cpsql > 0 ? formatCurrency(source.cpsql) : '-'}
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </React.Fragment>
-                );
-              })}
-              
-              {/* Totals Row */}
-              <TableRow className="font-bold bg-primary/5 border-t-2">
-                <TableCell></TableCell>
-                <TableCell className="font-bold">TOTAL</TableCell>
-                <TableCell className="text-right">{totals.total}</TableCell>
-                <TableCell className="text-right">
+                {/* Main metrics in a grid */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
                   <div>
-                    <div className="font-bold">{totals.qualified}</div>
-                    <div className="text-xs font-normal text-muted-foreground">
-                      G:{totals.goed} M:{totals.mql} R:{totals.redelijk}
+                    <div className="text-xs text-muted-foreground">Total Leads</div>
+                    <div className="text-2xl font-bold">{group.total}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-muted-foreground">Qualified</div>
+                    <div className="text-xl font-bold">{group.qualified}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {qualRate}% of total
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      G:{group.goed} M:{group.mql} R:{group.redelijk}
                     </div>
                   </div>
-                </TableCell>
-                <TableCell className="text-right">
-                  <div className="font-bold">{totals.salesQualified}</div>
-                </TableCell>
-                <TableCell className="text-right">
-                  <Badge variant={totals.total > 0 && ((totals.qualified / totals.total) * 100) > 30 ? "default" : "secondary"}>
-                    {totals.total > 0 ? ((totals.qualified / totals.total) * 100).toFixed(0) : '0'}%
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-right">{totals.engaged}</TableCell>
-                <TableCell className="text-right">
                   <div>
-                    <div className="font-bold">{totals.conversions}</div>
-                    <div className="text-xs font-normal text-muted-foreground">
-                      {totals.total > 0 ? ((totals.conversions / totals.total) * 100).toFixed(1) : '0'}%
+                    <div className="text-xs text-muted-foreground">SQL</div>
+                    <div className="text-xl font-bold">{group.salesQualified}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {sqlRate}% of total
                     </div>
                   </div>
-                </TableCell>
-                <TableCell className="text-right">
-                  {totals.budget > 0 ? formatCurrency(totals.budget) : '-'}
-                </TableCell>
-                <TableCell className="text-right">
-                  {totals.budget > 0 && totals.total > 0 ? formatCurrency(totals.budget / totals.total) : '-'}
-                </TableCell>
-                <TableCell className="text-right">
-                  {totals.budget > 0 && totals.qualified > 0 ? formatCurrency(totals.budget / totals.qualified) : '-'}
-                </TableCell>
-                <TableCell className="text-right">
-                  {totals.budget > 0 && totals.salesQualified > 0 ? formatCurrency(totals.budget / totals.salesQualified) : '-'}
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
+                  <div>
+                    <div className="text-xs text-muted-foreground">Conversions</div>
+                    <div className="text-xl font-bold">{group.conversions}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {convRate}% of total
+                    </div>
+                  </div>
+                </div>
+
+                {/* Cost metrics */}
+                {group.budget > 0 && (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-3 border-t">
+                    <div>
+                      <div className="text-xs text-muted-foreground">CPL</div>
+                      <div className="text-sm font-medium">€{cpl}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-muted-foreground">CPQL</div>
+                      <div className="text-sm font-medium">€{cpql}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-muted-foreground">CPSQL</div>
+                      <div className="text-sm font-medium">€{cpsql}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-muted-foreground">Campaign Budget</div>
+                      <div className="text-sm font-medium">€{group.budget.toFixed(0)}</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </CardContent>
     </Card>
