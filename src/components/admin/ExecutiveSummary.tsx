@@ -192,7 +192,7 @@ export const ExecutiveSummary = ({ submissions, budgets }: ExecutiveSummaryProps
 
                   {/* Cost metrics */}
                   {budget > 0 && (
-                    <div className="grid grid-cols-3 gap-3 pt-3 border-t">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-3 border-t">
                       <div>
                         <div className="text-xs text-muted-foreground">CPL</div>
                         <div className="text-sm font-medium">€{cpl}</div>
@@ -204,6 +204,10 @@ export const ExecutiveSummary = ({ submissions, budgets }: ExecutiveSummaryProps
                       <div>
                         <div className="text-xs text-muted-foreground">CPSQL</div>
                         <div className="text-sm font-medium">€{cpsql}</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-muted-foreground">Budget</div>
+                        <div className="text-sm font-medium">€{budget.toFixed(0)}</div>
                       </div>
                     </div>
                   )}
