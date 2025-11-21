@@ -303,9 +303,6 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
                       {qualRate}% of total
                     </div>
                     <div className="text-xs text-muted-foreground">
-                      G:{group.goed} M:{group.mql} R:{group.redelijk}
-                    </div>
-                    <div className="text-xs text-muted-foreground">
                       S:{group.qualifiedByType.stalen} L:{group.qualifiedByType.renderboek} T:{group.qualifiedByType.keukentrends} K:{group.qualifiedByType.korting}
                     </div>
                   </div>
