@@ -53,6 +53,7 @@ interface CampaignGroup {
   sources: SourceStat[];
   total: number;
   qualified: number;
+  salesQualified: number; // Goed + Redelijk (excludes MQL)
   goed: number;
   mql: number;
   redelijk: number;
@@ -173,6 +174,7 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
         sources: [],
         total: 0,
         qualified: 0,
+        salesQualified: 0, // Goed + Redelijk only
         goed: 0,
         mql: 0,
         redelijk: 0,
@@ -186,6 +188,7 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
     acc[stat.campaign].sources.push(stat);
     acc[stat.campaign].total += stat.total;
     acc[stat.campaign].qualified += stat.qualified;
+    acc[stat.campaign].salesQualified += stat.goed + stat.redelijk; // For CPSQL
     acc[stat.campaign].goed += stat.goed;
     acc[stat.campaign].mql += stat.mql;
     acc[stat.campaign].redelijk += stat.redelijk;
@@ -214,6 +217,7 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
   const totals = sortedCampaigns.reduce((acc, group) => ({
     total: acc.total + group.total,
     qualified: acc.qualified + group.qualified,
+    salesQualified: acc.salesQualified + group.salesQualified,
     goed: acc.goed + group.goed,
     mql: acc.mql + group.mql,
     redelijk: acc.redelijk + group.redelijk,
@@ -223,6 +227,7 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
   }), {
     total: 0,
     qualified: 0,
+    salesQualified: 0,
     goed: 0,
     mql: 0,
     redelijk: 0,
@@ -268,7 +273,7 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
                 const qualRate = group.total > 0 ? ((group.qualified / group.total) * 100).toFixed(0) : '0';
                 const convRate = group.total > 0 ? ((group.conversions / group.total) * 100).toFixed(1) : '0';
                 const cpl = group.budget > 0 ? group.budget / group.total : 0;
-                const cpsql = group.budget > 0 && group.qualified > 0 ? group.budget / group.qualified : 0;
+                const cpsql = group.budget > 0 && group.salesQualified > 0 ? group.budget / group.salesQualified : 0;
                 const isExpanded = expandedCampaigns.has(group.campaign);
                 
                 return (
@@ -401,7 +406,7 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
                   {totals.budget > 0 && totals.total > 0 ? formatCurrency(totals.budget / totals.total) : '-'}
                 </TableCell>
                 <TableCell className="text-right">
-                  {totals.budget > 0 && totals.qualified > 0 ? formatCurrency(totals.budget / totals.qualified) : '-'}
+                  {totals.budget > 0 && totals.salesQualified > 0 ? formatCurrency(totals.budget / totals.salesQualified) : '-'}
                 </TableCell>
               </TableRow>
             </TableBody>

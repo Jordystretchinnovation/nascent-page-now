@@ -23,8 +23,9 @@ interface ExecutiveSummaryProps {
 export const ExecutiveSummary = ({ submissions, budgets }: ExecutiveSummaryProps) => {
   const totalLeads = submissions.length;
   
+  // Qualified = MQL + Goed + Goed - klant/Klant + Redelijk
   const qualifiedLeads = submissions.filter(s => 
-    s.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(s.kwaliteit)
+    s.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(s.kwaliteit)
   ).length;
   
   const conversions = submissions.filter(s => s.sales_status === 'Gesprek gepland').length;
@@ -35,14 +36,19 @@ export const ExecutiveSummary = ({ submissions, budgets }: ExecutiveSummaryProps
   // Campaign type performance
   const typeStats = submissions.reduce((acc, sub) => {
     if (!acc[sub.type]) {
-      acc[sub.type] = { total: 0, qualified: 0 };
+      acc[sub.type] = { total: 0, qualified: 0, salesQualified: 0 };
     }
     acc[sub.type].total++;
-    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
+    // Qualified includes MQL
+    if (sub.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
       acc[sub.type].qualified++;
     }
+    // Sales Qualified excludes MQL (for CPSQL calculation)
+    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
+      acc[sub.type].salesQualified++;
+    }
     return acc;
-  }, {} as Record<string, { total: number; qualified: number }>);
+  }, {} as Record<string, { total: number; qualified: number; salesQualified: number }>);
 
   const getTypeLabel = (type: string) => {
     const labels: Record<string, string> = {
@@ -128,7 +134,7 @@ export const ExecutiveSummary = ({ submissions, budgets }: ExecutiveSummaryProps
               const percentage = totalLeads > 0 ? ((stats.total / totalLeads) * 100).toFixed(0) : '0';
               const budget = getTypeBudget(type);
               const cpl = budget > 0 && stats.total > 0 ? (budget / stats.total).toFixed(2) : '0';
-              const cpsql = budget > 0 && stats.qualified > 0 ? (budget / stats.qualified).toFixed(2) : '0';
+              const cpsql = budget > 0 && stats.salesQualified > 0 ? (budget / stats.salesQualified).toFixed(2) : '0';
               
               return (
                 <div key={type} className="border rounded-lg p-4">

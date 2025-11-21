@@ -43,13 +43,19 @@ export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps
     const source = sub.utm_source || 'Unknown';
     
     if (!acc[source]) {
-      acc[source] = { total: 0, qualified: 0, conversions: 0 };
+      acc[source] = { total: 0, qualified: 0, salesQualified: 0, conversions: 0 };
     }
     
     acc[source].total++;
     
-    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
+    // Qualified includes MQL
+    if (sub.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
       acc[source].qualified++;
+    }
+    
+    // Sales Qualified excludes MQL (for CPSQL calculation)
+    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
+      acc[source].salesQualified++;
     }
     
     if (sub.sales_status === 'Gesprek gepland') {
@@ -57,7 +63,7 @@ export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps
     }
     
     return acc;
-  }, {} as Record<string, { total: number; qualified: number; conversions: number }>);
+  }, {} as Record<string, { total: number; qualified: number; salesQualified: number; conversions: number }>);
 
   // Calculate totals for each channel with budgets and email metrics
   const enhancedChannels = Object.entries(channelStats).map(([source, stats]) => {
@@ -85,7 +91,7 @@ export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps
     const qualRate = stats.total > 0 ? ((stats.qualified / stats.total) * 100).toFixed(1) : '0';
     const convRate = stats.total > 0 ? ((stats.conversions / stats.total) * 100).toFixed(1) : '0';
     const cpl = channelBudget > 0 ? (channelBudget / stats.total).toFixed(2) : '0';
-    const cpsql = channelBudget > 0 && stats.qualified > 0 ? (channelBudget / stats.qualified).toFixed(2) : '0';
+    const cpsql = channelBudget > 0 && stats.salesQualified > 0 ? (channelBudget / stats.salesQualified).toFixed(2) : '0';
     
     return {
       source,

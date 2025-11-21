@@ -67,7 +67,7 @@ export const PerformanceCharts = ({ submissions }: PerformanceChartsProps) => {
     const weekKey = weekStart.toISOString().split('T')[0];
     
     const existing = acc.find(item => item.week === weekKey);
-    const isQualified = sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit);
+    const isQualified = sub.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit);
     
     if (existing) {
       existing.total++;
@@ -82,7 +82,7 @@ export const PerformanceCharts = ({ submissions }: PerformanceChartsProps) => {
   const channelData = submissions.reduce((acc, sub) => {
     const source = sub.utm_source || 'Unknown';
     const existing = acc.find(item => item.channel === source);
-    const isQualified = sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit);
+    const isQualified = sub.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit);
     
     if (existing) {
       existing.total++;

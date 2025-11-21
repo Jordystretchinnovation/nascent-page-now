@@ -46,17 +46,22 @@ export const InsightsSection = ({ submissions, budgets }: InsightsSectionProps) 
   const channelStats = nonEmailSubmissions.reduce((acc, sub) => {
     const source = sub.utm_source || 'Unknown';
     if (!acc[source]) {
-      acc[source] = { total: 0, qualified: 0, conversions: 0 };
+      acc[source] = { total: 0, qualified: 0, salesQualified: 0, conversions: 0 };
     }
     acc[source].total++;
-    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
+    // Qualified includes MQL
+    if (sub.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
       acc[source].qualified++;
+    }
+    // Sales Qualified excludes MQL (for CPSQL)
+    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
+      acc[source].salesQualified++;
     }
     if (sub.sales_status === 'Gesprek gepland') {
       acc[source].conversions++;
     }
     return acc;
-  }, {} as Record<string, { total: number; qualified: number; conversions: number }>);
+  }, {} as Record<string, { total: number; qualified: number; salesQualified: number; conversions: number }>);
 
   const channelsWithMetrics = Object.entries(channelStats)
     .map(([source, stats]) => {
@@ -71,7 +76,7 @@ export const InsightsSection = ({ submissions, budgets }: InsightsSectionProps) 
       const channelBudget = uniqueBudgets.reduce((sum, b) => sum + b.budget, 0);
       const qualRate = stats.total > 0 ? (stats.qualified / stats.total) * 100 : 0;
       const cpl = channelBudget > 0 ? channelBudget / stats.total : 0;
-      const cpsql = channelBudget > 0 && stats.qualified > 0 ? channelBudget / stats.qualified : 0;
+      const cpsql = channelBudget > 0 && stats.salesQualified > 0 ? channelBudget / stats.salesQualified : 0;
       
       return { source, ...stats, budget: channelBudget, qualRate, cpl, cpsql };
     })
@@ -87,7 +92,8 @@ export const InsightsSection = ({ submissions, budgets }: InsightsSectionProps) 
       acc[campaign] = { total: 0, qualified: 0, conversions: 0 };
     }
     acc[campaign].total++;
-    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
+    // Qualified includes MQL
+    if (sub.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
       acc[campaign].qualified++;
     }
     if (sub.sales_status === 'Gesprek gepland') {
@@ -123,7 +129,8 @@ export const InsightsSection = ({ submissions, budgets }: InsightsSectionProps) 
       acc[sub.type] = { total: 0, qualified: 0 };
     }
     acc[sub.type].total++;
-    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
+    // Qualified includes MQL
+    if (sub.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
       acc[sub.type].qualified++;
     }
     return acc;
@@ -166,7 +173,7 @@ export const InsightsSection = ({ submissions, budgets }: InsightsSectionProps) 
   const emailSubmissions = submissions.filter(sub => isEmailSource(sub.utm_source));
   const emailLeads = emailSubmissions.length;
   const emailQualified = emailSubmissions.filter(s => 
-    s.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(s.kwaliteit)
+    s.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(s.kwaliteit)
   ).length;
 
   // CPL Evolution Over Time
