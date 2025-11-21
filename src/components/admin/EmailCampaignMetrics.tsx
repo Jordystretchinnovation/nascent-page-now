@@ -7,6 +7,7 @@ interface Submission {
   utm_source: string | null;
   utm_medium: string | null;
   utm_campaign: string | null;
+  utm_term: string | null;
 }
 
 interface CampaignBudget {
@@ -59,7 +60,8 @@ export const EmailCampaignMetrics = ({ submissions, budgets }: EmailCampaignMetr
         total: 0,
         qualified: 0,
         sql: 0,
-        conversions: 0
+        conversions: 0,
+        byTerm: {} as Record<string, { total: number; qualified: number; sql: number; conversions: number }>
       };
     }
     
@@ -78,9 +80,25 @@ export const EmailCampaignMetrics = ({ submissions, budgets }: EmailCampaignMetr
     if (sub.sales_status === 'Gesprek gepland') {
       acc[campaign].conversions++;
     }
+
+    // Track by utm_term
+    const term = sub.utm_term || 'No term';
+    if (!acc[campaign].byTerm[term]) {
+      acc[campaign].byTerm[term] = { total: 0, qualified: 0, sql: 0, conversions: 0 };
+    }
+    acc[campaign].byTerm[term].total++;
+    if (sub.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
+      acc[campaign].byTerm[term].qualified++;
+    }
+    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
+      acc[campaign].byTerm[term].sql++;
+    }
+    if (sub.sales_status === 'Gesprek gepland') {
+      acc[campaign].byTerm[term].conversions++;
+    }
     
     return acc;
-  }, {} as Record<string, { total: number; qualified: number; sql: number; conversions: number }>);
+  }, {} as Record<string, { total: number; qualified: number; sql: number; conversions: number; byTerm: Record<string, { total: number; qualified: number; sql: number; conversions: number }> }>);
 
   // Enhance with budget data
   const enhancedEmailCampaigns = Object.entries(emailCampaignStats).map(([campaign, stats]) => {
@@ -104,7 +122,8 @@ export const EmailCampaignMetrics = ({ submissions, budgets }: EmailCampaignMetr
       leads: stats.total,
       qualified: stats.qualified,
       sql: stats.sql,
-      conversions: stats.conversions
+      conversions: stats.conversions,
+      byTerm: stats.byTerm
     };
   }).sort((a, b) => {
     // Extract gh number from campaign name (e.g., "2506_gh5_leads" -> 5)
@@ -186,6 +205,46 @@ export const EmailCampaignMetrics = ({ submissions, budgets }: EmailCampaignMetr
                     <div>
                       <div className="text-xs text-muted-foreground">Email→Lead Rate</div>
                       <div className="text-sm font-medium">{campaign.emailToLeadRate.toFixed(2)}%</div>
+                    </div>
+                  </div>
+                )}
+
+                {/* UTM Term breakdown */}
+                {Object.keys(campaign.byTerm).length > 0 && (
+                  <div className="mt-4 pt-4 border-t">
+                    <div className="text-sm font-medium mb-3 text-muted-foreground">Breakdown by UTM Term</div>
+                    <div className="space-y-3">
+                      {Object.entries(campaign.byTerm)
+                        .sort((a, b) => b[1].total - a[1].total)
+                        .map(([term, stats]) => {
+                          const termQualRate = stats.total > 0 ? ((stats.qualified / stats.total) * 100).toFixed(0) : '0';
+                          const termSqlRate = stats.total > 0 ? ((stats.sql / stats.total) * 100).toFixed(0) : '0';
+                          const termConvRate = stats.total > 0 ? ((stats.conversions / stats.total) * 100).toFixed(1) : '0';
+                          
+                          return (
+                            <div key={term} className="bg-muted/30 rounded-md p-3">
+                              <div className="text-sm font-medium mb-2">{term}</div>
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+                                <div>
+                                  <div className="text-muted-foreground">Leads</div>
+                                  <div className="font-semibold">{stats.total}</div>
+                                </div>
+                                <div>
+                                  <div className="text-muted-foreground">Qualified</div>
+                                  <div className="font-semibold">{stats.qualified} ({termQualRate}%)</div>
+                                </div>
+                                <div>
+                                  <div className="text-muted-foreground">SQL</div>
+                                  <div className="font-semibold">{stats.sql} ({termSqlRate}%)</div>
+                                </div>
+                                <div>
+                                  <div className="text-muted-foreground">Conv</div>
+                                  <div className="font-semibold">{stats.conversions} ({termConvRate}%)</div>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
                     </div>
                   </div>
                 )}
