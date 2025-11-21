@@ -88,9 +88,19 @@ export const EmailCampaignMetrics = ({ submissions, budgets }: EmailCampaignMetr
       b.utm_campaign?.includes(campaign)
     );
     
+    const emailsSent = campaignBudget?.emails_sent || 0;
+    const openRate = campaignBudget?.open_rate || 0;
+    const clickRate = campaignBudget?.click_rate || 0;
+    
+    const emailToLeadRate = emailsSent > 0 ? ((stats.total / emailsSent) * 100) : 0;
+    
     return {
       campaign: campaign,
       campaignName: campaignBudget?.campaign_name || campaign,
+      emailsSent,
+      openRate,
+      clickRate,
+      emailToLeadRate,
       leads: stats.total,
       qualified: stats.qualified,
       sql: stats.sql,
@@ -129,8 +139,8 @@ export const EmailCampaignMetrics = ({ submissions, budgets }: EmailCampaignMetr
               <div key={campaign.campaign} className="border rounded-lg p-4">
                 <div className="font-semibold text-lg mb-3">{campaign.campaign}</div>
                 
-                {/* Main metrics in a grid */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {/* Lead metrics */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
                   <div>
                     <div className="text-xs text-muted-foreground">Total Leads</div>
                     <div className="text-2xl font-bold">{campaign.leads}</div>
@@ -157,6 +167,28 @@ export const EmailCampaignMetrics = ({ submissions, budgets }: EmailCampaignMetr
                     </div>
                   </div>
                 </div>
+
+                {/* Email metrics */}
+                {campaign.emailsSent > 0 && (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-3 border-t">
+                    <div>
+                      <div className="text-xs text-muted-foreground">Emails Sent</div>
+                      <div className="text-sm font-medium">{campaign.emailsSent.toLocaleString()}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-muted-foreground">Open Rate</div>
+                      <div className="text-sm font-medium">{campaign.openRate.toFixed(1)}%</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-muted-foreground">Click Rate</div>
+                      <div className="text-sm font-medium">{campaign.clickRate.toFixed(1)}%</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-muted-foreground">Email→Lead Rate</div>
+                      <div className="text-sm font-medium">{campaign.emailToLeadRate.toFixed(2)}%</div>
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })}
