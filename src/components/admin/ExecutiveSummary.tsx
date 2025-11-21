@@ -24,7 +24,7 @@ export const ExecutiveSummary = ({ submissions, budgets }: ExecutiveSummaryProps
   const totalLeads = submissions.length;
   
   const qualifiedLeads = submissions.filter(s => 
-    s.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(s.kwaliteit)
+    s.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(s.kwaliteit)
   ).length;
   
   const conversions = submissions.filter(s => s.sales_status === 'Gesprek gepland').length;
@@ -38,7 +38,7 @@ export const ExecutiveSummary = ({ submissions, budgets }: ExecutiveSummaryProps
       acc[sub.type] = { total: 0, qualified: 0 };
     }
     acc[sub.type].total++;
-    if (sub.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
+    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
       acc[sub.type].qualified++;
     }
     return acc;

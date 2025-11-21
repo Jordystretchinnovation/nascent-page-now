@@ -66,7 +66,7 @@ export const EmailCampaignMetrics = ({ submissions, budgets }: EmailCampaignMetr
     
     acc[campaign].total++;
     
-    if (sub.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
+    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
       acc[campaign].qualified++;
     }
     

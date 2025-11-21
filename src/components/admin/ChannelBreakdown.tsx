@@ -48,7 +48,7 @@ export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps
     
     acc[source].total++;
     
-    if (sub.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
+    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
       acc[source].qualified++;
     }
     

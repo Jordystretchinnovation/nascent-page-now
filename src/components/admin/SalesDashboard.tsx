@@ -123,8 +123,7 @@ export const SalesDashboard = () => {
       return kwaliteit === 'goed' || 
              kwaliteit === 'goed - klant' || 
              kwaliteit.includes('goed') && kwaliteit.includes('klant') ||
-             kwaliteit === 'redelijk' ||
-             kwaliteit === 'mql';
+             kwaliteit === 'redelijk';
     });
 
     if (salesRepFilter !== 'all') {
