@@ -33,6 +33,16 @@ export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps
     return emailSources.some(emailSource => lowerSource.includes(emailSource));
   };
 
+  // Calculate total media budget (deduplicated by campaign_name)
+  const uniqueBudgets = budgets.reduce((acc, budget) => {
+    if (!acc.some(b => b.campaign_name === budget.campaign_name)) {
+      acc.push(budget);
+    }
+    return acc;
+  }, [] as CampaignBudget[]);
+  
+  const totalBudget = uniqueBudgets.reduce((sum, b) => sum + b.budget, 0);
+
   // Filter out email sources - they have their own table
   const nonEmailSubmissions = submissions.filter(sub => 
     !isEmailSource(sub.utm_source)
@@ -70,36 +80,39 @@ export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps
     const relevantBudgets = budgets.filter(b => b.utm_source?.includes(source));
     
     // Deduplicate by campaign_name to avoid counting same budget twice for fb+ig
-    const uniqueBudgets = relevantBudgets.reduce((acc, budget) => {
+    const uniqueChannelBudgets = relevantBudgets.reduce((acc, budget) => {
       if (!acc.some(b => b.campaign_name === budget.campaign_name)) {
         acc.push(budget);
       }
       return acc;
     }, [] as CampaignBudget[]);
     
-    const channelBudget = uniqueBudgets.reduce((sum, b) => sum + b.budget, 0);
-    
     // Email-specific metrics
-    const totalEmailsSent = uniqueBudgets.reduce((sum, b) => sum + (b.emails_sent || 0), 0);
-    const avgOpenRate = uniqueBudgets.length > 0 
-      ? uniqueBudgets.reduce((sum, b) => sum + (b.open_rate || 0), 0) / uniqueBudgets.length 
+    const totalEmailsSent = uniqueChannelBudgets.reduce((sum, b) => sum + (b.emails_sent || 0), 0);
+    const avgOpenRate = uniqueChannelBudgets.length > 0 
+      ? uniqueChannelBudgets.reduce((sum, b) => sum + (b.open_rate || 0), 0) / uniqueChannelBudgets.length 
       : 0;
-    const avgClickRate = uniqueBudgets.length > 0 
-      ? uniqueBudgets.reduce((sum, b) => sum + (b.click_rate || 0), 0) / uniqueBudgets.length 
+    const avgClickRate = uniqueChannelBudgets.length > 0 
+      ? uniqueChannelBudgets.reduce((sum, b) => sum + (b.click_rate || 0), 0) / uniqueChannelBudgets.length 
       : 0;
     
     const qualRate = stats.total > 0 ? ((stats.qualified / stats.total) * 100).toFixed(1) : '0';
+    const sqlRate = stats.total > 0 ? ((stats.salesQualified / stats.total) * 100).toFixed(1) : '0';
     const convRate = stats.total > 0 ? ((stats.conversions / stats.total) * 100).toFixed(1) : '0';
-    const cpl = channelBudget > 0 ? (channelBudget / stats.total).toFixed(2) : '0';
-    const cpsql = channelBudget > 0 && stats.salesQualified > 0 ? (channelBudget / stats.salesQualified).toFixed(2) : '0';
+    
+    // Use total budget for cost calculations
+    const cpl = totalBudget > 0 ? (totalBudget / stats.total).toFixed(2) : '0';
+    const cpql = totalBudget > 0 && stats.qualified > 0 ? (totalBudget / stats.qualified).toFixed(2) : '0';
+    const cpsql = totalBudget > 0 && stats.salesQualified > 0 ? (totalBudget / stats.salesQualified).toFixed(2) : '0';
     
     return {
       source,
       ...stats,
-      budget: channelBudget,
       qualRate: parseFloat(qualRate),
+      sqlRate: parseFloat(sqlRate),
       convRate: parseFloat(convRate),
       cpl: parseFloat(cpl),
+      cpql: parseFloat(cpql),
       cpsql: parseFloat(cpsql),
       emailsSent: totalEmailsSent,
       openRate: avgOpenRate,
@@ -117,56 +130,76 @@ export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps
           <CardTitle>All Channels Overview</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-3">
+          <div className="space-y-4">
             {enhancedChannels.map((channel) => (
               <div key={channel.source} className="border rounded-lg p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="font-semibold text-lg">{channel.source}</div>
-                  <Badge variant={channel.qualRate > 30 ? "default" : "secondary"}>
-                    {channel.qualRate}% qualified
-                  </Badge>
+                <div className="font-semibold text-lg mb-3">{channel.source}</div>
+                
+                {/* Main metrics in a grid */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+                  <div>
+                    <div className="text-xs text-muted-foreground">Total Leads</div>
+                    <div className="text-2xl font-bold">{channel.total}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-muted-foreground">Qualified</div>
+                    <div className="text-xl font-bold">{channel.qualified}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {channel.qualRate.toFixed(0)}% of total
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-muted-foreground">SQL</div>
+                    <div className="text-xl font-bold">{channel.salesQualified}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {channel.sqlRate.toFixed(0)}% of total
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-muted-foreground">Conversions</div>
+                    <div className="text-xl font-bold">{channel.conversions}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {channel.convRate}% of total
+                    </div>
+                  </div>
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-sm">
-                  <div>
-                    <div className="text-muted-foreground">Leads</div>
-                    <div className="font-medium">{channel.total}</div>
+
+                {/* Cost metrics or Email metrics */}
+                {channel.isEmail && channel.emailsSent > 0 ? (
+                  <div className="grid grid-cols-3 gap-3 pt-3 border-t">
+                    <div>
+                      <div className="text-xs text-muted-foreground">Emails Sent</div>
+                      <div className="text-sm font-medium">{channel.emailsSent.toLocaleString()}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-muted-foreground">Open Rate</div>
+                      <div className="text-sm font-medium">{channel.openRate.toFixed(1)}%</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-muted-foreground">Click Rate</div>
+                      <div className="text-sm font-medium">{channel.clickRate.toFixed(1)}%</div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="text-muted-foreground">Qualified</div>
-                    <div className="font-medium">{channel.qualified}</div>
+                ) : totalBudget > 0 ? (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-3 border-t">
+                    <div>
+                      <div className="text-xs text-muted-foreground">CPL</div>
+                      <div className="text-sm font-medium">€{channel.cpl}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-muted-foreground">CPQL</div>
+                      <div className="text-sm font-medium">€{channel.cpql}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-muted-foreground">CPSQL</div>
+                      <div className="text-sm font-medium">€{channel.cpsql}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-muted-foreground">Total Budget</div>
+                      <div className="text-sm font-medium">€{totalBudget.toFixed(0)}</div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="text-muted-foreground">Conversions</div>
-                    <div className="font-medium">{channel.conversions} ({channel.convRate}%)</div>
-                  </div>
-                  {channel.isEmail && channel.emailsSent > 0 ? (
-                    <>
-                      <div>
-                        <div className="text-muted-foreground">Emails Sent</div>
-                        <div className="font-medium">{channel.emailsSent.toLocaleString()}</div>
-                      </div>
-                      <div>
-                        <div className="text-muted-foreground">Open Rate</div>
-                        <div className="font-medium">{channel.openRate.toFixed(1)}%</div>
-                      </div>
-                      <div>
-                        <div className="text-muted-foreground">Click Rate</div>
-                        <div className="font-medium">{channel.clickRate.toFixed(1)}%</div>
-                      </div>
-                    </>
-                  ) : channel.budget > 0 ? (
-                    <>
-                      <div>
-                        <div className="text-muted-foreground">Budget</div>
-                        <div className="font-medium">€{channel.budget.toFixed(0)}</div>
-                      </div>
-                      <div>
-                        <div className="text-muted-foreground">CPL / CPSQL</div>
-                        <div className="font-medium">€{channel.cpl} / €{channel.cpsql}</div>
-                      </div>
-                    </>
-                  ) : null}
-                </div>
+                ) : null}
               </div>
             ))}
           </div>
