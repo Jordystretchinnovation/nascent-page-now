@@ -151,7 +151,6 @@ export const ExecutiveSummary = ({ submissions, budgets }: ExecutiveSummaryProps
           <CardContent>
             <div className="text-3xl font-bold text-foreground">{qualifiedLeads}</div>
             <Badge variant="secondary" className="mt-2">{qualificationRate}% of total</Badge>
-            <p className="text-xs text-muted-foreground mt-1">Includes MQL</p>
             <div className="text-xs text-muted-foreground mt-1">
               S:{qualifiedByType.stalen} L:{qualifiedByType.renderboek} T:{qualifiedByType.keukentrends} K:{qualifiedByType.korting}
             </div>
@@ -168,7 +167,6 @@ export const ExecutiveSummary = ({ submissions, budgets }: ExecutiveSummaryProps
           <CardContent>
             <div className="text-3xl font-bold text-foreground">{sqlLeads}</div>
             <Badge variant="secondary" className="mt-2">{sqlRate}% of total</Badge>
-            <p className="text-xs text-muted-foreground mt-1">Goed + Redelijk</p>
             <div className="text-xs text-muted-foreground mt-1">
               S:{sqlByType.stalen} L:{sqlByType.renderboek} T:{sqlByType.keukentrends} K:{sqlByType.korting}
             </div>
