@@ -47,13 +47,13 @@ export const PerformanceCharts = ({ submissions }: PerformanceChartsProps) => {
     return acc;
   }, [] as { name: string; value: number }[]);
 
-  // Quality distribution - following the same logic as top cards
+  // Quality distribution - following the same logic as top cards (cumulative)
   const totalLeads = submissions.length;
   const slechtCount = submissions.filter(s => s.kwaliteit === 'Slecht').length;
-  const mqlCount = submissions.filter(s => s.kwaliteit === 'MQL').length;
   const sqlCount = submissions.filter(s => 
     s.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(s.kwaliteit)
   ).length;
+  const mqlCount = submissions.filter(s => s.kwaliteit === 'MQL').length + sqlCount; // MQL + SQL (cumulative)
   
   const qualityData = [
     { name: 'Leads', count: totalLeads },
