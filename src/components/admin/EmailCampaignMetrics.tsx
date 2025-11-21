@@ -137,7 +137,7 @@ export const EmailCampaignMetrics = ({ submissions, budgets }: EmailCampaignMetr
             
             return (
               <div key={campaign.campaign} className="border rounded-lg p-4">
-                <div className="font-semibold text-lg mb-3">{campaign.campaign}</div>
+                <div className="font-semibold text-lg mb-3">{campaign.campaignName}</div>
                 
                 {/* Lead metrics */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
