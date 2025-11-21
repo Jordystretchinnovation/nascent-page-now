@@ -42,7 +42,7 @@ export const ExecutiveSummary = ({ submissions, budgets }: ExecutiveSummaryProps
   // Campaign type performance
   const typeStats = submissions.reduce((acc, sub) => {
     if (!acc[sub.type]) {
-      acc[sub.type] = { total: 0, qualified: 0, salesQualified: 0 };
+      acc[sub.type] = { total: 0, qualified: 0, salesQualified: 0, conversions: 0 };
     }
     acc[sub.type].total++;
     // Qualified includes MQL
@@ -53,8 +53,12 @@ export const ExecutiveSummary = ({ submissions, budgets }: ExecutiveSummaryProps
     if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
       acc[sub.type].salesQualified++;
     }
+    // Conversions
+    if (sub.sales_status === 'Gesprek gepland') {
+      acc[sub.type].conversions++;
+    }
     return acc;
-  }, {} as Record<string, { total: number; qualified: number; salesQualified: number }>);
+  }, {} as Record<string, { total: number; qualified: number; salesQualified: number; conversions: number }>);
 
   const getTypeLabel = (type: string) => {
     const labels: Record<string, string> = {
@@ -146,28 +150,61 @@ export const ExecutiveSummary = ({ submissions, budgets }: ExecutiveSummaryProps
           <CardTitle>Campaign Type Performance</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="space-y-4">
             {Object.entries(typeStats).map(([type, stats]) => {
-              const qualRate = stats.total > 0 ? ((stats.qualified / stats.total) * 100).toFixed(0) : '0';
-              const percentage = totalLeads > 0 ? ((stats.total / totalLeads) * 100).toFixed(0) : '0';
               const budget = getTypeBudget(type);
               const cpl = budget > 0 && stats.total > 0 ? (budget / stats.total).toFixed(2) : '0';
+              const cpql = budget > 0 && stats.qualified > 0 ? (budget / stats.qualified).toFixed(2) : '0';
               const cpsql = budget > 0 && stats.salesQualified > 0 ? (budget / stats.salesQualified).toFixed(2) : '0';
               
               return (
                 <div key={type} className="border rounded-lg p-4">
-                  <div className="font-medium mb-2">{getTypeLabel(type)}</div>
-                  <div className="text-2xl font-bold">{stats.total}</div>
-                  <div className="text-sm text-muted-foreground mt-1">
-                    {stats.qualified} qualified ({qualRate}%)
+                  <div className="font-semibold text-lg mb-3">{getTypeLabel(type)}</div>
+                  
+                  {/* Main metrics in a grid */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
+                    <div>
+                      <div className="text-xs text-muted-foreground">Total Leads</div>
+                      <div className="text-2xl font-bold">{stats.total}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-muted-foreground">Qualified</div>
+                      <div className="text-xl font-bold">{stats.qualified}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {stats.total > 0 ? ((stats.qualified / stats.total) * 100).toFixed(0) : '0'}% of total
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-muted-foreground">SQL</div>
+                      <div className="text-xl font-bold">{stats.salesQualified}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {stats.total > 0 ? ((stats.salesQualified / stats.total) * 100).toFixed(0) : '0'}% of total
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-muted-foreground">Conversions</div>
+                      <div className="text-xl font-bold">{stats.conversions}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {stats.total > 0 ? ((stats.conversions / stats.total) * 100).toFixed(0) : '0'}% of total
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex gap-2 mt-2">
-                    <Badge variant="outline">{percentage}% of total</Badge>
-                  </div>
+
+                  {/* Cost metrics */}
                   {budget > 0 && (
-                    <div className="text-xs text-muted-foreground mt-2 space-y-1">
-                      <div>CPL: €{cpl}</div>
-                      <div>CPSQL: €{cpsql}</div>
+                    <div className="grid grid-cols-3 gap-3 pt-3 border-t">
+                      <div>
+                        <div className="text-xs text-muted-foreground">CPL</div>
+                        <div className="text-sm font-medium">€{cpl}</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-muted-foreground">CPQL</div>
+                        <div className="text-sm font-medium">€{cpql}</div>
+                      </div>
+                      <div>
+                        <div className="text-xs text-muted-foreground">CPSQL</div>
+                        <div className="text-sm font-medium">€{cpsql}</div>
+                      </div>
                     </div>
                   )}
                 </div>
