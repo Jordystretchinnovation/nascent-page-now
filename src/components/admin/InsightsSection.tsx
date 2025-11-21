@@ -53,8 +53,8 @@ export const InsightsSection = ({ submissions, budgets }: InsightsSectionProps) 
     if (sub.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
       acc[source].qualified++;
     }
-    // Sales Qualified excludes MQL (for CPSQL)
-    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
+    // Sales Qualified excludes MQL and keukentrends
+    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit) && sub.type !== 'keukentrends') {
       acc[source].salesQualified++;
     }
     if (sub.sales_status === 'Gesprek gepland') {
@@ -75,32 +75,38 @@ export const InsightsSection = ({ submissions, budgets }: InsightsSectionProps) 
       
       const channelBudget = uniqueBudgets.reduce((sum, b) => sum + b.budget, 0);
       const qualRate = stats.total > 0 ? (stats.qualified / stats.total) * 100 : 0;
+      const sqlRate = stats.total > 0 ? (stats.salesQualified / stats.total) * 100 : 0;
       const cpl = channelBudget > 0 ? channelBudget / stats.total : 0;
       const cpsql = channelBudget > 0 && stats.salesQualified > 0 ? channelBudget / stats.salesQualified : 0;
+      const score = sqlRate * Math.log(stats.salesQualified + 1);
       
-      return { source, ...stats, budget: channelBudget, qualRate, cpl, cpsql };
+      return { source, ...stats, budget: channelBudget, qualRate, sqlRate, cpl, cpsql, score };
     })
     .filter(c => c.total >= 5)
-    .sort((a, b) => b.qualRate - a.qualRate);
+    .sort((a, b) => b.score - a.score);
 
-  const bestChannel = channelsWithMetrics[0];
+  const topChannels = channelsWithMetrics.slice(0, 3);
 
   // Best Campaign Analysis (paid campaigns only, exclude email)
   const campaignStats = nonEmailSubmissions.reduce((acc, sub) => {
     const campaign = sub.utm_campaign || 'Unknown';
     if (!acc[campaign]) {
-      acc[campaign] = { total: 0, qualified: 0, conversions: 0 };
+      acc[campaign] = { total: 0, qualified: 0, salesQualified: 0, conversions: 0 };
     }
     acc[campaign].total++;
     // Qualified includes MQL
     if (sub.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
       acc[campaign].qualified++;
     }
+    // Sales Qualified excludes MQL and keukentrends
+    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit) && sub.type !== 'keukentrends') {
+      acc[campaign].salesQualified++;
+    }
     if (sub.sales_status === 'Gesprek gepland') {
       acc[campaign].conversions++;
     }
     return acc;
-  }, {} as Record<string, { total: number; qualified: number; conversions: number }>);
+  }, {} as Record<string, { total: number; qualified: number; salesQualified: number; conversions: number }>);
 
   const campaignsWithMetrics = Object.entries(campaignStats)
     .map(([campaign, stats]) => {
@@ -114,36 +120,43 @@ export const InsightsSection = ({ submissions, budgets }: InsightsSectionProps) 
       
       const campaignBudget = uniqueBudgets.reduce((sum, b) => sum + b.budget, 0);
       const qualRate = stats.total > 0 ? (stats.qualified / stats.total) * 100 : 0;
+      const sqlRate = stats.total > 0 ? (stats.salesQualified / stats.total) * 100 : 0;
       const convRate = stats.total > 0 ? (stats.conversions / stats.total) * 100 : 0;
+      const score = sqlRate * Math.log(stats.salesQualified + 1);
       
-      return { campaign, ...stats, budget: campaignBudget, qualRate, convRate };
+      return { campaign, ...stats, budget: campaignBudget, qualRate, sqlRate, convRate, score };
     })
     .filter(c => c.total >= 5)
-    .sort((a, b) => b.qualRate - a.qualRate);
+    .sort((a, b) => b.score - a.score);
 
-  const bestCampaign = campaignsWithMetrics[0];
+  const topCampaigns = campaignsWithMetrics.slice(0, 3);
 
   // Best Lead Magnet Type Analysis
   const typeStats = submissions.reduce((acc, sub) => {
     if (!acc[sub.type]) {
-      acc[sub.type] = { total: 0, qualified: 0 };
+      acc[sub.type] = { total: 0, qualified: 0, salesQualified: 0 };
     }
     acc[sub.type].total++;
     // Qualified includes MQL
     if (sub.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
       acc[sub.type].qualified++;
     }
+    // Sales Qualified excludes MQL and keukentrends
+    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit) && sub.type !== 'keukentrends') {
+      acc[sub.type].salesQualified++;
+    }
     return acc;
-  }, {} as Record<string, { total: number; qualified: number }>);
+  }, {} as Record<string, { total: number; qualified: number; salesQualified: number }>);
 
   const typesWithMetrics = Object.entries(typeStats)
-    .map(([type, stats]) => ({
-      type,
-      ...stats,
-      qualRate: stats.total > 0 ? (stats.qualified / stats.total) * 100 : 0
-    }))
+    .map(([type, stats]) => {
+      const qualRate = stats.total > 0 ? (stats.qualified / stats.total) * 100 : 0;
+      const sqlRate = stats.total > 0 ? (stats.salesQualified / stats.total) * 100 : 0;
+      const score = sqlRate * Math.log(stats.salesQualified + 1);
+      return { type, ...stats, qualRate, sqlRate, score };
+    })
     .filter(t => t.total >= 5)
-    .sort((a, b) => b.qualRate - a.qualRate);
+    .sort((a, b) => b.score - a.score);
 
   const bestLeadMagnet = typesWithMetrics[0];
 
@@ -235,135 +248,181 @@ export const InsightsSection = ({ submissions, budgets }: InsightsSectionProps) 
     <div className="space-y-6">
       <h2 className="text-2xl font-semibold">Key Insights</h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {/* Best Channel */}
-        {bestChannel && (
-          <Card>
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Best Channel</CardTitle>
-                <Award className="h-5 w-5 text-primary" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{bestChannel.source}</div>
-              <div className="space-y-1 mt-3 text-sm">
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Qualification Rate</span>
-                  <Badge variant="default">{bestChannel.qualRate.toFixed(1)}%</Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Leads</span>
-                  <span className="font-medium">{bestChannel.total}</span>
-                </div>
-                {bestChannel.budget > 0 && (
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">CPSQL</span>
-                    <span className="font-medium">€{bestChannel.cpsql.toFixed(2)}</span>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+      <div className="space-y-6">
+        {/* Top 3 Channels */}
+        {topChannels.length > 0 && (
+          <div>
+            <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+              <Award className="h-5 w-5 text-primary" />
+              Top Channels
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {topChannels.map((channel, index) => (
+                <Card key={channel.source}>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <Badge variant={index === 0 ? "default" : "secondary"}>
+                        #{index + 1}
+                      </Badge>
+                      <Badge variant="outline">{channel.score.toFixed(1)}</Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold mb-3">{channel.source}</div>
+                    <div className="space-y-1 text-sm">
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">SQL Rate</span>
+                        <Badge variant="default">{channel.sqlRate.toFixed(1)}%</Badge>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">SQL Count</span>
+                        <span className="font-medium">{channel.salesQualified}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Total Leads</span>
+                        <span className="font-medium">{channel.total}</span>
+                      </div>
+                      {channel.budget > 0 && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">CPSQL</span>
+                          <span className="font-medium">€{channel.cpsql.toFixed(2)}</span>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
         )}
 
-        {/* Best Campaign */}
-        {bestCampaign && (
-          <Card>
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Best Campaign</CardTitle>
-                <TrendingUp className="h-5 w-5 text-primary" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold truncate">{bestCampaign.campaign}</div>
-              <div className="space-y-1 mt-3 text-sm">
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Qualification Rate</span>
-                  <Badge variant="default">{bestCampaign.qualRate.toFixed(1)}%</Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Conversions</span>
-                  <span className="font-medium">{bestCampaign.conversions} ({bestCampaign.convRate.toFixed(1)}%)</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Total Leads</span>
-                  <span className="font-medium">{bestCampaign.total}</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Top 3 Campaigns */}
+        {topCampaigns.length > 0 && (
+          <div>
+            <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-primary" />
+              Top Campaigns
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {topCampaigns.map((campaign, index) => (
+                <Card key={campaign.campaign}>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <Badge variant={index === 0 ? "default" : "secondary"}>
+                        #{index + 1}
+                      </Badge>
+                      <Badge variant="outline">{campaign.score.toFixed(1)}</Badge>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-xl font-bold mb-3 truncate" title={campaign.campaign}>
+                      {campaign.campaign}
+                    </div>
+                    <div className="space-y-1 text-sm">
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">SQL Rate</span>
+                        <Badge variant="default">{campaign.sqlRate.toFixed(1)}%</Badge>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">SQL Count</span>
+                        <span className="font-medium">{campaign.salesQualified}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Conversions</span>
+                        <span className="font-medium">{campaign.conversions} ({campaign.convRate.toFixed(1)}%)</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Total Leads</span>
+                        <span className="font-medium">{campaign.total}</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
         )}
 
         {/* Best Lead Magnet */}
         {bestLeadMagnet && (
-          <Card>
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Best Lead Magnet</CardTitle>
-                <Award className="h-5 w-5 text-primary" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{getTypeLabel(bestLeadMagnet.type)}</div>
-              <div className="space-y-1 mt-3 text-sm">
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Qualification Rate</span>
-                  <Badge variant="default">{bestLeadMagnet.qualRate.toFixed(1)}%</Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Qualified Leads</span>
-                  <span className="font-medium">{bestLeadMagnet.qualified}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Total Leads</span>
-                  <span className="font-medium">{bestLeadMagnet.total}</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Email Campaign Performance */}
-        {emailBudgets.length > 0 && (
-          <Card className="md:col-span-2 lg:col-span-3">
-            <CardHeader className="pb-3">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Email Campaign Performance</CardTitle>
-                <Mail className="h-5 w-5 text-primary" />
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
-                <div>
-                  <div className="text-muted-foreground mb-1">Emails Sent</div>
-                  <div className="text-2xl font-bold">{totalEmailsSent.toLocaleString()}</div>
-                </div>
-                <div>
-                  <div className="text-muted-foreground mb-1">Avg Open Rate</div>
-                  <div className="text-2xl font-bold">{avgOpenRate.toFixed(1)}%</div>
-                </div>
-                <div>
-                  <div className="text-muted-foreground mb-1">Avg Click Rate</div>
-                  <div className="text-2xl font-bold">{avgClickRate.toFixed(1)}%</div>
-                </div>
-                <div>
-                  <div className="text-muted-foreground mb-1">Leads Generated</div>
-                  <div className="text-2xl font-bold">{emailLeads}</div>
-                </div>
-                <div>
-                  <div className="text-muted-foreground mb-1">Qualified Leads</div>
-                  <div className="text-2xl font-bold">{emailQualified}</div>
-                  <Badge variant="secondary" className="mt-1">
-                    {emailLeads > 0 ? ((emailQualified / emailLeads) * 100).toFixed(1) : 0}% qual rate
-                  </Badge>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <div>
+            <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+              <Award className="h-5 w-5 text-primary" />
+              Best Lead Magnet
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <Card>
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <Badge variant="default">#1</Badge>
+                    <Badge variant="outline">{bestLeadMagnet.score.toFixed(1)}</Badge>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold mb-3">{getTypeLabel(bestLeadMagnet.type)}</div>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">SQL Rate</span>
+                      <Badge variant="default">{bestLeadMagnet.sqlRate.toFixed(1)}%</Badge>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">SQL Count</span>
+                      <span className="font-medium">{bestLeadMagnet.salesQualified}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">Qual. Rate</span>
+                      <span className="font-medium">{bestLeadMagnet.qualRate.toFixed(1)}%</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">Total Leads</span>
+                      <span className="font-medium">{bestLeadMagnet.total}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         )}
       </div>
+
+      {/* Email Campaign Performance */}
+      {emailBudgets.length > 0 && (
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              <Mail className="h-5 w-5 text-primary" />
+              <CardTitle className="text-sm font-medium text-muted-foreground">Email Campaign Performance</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 text-sm">
+              <div>
+                <div className="text-muted-foreground mb-1">Emails Sent</div>
+                <div className="text-2xl font-bold">{totalEmailsSent.toLocaleString()}</div>
+              </div>
+              <div>
+                <div className="text-muted-foreground mb-1">Avg Open Rate</div>
+                <div className="text-2xl font-bold">{avgOpenRate.toFixed(1)}%</div>
+              </div>
+              <div>
+                <div className="text-muted-foreground mb-1">Avg Click Rate</div>
+                <div className="text-2xl font-bold">{avgClickRate.toFixed(1)}%</div>
+              </div>
+              <div>
+                <div className="text-muted-foreground mb-1">Leads Generated</div>
+                <div className="text-2xl font-bold">{emailLeads}</div>
+              </div>
+              <div>
+                <div className="text-muted-foreground mb-1">Qualified Leads</div>
+                <div className="text-2xl font-bold">{emailQualified}</div>
+                <Badge variant="secondary" className="mt-1">
+                  {emailLeads > 0 ? ((emailQualified / emailLeads) * 100).toFixed(1) : 0}% qual rate
+                </Badge>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* CPL Trend Chart */}
       {cplTrendData.length > 0 && (
