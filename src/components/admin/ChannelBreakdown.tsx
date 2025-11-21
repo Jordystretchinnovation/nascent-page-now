@@ -102,10 +102,10 @@ export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps
     const sqlRate = stats.total > 0 ? ((stats.salesQualified / stats.total) * 100).toFixed(1) : '0';
     const convRate = stats.total > 0 ? ((stats.conversions / stats.total) * 100).toFixed(1) : '0';
     
-    // Use total budget for cost calculations
-    const cpl = totalBudget > 0 ? (totalBudget / stats.total).toFixed(2) : '0';
-    const cpql = totalBudget > 0 && stats.qualified > 0 ? (totalBudget / stats.qualified).toFixed(2) : '0';
-    const cpsql = totalBudget > 0 && stats.salesQualified > 0 ? (totalBudget / stats.salesQualified).toFixed(2) : '0';
+    // Use channel budget for cost calculations
+    const cpl = channelBudget > 0 ? (channelBudget / stats.total).toFixed(2) : '0';
+    const cpql = channelBudget > 0 && stats.qualified > 0 ? (channelBudget / stats.qualified).toFixed(2) : '0';
+    const cpsql = channelBudget > 0 && stats.salesQualified > 0 ? (channelBudget / stats.salesQualified).toFixed(2) : '0';
     
     return {
       source,
@@ -183,7 +183,7 @@ export const ChannelBreakdown = ({ submissions, budgets }: ChannelBreakdownProps
                       <div className="text-sm font-medium">{channel.clickRate.toFixed(1)}%</div>
                     </div>
                   </div>
-                ) : totalBudget > 0 ? (
+                ) : channel.channelBudget > 0 ? (
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-3 border-t">
                     <div>
                       <div className="text-xs text-muted-foreground">CPL</div>
