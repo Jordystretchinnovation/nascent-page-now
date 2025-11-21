@@ -231,7 +231,8 @@ export const CampaignPerformanceTable = ({ submissions, budgets }: CampaignPerfo
     }
     
     // SQL includes only Goed and Redelijk (excludes MQL)
-    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
+    // Exclude keukentrends leads from SQL count
+    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit) && sub.type !== 'keukentrends') {
       acc[campaign].salesQualified++;
       if (leadType in acc[campaign].sqlByType) {
         acc[campaign].sqlByType[leadType]++;
