@@ -1,6 +1,4 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Mail } from "lucide-react";
 
 interface Submission {
@@ -60,15 +58,21 @@ export const EmailCampaignMetrics = ({ submissions, budgets }: EmailCampaignMetr
       acc[campaign] = {
         total: 0,
         qualified: 0,
+        sql: 0,
         conversions: 0
       };
     }
     
     acc[campaign].total++;
     
-    // Qualified includes MQL
+    // Qualified includes MQL, Goed, Redelijk
     if (sub.kwaliteit && ['Goed', 'MQL', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
       acc[campaign].qualified++;
+    }
+    
+    // SQL includes only Goed and Redelijk (excludes MQL)
+    if (sub.kwaliteit && ['Goed', 'Goed - klant', 'Goed - Klant', 'Redelijk'].includes(sub.kwaliteit)) {
+      acc[campaign].sql++;
     }
     
     if (sub.sales_status === 'Gesprek gepland') {
@@ -76,7 +80,7 @@ export const EmailCampaignMetrics = ({ submissions, budgets }: EmailCampaignMetr
     }
     
     return acc;
-  }, {} as Record<string, { total: number; qualified: number; conversions: number }>);
+  }, {} as Record<string, { total: number; qualified: number; sql: number; conversions: number }>);
 
   // Enhance with budget data
   const enhancedEmailCampaigns = Object.entries(emailCampaignStats).map(([campaign, stats]) => {
@@ -84,32 +88,13 @@ export const EmailCampaignMetrics = ({ submissions, budgets }: EmailCampaignMetr
       b.utm_campaign?.includes(campaign)
     );
     
-    const emailsSent = campaignBudget?.emails_sent || 0;
-    const openRate = campaignBudget?.open_rate || 0;
-    const clickRate = campaignBudget?.click_rate || 0;
-    
-    const qualRate = stats.total > 0 ? ((stats.qualified / stats.total) * 100) : 0;
-    const convRate = stats.total > 0 ? ((stats.conversions / stats.total) * 100) : 0;
-    
-    // Calculate email-specific metrics
-    const emailToLeadRate = emailsSent > 0 ? ((stats.total / emailsSent) * 100) : 0;
-    const clickToLeadRate = (emailsSent > 0 && clickRate > 0) 
-      ? ((stats.total / (emailsSent * (clickRate / 100))) * 100) 
-      : 0;
-    
     return {
       campaign: campaign,
       campaignName: campaignBudget?.campaign_name || campaign,
-      emailsSent,
-      openRate,
-      clickRate,
       leads: stats.total,
       qualified: stats.qualified,
-      conversions: stats.conversions,
-      qualRate,
-      convRate,
-      emailToLeadRate,
-      clickToLeadRate
+      sql: stats.sql,
+      conversions: stats.conversions
     };
   }).sort((a, b) => {
     // Extract gh number from campaign name (e.g., "2506_gh5_leads" -> 5)
@@ -124,30 +109,6 @@ export const EmailCampaignMetrics = ({ submissions, budgets }: EmailCampaignMetr
     return ghA - ghB;
   });
 
-  // Calculate totals
-  const totals = enhancedEmailCampaigns.reduce((acc, campaign) => ({
-    emailsSent: acc.emailsSent + campaign.emailsSent,
-    leads: acc.leads + campaign.leads,
-    qualified: acc.qualified + campaign.qualified,
-    conversions: acc.conversions + campaign.conversions
-  }), {
-    emailsSent: 0,
-    leads: 0,
-    qualified: 0,
-    conversions: 0
-  });
-
-  const avgOpenRate = enhancedEmailCampaigns.length > 0
-    ? enhancedEmailCampaigns.reduce((sum, c) => sum + c.openRate, 0) / enhancedEmailCampaigns.length
-    : 0;
-  
-  const avgClickRate = enhancedEmailCampaigns.length > 0
-    ? enhancedEmailCampaigns.reduce((sum, c) => sum + c.clickRate, 0) / enhancedEmailCampaigns.length
-    : 0;
-
-  const totalQualRate = totals.leads > 0 ? ((totals.qualified / totals.leads) * 100) : 0;
-  const totalConvRate = totals.leads > 0 ? ((totals.conversions / totals.leads) * 100) : 0;
-  const totalEmailToLeadRate = totals.emailsSent > 0 ? ((totals.leads / totals.emailsSent) * 100) : 0;
 
   return (
     <Card>
@@ -158,115 +119,47 @@ export const EmailCampaignMetrics = ({ submissions, budgets }: EmailCampaignMetr
         </div>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Campaign</TableHead>
-                <TableHead className="text-right">Emails Sent</TableHead>
-                <TableHead className="text-right">Open Rate</TableHead>
-                <TableHead className="text-right">Click Rate</TableHead>
-                <TableHead className="text-right">Leads</TableHead>
-                <TableHead className="text-right">Email→Lead</TableHead>
-                <TableHead className="text-right">Qualified</TableHead>
-                <TableHead className="text-right">Qual. Rate</TableHead>
-                <TableHead className="text-right">Conversions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {enhancedEmailCampaigns.map((campaign, index) => (
-                <TableRow key={index}>
-                  <TableCell>
-                    <div>
-                      <div className="font-medium">{campaign.campaignName}</div>
-                      {campaign.campaign !== campaign.campaignName && (
-                        <div className="text-xs text-muted-foreground">{campaign.campaign}</div>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {campaign.emailsSent > 0 ? campaign.emailsSent.toLocaleString() : '-'}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {campaign.openRate > 0 ? (
-                      <Badge variant="secondary">{campaign.openRate.toFixed(1)}%</Badge>
-                    ) : '-'}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {campaign.clickRate > 0 ? (
-                      <Badge variant="secondary">{campaign.clickRate.toFixed(1)}%</Badge>
-                    ) : '-'}
-                  </TableCell>
-                  <TableCell className="text-right font-medium">
-                    {campaign.leads}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {campaign.emailToLeadRate > 0 ? (
-                      <span className="text-sm">{campaign.emailToLeadRate.toFixed(2)}%</span>
-                    ) : '-'}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {campaign.qualified}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Badge variant={campaign.qualRate > 30 ? "default" : "secondary"}>
-                      {campaign.qualRate.toFixed(0)}%
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div>
-                      <div className="font-medium">{campaign.conversions}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {campaign.convRate.toFixed(1)}%
-                      </div>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-              
-              {/* Totals Row */}
-              <TableRow className="font-bold bg-primary/5 border-t-2">
-                <TableCell className="font-bold">TOTAL</TableCell>
-                <TableCell className="text-right">
-                  {totals.emailsSent > 0 ? totals.emailsSent.toLocaleString() : '-'}
-                </TableCell>
-                <TableCell className="text-right">
-                  {avgOpenRate > 0 ? (
-                    <Badge variant="secondary">{avgOpenRate.toFixed(1)}%</Badge>
-                  ) : '-'}
-                </TableCell>
-                <TableCell className="text-right">
-                  {avgClickRate > 0 ? (
-                    <Badge variant="secondary">{avgClickRate.toFixed(1)}%</Badge>
-                  ) : '-'}
-                </TableCell>
-                <TableCell className="text-right font-bold">
-                  {totals.leads}
-                </TableCell>
-                <TableCell className="text-right">
-                  {totalEmailToLeadRate > 0 ? (
-                    <span className="text-sm">{totalEmailToLeadRate.toFixed(2)}%</span>
-                  ) : '-'}
-                </TableCell>
-                <TableCell className="text-right">
-                  {totals.qualified}
-                </TableCell>
-                <TableCell className="text-right">
-                  <Badge variant={totalQualRate > 30 ? "default" : "secondary"}>
-                    {totalQualRate.toFixed(0)}%
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-right">
+        <div className="space-y-4">
+          {enhancedEmailCampaigns.map((campaign) => {
+            const qualRate = campaign.leads > 0 ? ((campaign.qualified / campaign.leads) * 100).toFixed(0) : '0';
+            const sqlRate = campaign.leads > 0 ? ((campaign.sql / campaign.leads) * 100).toFixed(0) : '0';
+            const convRate = campaign.leads > 0 ? ((campaign.conversions / campaign.leads) * 100).toFixed(1) : '0';
+            
+            return (
+              <div key={campaign.campaign} className="border rounded-lg p-4">
+                <div className="font-semibold text-lg mb-3">{campaign.campaign}</div>
+                
+                {/* Main metrics in a grid */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   <div>
-                    <div className="font-bold">{totals.conversions}</div>
-                    <div className="text-xs font-normal text-muted-foreground">
-                      {totalConvRate.toFixed(1)}%
+                    <div className="text-xs text-muted-foreground">Total Leads</div>
+                    <div className="text-2xl font-bold">{campaign.leads}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-muted-foreground">Qualified</div>
+                    <div className="text-xl font-bold">{campaign.qualified}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {qualRate}% of total
                     </div>
                   </div>
-                </TableCell>
-              </TableRow>
-            </TableBody>
-          </Table>
+                  <div>
+                    <div className="text-xs text-muted-foreground">SQL</div>
+                    <div className="text-xl font-bold">{campaign.sql}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {sqlRate}% of total
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-xs text-muted-foreground">Conversions</div>
+                    <div className="text-xl font-bold">{campaign.conversions}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {convRate}% of total
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </CardContent>
     </Card>
