@@ -98,7 +98,7 @@ serve(async (req) => {
 
     // Insert into form_submissions table
     const { data, error } = await supabase
-      .from('form_submissions')
+      .from('form_submissions_2026')
       .insert([leadData])
       .select();
 

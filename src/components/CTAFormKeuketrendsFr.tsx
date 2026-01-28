@@ -95,7 +95,7 @@ const CTAFormKeuketrendsFr = ({ title }: CTAFormKeuketrendsFrProps) => {
       
       // Insert into Supabase
       const { data, error } = await supabase
-        .from('form_submissions')
+        .from('form_submissions_2026')
         .insert([submissionData])
         .select();
 
