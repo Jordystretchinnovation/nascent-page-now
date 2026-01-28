@@ -188,7 +188,7 @@ const CTAFormDirect = ({ type, title }: CTAFormDirectProps) => {
       // Insert into Supabase directly without testing connection first
       console.log('CTAFormDirect - Inserting data into form_submissions table...');
       const { data, error } = await supabase
-        .from('form_submissions')
+        .from('form_submissions_2026')
         .insert([submissionData])
         .select();
 
