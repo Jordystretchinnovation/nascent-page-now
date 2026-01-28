@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { MediaDashboardLayout } from '@/components/media-dashboard/MediaDashboardLayout';
 import { DashboardFilters } from '@/components/media-dashboard/DashboardFilters';
 import { useMediaDashboard } from '@/hooks/useMediaDashboard';
-import { DashboardFilters as FilterState, getCPSQLColor, getCPSQLBgColor } from '@/types/mediaDashboard';
+import { DashboardFilters as FilterState, getCPSQLColor, getCPSQLBgColor, getCampaignType, getAdsetTypeBadge, getAudienceTargetCPL } from '@/types/mediaDashboard';
 import { AdminLogin } from '@/components/admin/AdminLogin';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -19,8 +19,8 @@ const MediaDashboardCampaigns = () => {
 
   const [filters, setFilters] = useState<FilterState>({
     dateRange: {
-      start: new Date(2025, 0, 1),
-      end: new Date(2025, 2, 31),
+      start: new Date(2026, 1, 2),  // Feb 2, 2026 - Campaign start
+      end: new Date(2026, 4, 3),    // May 3, 2026 - 13 weeks later
     },
     market: 'All',
     campaign: 'All',
@@ -177,14 +177,15 @@ const MediaDashboardCampaigns = () => {
                     <TableRow>
                       <TableHead className="w-8"></TableHead>
                       <TableHead>Campaign / Adset</TableHead>
+                      <TableHead>Type</TableHead>
                       <TableHead>Market</TableHead>
                       <TableHead>Audience</TableHead>
                       <TableHead className="text-right">Spent</TableHead>
                       <TableHead className="text-right">Leads</TableHead>
                       <TableHead className="text-right">Gekwal.</TableHead>
-                      <TableHead className="text-right">MQL</TableHead>
                       <TableHead className="text-right">SQL</TableHead>
                       <TableHead className="text-right">CPL</TableHead>
+                      <TableHead className="text-right">vs Target</TableHead>
                       <TableHead className="text-right">CPSQL</TableHead>
                       <TableHead className="text-right">Freq.</TableHead>
                     </TableRow>
@@ -211,62 +212,116 @@ const MediaDashboardCampaigns = () => {
                               )}
                             </TableCell>
                             <TableCell className="font-medium">{campaign}</TableCell>
+                            <TableCell>
+                              <span className={cn(
+                                "px-2 py-0.5 rounded text-xs font-medium",
+                                getCampaignType(campaign) === 'Lead Gen' ? "bg-purple-100 text-purple-700" :
+                                getCampaignType(campaign) === 'Awareness' ? "bg-cyan-100 text-cyan-700" :
+                                "bg-slate-100 text-slate-600"
+                              )}>
+                                {getCampaignType(campaign)}
+                              </span>
+                            </TableCell>
                             <TableCell>-</TableCell>
                             <TableCell>-</TableCell>
                             <TableCell className="text-right">€{totals.spent.toFixed(0)}</TableCell>
                             <TableCell className="text-right">{totals.leads}</TableCell>
                             <TableCell className="text-right">{totals.gekwalificeerd}</TableCell>
-                            <TableCell className="text-right">{totals.mqls}</TableCell>
                             <TableCell className="text-right">{totals.sqls}</TableCell>
                             <TableCell className="text-right">€{campaignCPL.toFixed(2)}</TableCell>
+                            <TableCell>-</TableCell>
                             <TableCell className={cn("text-right font-medium", getCPSQLColor(campaignCPSQL))}>
                               €{campaignCPSQL.toFixed(2)}
                             </TableCell>
                             <TableCell className="text-right">-</TableCell>
                           </TableRow>
-                          {isExpanded && adsets.map((adset, idx) => (
-                            <TableRow key={`${campaign}-${idx}`} className="bg-slate-50/50">
-                              <TableCell></TableCell>
-                              <TableCell className="pl-8 text-sm text-slate-600">
-                                {adset.adset_name}
-                              </TableCell>
-                              <TableCell>
-                                <span className={cn(
-                                  "px-2 py-1 rounded text-xs font-medium",
-                                  adset.market === 'NL' ? "bg-blue-100 text-blue-700" : 
-                                  adset.market === 'FR' ? "bg-purple-100 text-purple-700" :
-                                  "bg-slate-100 text-slate-600"
-                                )}>
-                                  {adset.market}
-                                </span>
-                              </TableCell>
-                              <TableCell>
-                                <span className={cn(
-                                  "px-2 py-1 rounded text-xs font-medium",
-                                  adset.audience_type === 'Lookalike' ? "bg-orange-100 text-orange-700" : 
-                                  adset.audience_type === 'Retargeting' ? "bg-green-100 text-green-700" :
-                                  "bg-slate-100 text-slate-600"
-                                )}>
-                                  {adset.audience_type}
-                                </span>
-                              </TableCell>
-                              <TableCell className="text-right">€{adset.spent.toFixed(0)}</TableCell>
-                              <TableCell className="text-right">{adset.leads}</TableCell>
-                              <TableCell className="text-right">{adset.gekwalificeerd}</TableCell>
-                              <TableCell className="text-right">{adset.mqls}</TableCell>
-                              <TableCell className="text-right">{adset.sqls}</TableCell>
-                              <TableCell className="text-right">€{adset.cpl.toFixed(2)}</TableCell>
-                              <TableCell className={cn(
-                                "text-right",
-                                getCPSQLColor(adset.cpsql)
+                          {isExpanded && adsets.map((adset, idx) => {
+                            const targetCPL = adset.adset_name ? getAudienceTargetCPL(adset.adset_name) : null;
+                            const badge = adset.adset_name ? getAdsetTypeBadge(adset.adset_name) : null;
+                            const vsTarget = targetCPL && adset.cpl > 0 
+                              ? ((adset.cpl - targetCPL) / targetCPL) * 100 
+                              : null;
+                            
+                            return (
+                              <TableRow key={`${campaign}-${idx}`} className={cn(
+                                "bg-slate-50/50",
+                                targetCPL && adset.cpl > 0 && adset.cpl <= targetCPL && "bg-green-50/50",
+                                targetCPL && adset.cpl > 0 && adset.cpl > targetCPL && adset.cpl <= targetCPL * 1.1 && "bg-yellow-50/50",
+                                targetCPL && adset.cpl > targetCPL * 1.1 && "bg-red-50/50"
                               )}>
-                                €{adset.cpsql.toFixed(2)}
-                              </TableCell>
-                              <TableCell className="text-right">
-                                {adset.frequency?.toFixed(2) || '-'}
-                              </TableCell>
-                            </TableRow>
-                          ))}
+                                <TableCell></TableCell>
+                                <TableCell className="pl-8 text-sm text-slate-600">
+                                  <div className="flex items-center gap-2">
+                                    {adset.adset_name}
+                                    {badge && (
+                                      <span className={cn(
+                                        "px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase",
+                                        badge === 'BEWEZEN' && "bg-green-100 text-green-700",
+                                        badge === 'TEST' && "bg-yellow-100 text-yellow-700",
+                                        badge === 'INVEST' && "bg-blue-100 text-blue-700"
+                                      )}>
+                                        {badge}
+                                      </span>
+                                    )}
+                                  </div>
+                                </TableCell>
+                                <TableCell>-</TableCell>
+                                <TableCell>
+                                  <span className={cn(
+                                    "px-2 py-1 rounded text-xs font-medium",
+                                    adset.market === 'NL' ? "bg-orange-100 text-orange-700" : 
+                                    adset.market === 'FR' ? "bg-blue-100 text-blue-700" :
+                                    "bg-slate-100 text-slate-600"
+                                  )}>
+                                    {adset.market}
+                                  </span>
+                                </TableCell>
+                                <TableCell>
+                                  <span className={cn(
+                                    "px-2 py-1 rounded text-xs font-medium",
+                                    adset.audience_type === 'LAL Scraping' ? "bg-orange-100 text-orange-700" : 
+                                    adset.audience_type === 'LAL Leads' ? "bg-blue-100 text-blue-700" :
+                                    adset.audience_type === 'LAL Klanten' ? "bg-cyan-100 text-cyan-700" :
+                                    adset.audience_type === 'Retargeting' ? "bg-green-100 text-green-700" :
+                                    "bg-slate-100 text-slate-600"
+                                  )}>
+                                    {adset.audience_type}
+                                  </span>
+                                </TableCell>
+                                <TableCell className="text-right">€{adset.spent.toFixed(0)}</TableCell>
+                                <TableCell className="text-right">{adset.leads}</TableCell>
+                                <TableCell className="text-right">{adset.gekwalificeerd}</TableCell>
+                                <TableCell className="text-right">{adset.sqls}</TableCell>
+                                <TableCell className="text-right">€{adset.cpl.toFixed(2)}</TableCell>
+                                <TableCell className="text-right">
+                                  {targetCPL ? (
+                                    <span className={cn(
+                                      "text-xs font-medium",
+                                      vsTarget !== null && vsTarget <= 0 && "text-green-600",
+                                      vsTarget !== null && vsTarget > 0 && vsTarget <= 10 && "text-yellow-600",
+                                      vsTarget !== null && vsTarget > 10 && "text-red-600"
+                                    )}>
+                                      {vsTarget !== null ? (
+                                        <>
+                                          {vsTarget <= 0 ? '✅' : vsTarget <= 10 ? '⚠️' : '❌'} 
+                                          {' '}(€{targetCPL})
+                                        </>
+                                      ) : '-'}
+                                    </span>
+                                  ) : '-'}
+                                </TableCell>
+                                <TableCell className={cn(
+                                  "text-right",
+                                  getCPSQLColor(adset.cpsql)
+                                )}>
+                                  €{adset.cpsql.toFixed(2)}
+                                </TableCell>
+                                <TableCell className="text-right">
+                                  {adset.frequency?.toFixed(2) || '-'}
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
                         </>
                       );
                     })}

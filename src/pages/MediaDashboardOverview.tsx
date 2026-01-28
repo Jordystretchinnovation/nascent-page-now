@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { MediaDashboardLayout } from '@/components/media-dashboard/MediaDashboardLayout';
 import { DashboardFilters } from '@/components/media-dashboard/DashboardFilters';
 import { KPICards } from '@/components/media-dashboard/KPICards';
@@ -6,9 +6,10 @@ import { WeeklyPerformanceChart } from '@/components/media-dashboard/WeeklyPerfo
 import { FunnelChart } from '@/components/media-dashboard/FunnelChart';
 import { MarketAudienceCharts } from '@/components/media-dashboard/MarketAudienceCharts';
 import { useMediaDashboard } from '@/hooks/useMediaDashboard';
-import { DashboardFilters as FilterState } from '@/types/mediaDashboard';
+import { DashboardFilters as FilterState, Q1_TARGETS, getCurrentPhase } from '@/types/mediaDashboard';
 import { AdminLogin } from '@/components/admin/AdminLogin';
 import { Skeleton } from '@/components/ui/skeleton';
+import { differenceInWeeks } from 'date-fns';
 
 const MediaDashboardOverview = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -17,8 +18,8 @@ const MediaDashboardOverview = () => {
 
   const [filters, setFilters] = useState<FilterState>({
     dateRange: {
-      start: new Date(2025, 0, 1), // Jan 1, 2025
-      end: new Date(2025, 2, 31), // Mar 31, 2025
+      start: new Date(2026, 1, 2),  // Feb 2, 2026 - Campaign start
+      end: new Date(2026, 4, 3),    // May 3, 2026 - 13 weeks later
     },
     market: 'All',
     campaign: 'All',
@@ -36,6 +37,23 @@ const MediaDashboardOverview = () => {
     refetch,
   } = useMediaDashboard(filters);
 
+  // Calculate current week and phase
+  const currentWeekAndPhase = useMemo(() => {
+    const today = new Date();
+    const campaignStart = Q1_TARGETS.campaign_start;
+    
+    // If before campaign start, show Week 0
+    if (today < campaignStart) {
+      return { week: 0, phase: getCurrentPhase(1) };
+    }
+    
+    const weekNum = Math.min(
+      Math.max(1, differenceInWeeks(today, campaignStart) + 1),
+      Q1_TARGETS.weeks
+    );
+    return { week: weekNum, phase: getCurrentPhase(weekNum) };
+  }, []);
+
   const handleLogout = () => {
     sessionStorage.removeItem('adminAuthenticated');
     setIsAuthenticated(false);
@@ -48,9 +66,23 @@ const MediaDashboardOverview = () => {
   return (
     <MediaDashboardLayout onLogout={handleLogout}>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900">Covarte Media Dashboard - Q1 2026</h1>
-          <p className="text-slate-600">Meta Ads performance and lead qualification tracking</p>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">Covarte Media Dashboard - Q1 2026</h1>
+            <p className="text-slate-600">Meta Ads performance and lead qualification tracking</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-slate-100 text-slate-700">
+              Week {currentWeekAndPhase.week}/{Q1_TARGETS.weeks}
+            </span>
+            <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium ${
+              currentWeekAndPhase.phase.phase === 'fase1' ? 'bg-blue-100 text-blue-700' :
+              currentWeekAndPhase.phase.phase === 'fase2' ? 'bg-amber-100 text-amber-700' :
+              'bg-green-100 text-green-700'
+            }`}>
+              {currentWeekAndPhase.phase.name}
+            </span>
+          </div>
         </div>
 
         <DashboardFilters

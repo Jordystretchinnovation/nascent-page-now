@@ -27,8 +27,8 @@ const MediaDashboardFatigue = () => {
 
   const [filters, setFilters] = useState<FilterState>({
     dateRange: {
-      start: new Date(2025, 0, 1),
-      end: new Date(2025, 2, 31),
+      start: new Date(2026, 1, 2),  // Feb 2, 2026 - Campaign start
+      end: new Date(2026, 4, 3),    // May 3, 2026 - 13 weeks later
     },
     market: 'All',
     campaign: 'All',

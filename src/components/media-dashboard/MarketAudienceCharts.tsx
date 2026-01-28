@@ -45,8 +45,8 @@ export function MarketAudienceCharts({ marketData, audienceData }: MarketAudienc
                   }}
                 />
                 <Legend />
-                <Bar dataKey="leads" fill="#3b82f6" name="Leads" />
-                <Bar dataKey="sqls" fill="#22c55e" name="SQLs" />
+                <Bar dataKey="leads" fill="#FF6B35" name="Leads" />
+                <Bar dataKey="sqls" fill="#2E86AB" name="SQLs" />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -68,12 +68,12 @@ export function MarketAudienceCharts({ marketData, audienceData }: MarketAudienc
           <CardTitle className="text-lg">Performance by Audience Type</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[280px]">
+          <div className="h-[320px]">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={audienceData} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                 <XAxis type="number" tick={{ fontSize: 12 }} stroke="#64748b" />
-                <YAxis dataKey="audience_type" type="category" tick={{ fontSize: 12 }} stroke="#64748b" width={80} />
+                <YAxis dataKey="audience_type" type="category" tick={{ fontSize: 11 }} stroke="#64748b" width={90} />
                 <Tooltip 
                   contentStyle={{ 
                     backgroundColor: 'white', 
@@ -93,12 +93,12 @@ export function MarketAudienceCharts({ marketData, audienceData }: MarketAudienc
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
+          <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
             {audienceData.map(a => (
               <div key={a.audience_type} className="p-3 bg-slate-50 rounded-lg">
-                <div className="font-medium text-slate-700">{a.audience_type}</div>
-                <div className="text-slate-600">CPL: €{a.cpl.toFixed(2)}</div>
-                <div className="text-slate-600">CPSQL: €{a.cpsql.toFixed(2)}</div>
+                <div className="font-medium text-slate-700 text-xs">{a.audience_type}</div>
+                <div className="text-slate-600 text-xs">CPL: €{a.cpl.toFixed(2)}</div>
+                <div className="text-slate-600 text-xs">CPSQL: €{a.cpsql.toFixed(2)}</div>
               </div>
             ))}
           </div>
