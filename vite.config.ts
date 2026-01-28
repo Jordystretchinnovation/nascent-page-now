@@ -15,6 +15,9 @@ export default defineConfig(({ mode }) => ({
     componentTagger(),
   ].filter(Boolean),
   resolve: {
+    // Prevent "Invalid hook call" issues caused by multiple React copies.
+    // This can manifest as: "Cannot read properties of null (reading 'useState/useEffect')"
+    dedupe: ["react", "react-dom"],
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
