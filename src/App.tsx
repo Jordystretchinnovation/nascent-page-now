@@ -1,5 +1,3 @@
-
-import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -39,7 +37,7 @@ import MediaDashboardAlerts from "./pages/MediaDashboardAlerts";
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
+      staleTime: 1000 * 60 * 5,
       retry: 1,
       refetchOnWindowFocus: false,
       refetchOnReconnect: false,
@@ -47,11 +45,10 @@ const queryClient = new QueryClient({
   },
 });
 
-
-const App = () => {
+function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
+      <TooltipProvider delayDuration={0}>
         <Toaster />
         <Sonner />
         <BrowserRouter>
@@ -85,14 +82,12 @@ const App = () => {
             <Route path="/fr/merci/collection-lookbook" element={<ThankYouCollectionLookbookFr />} />
             <Route path="/fr/merci/tendances-cuisine" element={<ThankYouKeuketrendsFr />} />
             <Route path="/fr/merci/reduction" element={<ThankYouKortingFr />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
-          
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
   );
-};
+}
 
 export default App;
