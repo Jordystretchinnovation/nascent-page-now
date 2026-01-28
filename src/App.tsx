@@ -27,6 +27,7 @@ import ThankYouKortingFr from "./pages/ThankYouKortingFr";
 import Cookiebeleid from "./pages/Cookiebeleid";
 import PolitiqueCookies from "./pages/PolitiqueCookies";
 import Admin from "./pages/Admin";
+import Admin2026 from "./pages/Admin2026";
 import AdminProjectAnalysis from "./pages/AdminProjectAnalysis";
 
 const queryClient = new QueryClient({
@@ -62,6 +63,7 @@ const App = () => {
             <Route path="/cookiebeleid" element={<Cookiebeleid />} />
             <Route path="/fr/politique-cookies" element={<PolitiqueCookies />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/2026" element={<Admin2026 />} />
             <Route path="/admin/project-analysis" element={<AdminProjectAnalysis />} />
             <Route path="/thank-you/stalen" element={<ThankYouStalen />} />
             <Route path="/thank-you/collection-lookbook" element={<ThankYouCollectionLookbook />} />
