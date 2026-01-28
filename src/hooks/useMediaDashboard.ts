@@ -13,8 +13,12 @@ import {
   AudiencePerformance,
   DashboardFilters,
   Q1_TARGETS,
+  AUDIENCE_TARGETS,
   extractMarket,
   extractAudienceType,
+  getCampaignType,
+  getAdsetTypeBadge,
+  getWeeklyBudgetForWeek,
   isGekwalificeerd,
   isMQL,
   isSQL,
@@ -157,13 +161,14 @@ export function useMediaDashboard(filters: DashboardFilters) {
     ];
   }, [filteredLeads]);
 
-  // Calculate weekly metrics
+  // Calculate weekly metrics with phased budgets
   const weeklyMetrics: WeeklyMetrics[] = useMemo(() => {
     const weeks: WeeklyMetrics[] = [];
     let cumulativeSQLs = 0;
 
     // Campaign starts Feb 2, 2026 (Week 1)
-    const campaignStart = new Date(2026, 1, 2); // Feb 2, 2026
+    const campaignStart = Q1_TARGETS.campaign_start;
+    const weeklySqlTarget = Q1_TARGETS.sqls / Q1_TARGETS.weeks;
 
     for (let week = 1; week <= Q1_TARGETS.weeks; week++) {
       const weekStart = new Date(campaignStart);
@@ -185,18 +190,21 @@ export function useMediaDashboard(filters: DashboardFilters) {
       const actualSQLs = weekLeads.filter(l => isSQL(l.kwaliteit)).length;
       cumulativeSQLs += actualSQLs;
 
+      // Use phased weekly budget
+      const plannedSpend = getWeeklyBudgetForWeek(week);
+
       weeks.push({
         week,
         weekStart: format(weekStart, 'MMM d'),
         weekEnd: format(weekEnd, 'MMM d'),
-        planned_spend: Q1_TARGETS.weekly_budget,
+        planned_spend: plannedSpend,
         actual_spend: actualSpend,
-        spend_variance: actualSpend - Q1_TARGETS.weekly_budget,
-        planned_sqls: Q1_TARGETS.weekly_sqls,
+        spend_variance: actualSpend - plannedSpend,
+        planned_sqls: weeklySqlTarget,
         actual_sqls: actualSQLs,
         cumulative_sqls: cumulativeSQLs,
         leads: weekLeads.length,
-        on_track: cumulativeSQLs >= week * Q1_TARGETS.weekly_sqls * 0.9,
+        on_track: cumulativeSQLs >= week * weeklySqlTarget * 0.9,
       });
     }
 
@@ -220,6 +228,7 @@ export function useMediaDashboard(filters: DashboardFilters) {
           adset_name: m.adset_name,
           market: extractMarket(m.adset_name),
           audience_type: extractAudienceType(m.adset_name),
+          campaign_type: getCampaignType(m.campaign_name),
           spent: Number(m.spent),
           frequency: m.frequency ? Number(m.frequency) : null,
           leads: 0,
@@ -230,6 +239,7 @@ export function useMediaDashboard(filters: DashboardFilters) {
           cp_gekwalificeerd: 0,
           cpmql: 0,
           cpsql: 0,
+          badge: getAdsetTypeBadge(m.adset_name),
         });
       }
     });
@@ -288,23 +298,25 @@ export function useMediaDashboard(filters: DashboardFilters) {
     return Object.values(markets);
   }, [filteredMeta, filteredLeads]);
 
-  // Calculate audience performance
+  // Calculate audience performance with all audience types
   const audiencePerformance: AudiencePerformance[] = useMemo(() => {
     const audiences: Record<string, AudiencePerformance> = {
-      Lookalike: { audience_type: 'Lookalike', leads: 0, sqls: 0, spent: 0, cpl: 0, cpsql: 0 },
-      Retargeting: { audience_type: 'Retargeting', leads: 0, sqls: 0, spent: 0, cpl: 0, cpsql: 0 },
+      'LAL Scraping': { audience_type: 'LAL Scraping', leads: 0, sqls: 0, spent: 0, cpl: 0, cpsql: 0 },
+      'Retargeting': { audience_type: 'Retargeting', leads: 0, sqls: 0, spent: 0, cpl: 0, cpsql: 0 },
+      'LAL Leads': { audience_type: 'LAL Leads', leads: 0, sqls: 0, spent: 0, cpl: 0, cpsql: 0 },
+      'LAL Klanten': { audience_type: 'LAL Klanten', leads: 0, sqls: 0, spent: 0, cpl: 0, cpsql: 0 },
     };
 
     filteredMeta.forEach(m => {
       const audienceType = extractAudienceType(m.adset_name);
-      if (audienceType !== 'Unknown') {
+      if (audienceType !== 'Unknown' && audiences[audienceType]) {
         audiences[audienceType].spent += Number(m.spent);
       }
     });
 
     filteredLeads.forEach(l => {
       const audienceType = l.utm_content ? extractAudienceType(l.utm_content) : 'Unknown';
-      if (audienceType !== 'Unknown') {
+      if (audienceType !== 'Unknown' && audiences[audienceType]) {
         audiences[audienceType].leads++;
         if (isSQL(l.kwaliteit)) audiences[audienceType].sqls++;
       }

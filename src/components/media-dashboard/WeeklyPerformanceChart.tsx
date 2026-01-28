@@ -66,7 +66,7 @@ export function WeeklyPerformanceChart({ data }: WeeklyPerformanceChartProps) {
               />
               <Legend />
               <ReferenceLine 
-                y={Q1_TARGETS.weekly_sqls} 
+                y={Q1_TARGETS.sqls / Q1_TARGETS.weeks} 
                 yAxisId="left"
                 stroke="#22c55e" 
                 strokeDasharray="5 5"
