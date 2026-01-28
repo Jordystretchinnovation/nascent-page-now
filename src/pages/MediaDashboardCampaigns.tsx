@@ -281,7 +281,6 @@ const MediaDashboardCampaigns = () => {
                                     "px-2 py-1 rounded text-xs font-medium",
                                     adset.audience_type === 'LAL Scraping' ? "bg-orange-100 text-orange-700" : 
                                     adset.audience_type === 'LAL Leads' ? "bg-blue-100 text-blue-700" :
-                                    adset.audience_type === 'LAL Klanten' ? "bg-cyan-100 text-cyan-700" :
                                     adset.audience_type === 'Retargeting' ? "bg-green-100 text-green-700" :
                                     "bg-slate-100 text-slate-600"
                                   )}>

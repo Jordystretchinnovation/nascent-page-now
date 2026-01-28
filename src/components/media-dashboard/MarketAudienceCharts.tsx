@@ -93,7 +93,7 @@ export function MarketAudienceCharts({ marketData, audienceData }: MarketAudienc
               </BarChart>
             </ResponsiveContainer>
           </div>
-          <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
+          <div className="mt-4 grid grid-cols-3 gap-3 text-sm">
             {audienceData.map(a => (
               <div key={a.audience_type} className="p-3 bg-slate-50 rounded-lg">
                 <div className="font-medium text-slate-700 text-xs">{a.audience_type}</div>

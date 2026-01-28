@@ -298,13 +298,12 @@ export function useMediaDashboard(filters: DashboardFilters) {
     return Object.values(markets);
   }, [filteredMeta, filteredLeads]);
 
-  // Calculate audience performance with all audience types
+  // Calculate audience performance - only 3 lead gen audiences (LAL Klanten is Awareness, tracks clicks not leads)
   const audiencePerformance: AudiencePerformance[] = useMemo(() => {
     const audiences: Record<string, AudiencePerformance> = {
       'LAL Scraping': { audience_type: 'LAL Scraping', leads: 0, sqls: 0, spent: 0, cpl: 0, cpsql: 0 },
       'Retargeting': { audience_type: 'Retargeting', leads: 0, sqls: 0, spent: 0, cpl: 0, cpsql: 0 },
       'LAL Leads': { audience_type: 'LAL Leads', leads: 0, sqls: 0, spent: 0, cpl: 0, cpsql: 0 },
-      'LAL Klanten': { audience_type: 'LAL Klanten', leads: 0, sqls: 0, spent: 0, cpl: 0, cpsql: 0 },
     };
 
     filteredMeta.forEach(m => {
