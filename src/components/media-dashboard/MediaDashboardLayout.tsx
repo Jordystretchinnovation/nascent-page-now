@@ -105,7 +105,7 @@ export function MediaDashboardLayout({ children, onLogout }: MediaDashboardLayou
                 <Menu className="h-6 w-6" />
               </button>
               <h2 className="text-lg font-semibold text-slate-800">
-                Q1 2025 Performance
+                Q1 2026 Performance
               </h2>
             </div>
           </div>
