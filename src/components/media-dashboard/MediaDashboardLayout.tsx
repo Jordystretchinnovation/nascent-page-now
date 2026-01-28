@@ -5,6 +5,7 @@ import {
   Table2, 
   TrendingUp, 
   AlertTriangle,
+  Settings,
   Menu,
   X,
   LogOut
@@ -22,6 +23,7 @@ const navItems = [
   { title: 'Campaign Breakdown', path: '/media-dashboard/campaigns', icon: Table2 },
   { title: 'Pacing & Forecast', path: '/media-dashboard/pacing', icon: TrendingUp },
   { title: 'Ad Fatigue Monitor', path: '/media-dashboard/fatigue', icon: AlertTriangle },
+  { title: 'Settings', path: '/media-dashboard/settings', icon: Settings },
 ];
 
 export function MediaDashboardLayout({ children, onLogout }: MediaDashboardLayoutProps) {
