@@ -118,7 +118,7 @@ export interface DashboardFilters {
   campaign: string | 'All';
 }
 
-// Q1 2025 Targets
+// Q1 2026 Targets - Campaign starts Feb 2, 2026
 export const Q1_TARGETS = {
   budget: 15840,
   sqls: 132,
@@ -127,6 +127,8 @@ export const Q1_TARGETS = {
   weeks: 13,
   weekly_budget: 1218,
   weekly_sqls: 10.2,
+  // Campaign start date: Monday Feb 2, 2026
+  campaign_start: new Date(2026, 1, 2), // Month is 0-indexed, so 1 = February
 } as const;
 
 // Helper functions
