@@ -162,9 +162,14 @@ export function useMediaDashboard(filters: DashboardFilters) {
     const weeks: WeeklyMetrics[] = [];
     let cumulativeSQLs = 0;
 
+    // Campaign starts Feb 2, 2026 (Week 1)
+    const campaignStart = new Date(2026, 1, 2); // Feb 2, 2026
+
     for (let week = 1; week <= Q1_TARGETS.weeks; week++) {
-      const weekStart = new Date(2025, 0, 1 + (week - 1) * 7);
-      const weekEnd = new Date(2025, 0, 7 + (week - 1) * 7);
+      const weekStart = new Date(campaignStart);
+      weekStart.setDate(campaignStart.getDate() + (week - 1) * 7);
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekStart.getDate() + 6);
 
       const weekMeta = filteredMeta.filter(m => {
         const date = parseISO(m.date);
