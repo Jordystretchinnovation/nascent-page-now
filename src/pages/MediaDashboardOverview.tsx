@@ -1,11 +1,13 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { MediaDashboardLayout } from '@/components/media-dashboard/MediaDashboardLayout';
 import { DashboardFilters } from '@/components/media-dashboard/DashboardFilters';
 import { KPICards } from '@/components/media-dashboard/KPICards';
 import { WeeklyPerformanceChart } from '@/components/media-dashboard/WeeklyPerformanceChart';
 import { FunnelChart } from '@/components/media-dashboard/FunnelChart';
 import { MarketAudienceCharts } from '@/components/media-dashboard/MarketAudienceCharts';
+import { CriticalAlertsBanner } from '@/components/media-dashboard/CriticalAlertsBanner';
 import { useMediaDashboard } from '@/hooks/useMediaDashboard';
+import { useAlertsDashboard } from '@/hooks/useAlertsDashboard';
 import { DashboardFilters as FilterState, Q1_TARGETS, getCurrentPhase } from '@/types/mediaDashboard';
 import { AdminLogin } from '@/components/admin/AdminLogin';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -37,6 +39,8 @@ const MediaDashboardOverview = () => {
     refetch,
   } = useMediaDashboard(filters);
 
+  const { criticalAlerts } = useAlertsDashboard();
+
   // Calculate current week and phase
   const currentWeekAndPhase = useMemo(() => {
     const today = new Date();
@@ -64,8 +68,10 @@ const MediaDashboardOverview = () => {
   }
 
   return (
-    <MediaDashboardLayout onLogout={handleLogout}>
-      <div className="space-y-6">
+    <>
+      <CriticalAlertsBanner alerts={criticalAlerts} />
+      <MediaDashboardLayout onLogout={handleLogout}>
+        <div className="space-y-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
           <div>
             <h1 className="text-2xl font-bold text-slate-900">Covarte Media Dashboard - Q1 2026</h1>
@@ -123,6 +129,7 @@ const MediaDashboardOverview = () => {
         )}
       </div>
     </MediaDashboardLayout>
+    </>
   );
 };
 

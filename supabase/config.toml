@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.meta-sync]
 verify_jwt = false
+
+[functions.check-triggers]
+verify_jwt = false

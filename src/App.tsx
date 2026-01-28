@@ -34,6 +34,7 @@ import MediaDashboardCampaigns from "./pages/MediaDashboardCampaigns";
 import MediaDashboardPacing from "./pages/MediaDashboardPacing";
 import MediaDashboardFatigue from "./pages/MediaDashboardFatigue";
 import MediaDashboardSettings from "./pages/MediaDashboardSettings";
+import MediaDashboardAlerts from "./pages/MediaDashboardAlerts";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -74,6 +75,7 @@ const App = () => {
             <Route path="/media-dashboard/campaigns" element={<MediaDashboardCampaigns />} />
             <Route path="/media-dashboard/pacing" element={<MediaDashboardPacing />} />
             <Route path="/media-dashboard/fatigue" element={<MediaDashboardFatigue />} />
+            <Route path="/media-dashboard/alerts" element={<MediaDashboardAlerts />} />
             <Route path="/media-dashboard/settings" element={<MediaDashboardSettings />} />
             <Route path="/thank-you/stalen" element={<ThankYouStalen />} />
             <Route path="/thank-you/collection-lookbook" element={<ThankYouCollectionLookbook />} />
