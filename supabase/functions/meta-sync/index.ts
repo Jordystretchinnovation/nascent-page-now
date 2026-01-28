@@ -57,6 +57,120 @@ serve(async (req) => {
       });
     }
 
+    // Action: Auto-sync active campaigns (for cron job)
+    if (action === 'auto_sync') {
+      // Get all active campaigns from database
+      const { data: activeCampaigns, error: fetchError } = await supabase
+        .from('meta_sync_campaigns')
+        .select('campaign_id')
+        .eq('is_active', true);
+
+      if (fetchError) {
+        throw new Error(`Failed to fetch active campaigns: ${fetchError.message}`);
+      }
+
+      if (!activeCampaigns || activeCampaigns.length === 0) {
+        console.log('No active campaigns configured for sync');
+        return new Response(JSON.stringify({ 
+          success: true, 
+          message: 'No active campaigns to sync',
+          synced_rows: 0
+        }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+
+      const campaignIdsToSync = activeCampaigns.map(c => c.campaign_id);
+      
+      // Sync last 7 days to catch any delayed data
+      const today = new Date();
+      const sevenDaysAgo = new Date(today);
+      sevenDaysAgo.setDate(today.getDate() - 7);
+      
+      const autoStartDate = sevenDaysAgo.toISOString().split('T')[0];
+      const autoEndDate = today.toISOString().split('T')[0];
+
+      console.log(`Auto-syncing ${campaignIdsToSync.length} campaigns from ${autoStartDate} to ${autoEndDate}`);
+
+      // Continue to sync_performance logic below with these values
+      const allInsights: any[] = [];
+
+      for (const campaignId of campaignIdsToSync) {
+        const campaignUrl = `${META_API_BASE}/${campaignId}?fields=name&access_token=${accessToken}`;
+        const campaignResponse = await fetch(campaignUrl);
+        const campaignData = await campaignResponse.json();
+        
+        if (campaignData.error) {
+          console.error(`Error fetching campaign ${campaignId}:`, campaignData.error);
+          continue;
+        }
+
+        const campaignName = campaignData.name;
+
+        const insightsUrl = `${META_API_BASE}/${campaignId}/insights?fields=ad_id,ad_name,adset_id,adset_name,campaign_id,campaign_name,spend,frequency,date_start,date_stop&level=ad&time_increment=1&time_range={"since":"${autoStartDate}","until":"${autoEndDate}"}&access_token=${accessToken}&limit=500`;
+        
+        console.log(`Fetching insights for campaign: ${campaignName}`);
+        const insightsResponse = await fetch(insightsUrl);
+        const insightsData = await insightsResponse.json();
+
+        if (insightsData.error) {
+          console.error(`Error fetching insights for ${campaignId}:`, insightsData.error);
+          continue;
+        }
+
+        if (insightsData.data) {
+          for (const insight of insightsData.data) {
+            allInsights.push({
+              date: insight.date_start,
+              campaign_name: insight.campaign_name || campaignName,
+              adset_name: insight.adset_name || 'Unknown',
+              ad_name: insight.ad_name || 'Unknown',
+              spent: parseFloat(insight.spend || '0'),
+              frequency: insight.frequency ? parseFloat(insight.frequency) : null,
+            });
+          }
+        }
+      }
+
+      console.log(`Auto-sync: Total insights collected: ${allInsights.length}`);
+
+      if (allInsights.length > 0) {
+        const { error: deleteError } = await supabase
+          .from('meta_performance')
+          .delete()
+          .gte('date', autoStartDate)
+          .lte('date', autoEndDate)
+          .in('campaign_name', [...new Set(allInsights.map(i => i.campaign_name))]);
+
+        if (deleteError) {
+          console.error('Error deleting existing data:', deleteError);
+        }
+
+        const { error: insertError } = await supabase
+          .from('meta_performance')
+          .insert(allInsights);
+
+        if (insertError) {
+          console.error('Error inserting data:', insertError);
+          throw new Error(`Failed to insert data: ${insertError.message}`);
+        }
+
+        await supabase
+          .from('meta_sync_campaigns')
+          .update({ last_synced_at: new Date().toISOString() })
+          .in('campaign_id', campaignIdsToSync);
+      }
+
+      return new Response(JSON.stringify({ 
+        success: true, 
+        synced_rows: allInsights.length,
+        campaigns_synced: campaignIdsToSync.length,
+        message: `Auto-sync complete: ${allInsights.length} records from ${campaignIdsToSync.length} campaigns`
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
     // Action: Sync performance data for selected campaigns
     if (action === 'sync_performance') {
       if (!campaign_ids || campaign_ids.length === 0) {
