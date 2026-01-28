@@ -49,7 +49,7 @@ const MediaDashboardOverview = () => {
     <MediaDashboardLayout onLogout={handleLogout}>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Covarte Media Dashboard - Q1 2025</h1>
+          <h1 className="text-2xl font-bold text-slate-900">Covarte Media Dashboard - Q1 2026</h1>
           <p className="text-slate-600">Meta Ads performance and lead qualification tracking</p>
         </div>
 
