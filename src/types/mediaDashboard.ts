@@ -26,7 +26,7 @@ export interface CampaignMetrics {
   adset_name?: string;
   ad_name?: string;
   market: 'NL' | 'FR' | 'Unknown';
-  audience_type: 'LAL Scraping' | 'Retargeting' | 'LAL Leads' | 'LAL Klanten' | 'Unknown';
+  audience_type: 'LAL Scraping' | 'Retargeting' | 'LAL Leads' | 'Unknown';
   campaign_type: 'Lead Gen' | 'Awareness' | 'Other';
   spent: number;
   frequency: number | null;
@@ -104,14 +104,12 @@ export interface MarketPerformance {
 }
 
 export interface AudiencePerformance {
-  audience_type: 'LAL Scraping' | 'Retargeting' | 'LAL Leads' | 'LAL Klanten' | 'Unknown';
+  audience_type: 'LAL Scraping' | 'Retargeting' | 'LAL Leads' | 'Unknown';
   leads: number;
   sqls: number;
   spent: number;
   cpl: number;
   cpsql: number;
-  clicks?: number;
-  cpc?: number;
   target_cpl?: number;
 }
 
@@ -176,11 +174,12 @@ export function extractMarket(campaignName: string): 'NL' | 'FR' | 'Unknown' {
   return 'Unknown';
 }
 
-export function extractAudienceType(adsetName: string): 'LAL Scraping' | 'Retargeting' | 'LAL Leads' | 'LAL Klanten' | 'Unknown' {
+export function extractAudienceType(adsetName: string): 'LAL Scraping' | 'Retargeting' | 'LAL Leads' | 'Unknown' {
   const lower = adsetName.toLowerCase();
   if (lower.includes('lookalike_scraping')) return 'LAL Scraping';
   if (lower.includes('retargeting_engagement')) return 'Retargeting';
-  if (lower.includes('lookalike_leads_customers')) return 'LAL Klanten'; // Awareness
+  // lookalike_leads_customers is Awareness campaign (tracks clicks, not leads) - excluded from lead gen audiences
+  if (lower.includes('lookalike_leads_customers')) return 'Unknown';
   if (lower.includes('lookalike_leads')) return 'LAL Leads';
   return 'Unknown';
 }
