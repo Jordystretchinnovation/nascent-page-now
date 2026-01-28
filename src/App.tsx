@@ -29,6 +29,10 @@ import PolitiqueCookies from "./pages/PolitiqueCookies";
 import Admin from "./pages/Admin";
 import Admin2026 from "./pages/Admin2026";
 import AdminProjectAnalysis from "./pages/AdminProjectAnalysis";
+import MediaDashboardOverview from "./pages/MediaDashboardOverview";
+import MediaDashboardCampaigns from "./pages/MediaDashboardCampaigns";
+import MediaDashboardPacing from "./pages/MediaDashboardPacing";
+import MediaDashboardFatigue from "./pages/MediaDashboardFatigue";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -65,6 +69,10 @@ const App = () => {
             <Route path="/admin" element={<Admin />} />
             <Route path="/admin/2026" element={<Admin2026 />} />
             <Route path="/admin/project-analysis" element={<AdminProjectAnalysis />} />
+            <Route path="/media-dashboard" element={<MediaDashboardOverview />} />
+            <Route path="/media-dashboard/campaigns" element={<MediaDashboardCampaigns />} />
+            <Route path="/media-dashboard/pacing" element={<MediaDashboardPacing />} />
+            <Route path="/media-dashboard/fatigue" element={<MediaDashboardFatigue />} />
             <Route path="/thank-you/stalen" element={<ThankYouStalen />} />
             <Route path="/thank-you/collection-lookbook" element={<ThankYouCollectionLookbook />} />
             <Route path="/thank-you/keukentrends" element={<ThankYouKeukentrends />} />

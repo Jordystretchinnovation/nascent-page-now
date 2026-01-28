@@ -1,0 +1,299 @@
+import { useState, useMemo } from 'react';
+import { MediaDashboardLayout } from '@/components/media-dashboard/MediaDashboardLayout';
+import { DashboardFilters } from '@/components/media-dashboard/DashboardFilters';
+import { useMediaDashboard } from '@/hooks/useMediaDashboard';
+import { DashboardFilters as FilterState, Q1_TARGETS } from '@/types/mediaDashboard';
+import { AdminLogin } from '@/components/admin/AdminLogin';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Check, X, TrendingUp, TrendingDown, AlertCircle } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
+import { differenceInDays, format } from 'date-fns';
+
+const MediaDashboardPacing = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return sessionStorage.getItem('adminAuthenticated') === 'true';
+  });
+
+  const [filters, setFilters] = useState<FilterState>({
+    dateRange: {
+      start: new Date(2025, 0, 1),
+      end: new Date(2025, 2, 31),
+    },
+    market: 'All',
+    campaign: 'All',
+  });
+
+  const {
+    isLoading,
+    lastUpdated,
+    campaigns,
+    kpiSummary,
+    weeklyMetrics,
+    refetch,
+  } = useMediaDashboard(filters);
+
+  const handleLogout = () => {
+    sessionStorage.removeItem('adminAuthenticated');
+    setIsAuthenticated(false);
+  };
+
+  // Calculate forecast
+  const forecast = useMemo(() => {
+    const weeksWithData = weeklyMetrics.filter(w => w.actual_spend > 0);
+    if (weeksWithData.length === 0) {
+      return {
+        projectedSQLs: 0,
+        budgetExhaustDate: null,
+        weeklyRunRate: 0,
+        sqlRunRate: 0,
+        onTrack: false,
+      };
+    }
+
+    const totalSpent = weeksWithData.reduce((sum, w) => sum + w.actual_spend, 0);
+    const totalSQLs = weeksWithData.reduce((sum, w) => sum + w.actual_sqls, 0);
+    const weeklySpendRate = totalSpent / weeksWithData.length;
+    const weeklySQLRate = totalSQLs / weeksWithData.length;
+
+    const remainingBudget = Q1_TARGETS.budget - totalSpent;
+    const weeksRemaining = remainingBudget / weeklySpendRate;
+    const budgetExhaustDate = new Date();
+    budgetExhaustDate.setDate(budgetExhaustDate.getDate() + weeksRemaining * 7);
+
+    const projectedSQLs = Math.round(weeklySQLRate * Q1_TARGETS.weeks);
+
+    return {
+      projectedSQLs,
+      budgetExhaustDate,
+      weeklyRunRate: weeklySpendRate,
+      sqlRunRate: weeklySQLRate,
+      onTrack: projectedSQLs >= Q1_TARGETS.sqls * 0.9,
+    };
+  }, [weeklyMetrics]);
+
+  // Recommendations
+  const recommendations = useMemo(() => {
+    const recs: { type: 'success' | 'warning' | 'danger'; message: string }[] = [];
+
+    if (kpiSummary.cpsql > Q1_TARGETS.max_cpsql) {
+      recs.push({
+        type: 'danger',
+        message: `CPSQL (€${kpiSummary.cpsql.toFixed(2)}) exceeds target (€${Q1_TARGETS.max_cpsql}). Consider optimizing underperforming campaigns or reallocating budget.`,
+      });
+    }
+
+    if (kpiSummary.mql_to_sql_rate < Q1_TARGETS.mql_to_sql_rate * 100) {
+      recs.push({
+        type: 'warning',
+        message: `MQL→SQL conversion rate (${kpiSummary.mql_to_sql_rate.toFixed(1)}%) is below target (${Q1_TARGETS.mql_to_sql_rate * 100}%). Review lead quality and sales follow-up.`,
+      });
+    }
+
+    if (forecast.onTrack) {
+      recs.push({
+        type: 'success',
+        message: `On track to achieve ${forecast.projectedSQLs} SQLs by end of Q1 (target: ${Q1_TARGETS.sqls}).`,
+      });
+    } else {
+      recs.push({
+        type: 'danger',
+        message: `At current pace, projected to achieve only ${forecast.projectedSQLs} SQLs (target: ${Q1_TARGETS.sqls}). Consider increasing budget or improving conversion.`,
+      });
+    }
+
+    return recs;
+  }, [kpiSummary, forecast]);
+
+  if (!isAuthenticated) {
+    return <AdminLogin onSuccess={() => setIsAuthenticated(true)} />;
+  }
+
+  return (
+    <MediaDashboardLayout onLogout={handleLogout}>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Pacing & Forecast</h1>
+          <p className="text-slate-600">Weekly progress tracking and end-of-quarter projections</p>
+        </div>
+
+        <DashboardFilters
+          filters={filters}
+          onFiltersChange={setFilters}
+          campaigns={campaigns}
+          lastUpdated={lastUpdated}
+          onRefresh={refetch}
+          isLoading={isLoading}
+        />
+
+        {isLoading ? (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              {[...Array(3)].map((_, i) => (
+                <Skeleton key={i} className="h-32" />
+              ))}
+            </div>
+            <Skeleton className="h-96" />
+          </div>
+        ) : (
+          <>
+            {/* Forecast Cards */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <Card className="bg-white">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    {forecast.onTrack ? (
+                      <TrendingUp className="h-5 w-5 text-green-500" />
+                    ) : (
+                      <TrendingDown className="h-5 w-5 text-red-500" />
+                    )}
+                    <span className="text-sm font-medium text-slate-600">Projected SQLs</span>
+                  </div>
+                  <div className={cn(
+                    "text-3xl font-bold",
+                    forecast.onTrack ? "text-green-600" : "text-red-600"
+                  )}>
+                    {forecast.projectedSQLs}
+                  </div>
+                  <div className="text-sm text-slate-500">
+                    Target: {Q1_TARGETS.sqls} SQLs
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <AlertCircle className="h-5 w-5 text-orange-500" />
+                    <span className="text-sm font-medium text-slate-600">Budget Exhaust Date</span>
+                  </div>
+                  <div className="text-3xl font-bold text-slate-900">
+                    {forecast.budgetExhaustDate 
+                      ? format(forecast.budgetExhaustDate, 'MMM d')
+                      : 'N/A'}
+                  </div>
+                  <div className="text-sm text-slate-500">
+                    At current weekly spend of €{forecast.weeklyRunRate.toFixed(0)}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <TrendingUp className="h-5 w-5 text-blue-500" />
+                    <span className="text-sm font-medium text-slate-600">Weekly SQL Run Rate</span>
+                  </div>
+                  <div className="text-3xl font-bold text-slate-900">
+                    {forecast.sqlRunRate.toFixed(1)}
+                  </div>
+                  <div className="text-sm text-slate-500">
+                    Target: {Q1_TARGETS.weekly_sqls.toFixed(1)} SQLs/week
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Recommendations */}
+            <Card className="bg-white">
+              <CardHeader>
+                <CardTitle className="text-lg">Recommendations</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  {recommendations.map((rec, idx) => (
+                    <div
+                      key={idx}
+                      className={cn(
+                        "p-4 rounded-lg border-l-4",
+                        rec.type === 'success' && "bg-green-50 border-green-500",
+                        rec.type === 'warning' && "bg-yellow-50 border-yellow-500",
+                        rec.type === 'danger' && "bg-red-50 border-red-500"
+                      )}
+                    >
+                      <p className={cn(
+                        "text-sm",
+                        rec.type === 'success' && "text-green-800",
+                        rec.type === 'warning' && "text-yellow-800",
+                        rec.type === 'danger' && "text-red-800"
+                      )}>
+                        {rec.message}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Weekly Pacing Table */}
+            <Card className="bg-white">
+              <CardHeader>
+                <CardTitle className="text-lg">Weekly Pacing</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Week</TableHead>
+                        <TableHead>Dates</TableHead>
+                        <TableHead className="text-right">Planned Spend</TableHead>
+                        <TableHead className="text-right">Actual Spend</TableHead>
+                        <TableHead className="text-right">Variance</TableHead>
+                        <TableHead className="text-right">Planned SQLs</TableHead>
+                        <TableHead className="text-right">Actual SQLs</TableHead>
+                        <TableHead className="text-right">Cumulative SQLs</TableHead>
+                        <TableHead className="text-center">On Track</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {weeklyMetrics.map((week) => (
+                        <TableRow key={week.week}>
+                          <TableCell className="font-medium">Week {week.week}</TableCell>
+                          <TableCell className="text-slate-600">
+                            {week.weekStart} - {week.weekEnd}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            €{week.planned_spend.toFixed(0)}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            €{week.actual_spend.toFixed(0)}
+                          </TableCell>
+                          <TableCell className={cn(
+                            "text-right",
+                            week.spend_variance > 0 ? "text-red-600" : "text-green-600"
+                          )}>
+                            {week.spend_variance > 0 ? '+' : ''}€{week.spend_variance.toFixed(0)}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {week.planned_sqls.toFixed(1)}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            {week.actual_sqls}
+                          </TableCell>
+                          <TableCell className="text-right font-medium">
+                            {week.cumulative_sqls}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            {week.on_track ? (
+                              <Check className="h-5 w-5 text-green-500 mx-auto" />
+                            ) : (
+                              <X className="h-5 w-5 text-red-500 mx-auto" />
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+          </>
+        )}
+      </div>
+    </MediaDashboardLayout>
+  );
+};
+
+export default MediaDashboardPacing;

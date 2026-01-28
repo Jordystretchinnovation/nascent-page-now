@@ -326,6 +326,39 @@ export type Database = {
         }
         Relationships: []
       }
+      meta_performance: {
+        Row: {
+          ad_name: string
+          adset_name: string
+          campaign_name: string
+          created_at: string | null
+          date: string
+          frequency: number | null
+          id: string
+          spent: number
+        }
+        Insert: {
+          ad_name: string
+          adset_name: string
+          campaign_name: string
+          created_at?: string | null
+          date: string
+          frequency?: number | null
+          id?: string
+          spent: number
+        }
+        Update: {
+          ad_name?: string
+          adset_name?: string
+          campaign_name?: string
+          created_at?: string | null
+          date?: string
+          frequency?: number | null
+          id?: string
+          spent?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
