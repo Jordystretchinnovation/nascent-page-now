@@ -22,6 +22,7 @@ const navItems = [
   { title: 'Overview', path: '/media-dashboard', icon: LayoutDashboard },
   { title: 'Campaign Breakdown', path: '/media-dashboard/campaigns', icon: Table2 },
   { title: 'Pacing & Forecast', path: '/media-dashboard/pacing', icon: TrendingUp },
+  { title: 'Alerts', path: '/media-dashboard/alerts', icon: AlertTriangle },
   { title: 'Ad Fatigue Monitor', path: '/media-dashboard/fatigue', icon: AlertTriangle },
   { title: 'Settings', path: '/media-dashboard/settings', icon: Settings },
 ];

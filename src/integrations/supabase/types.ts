@@ -152,6 +152,60 @@ export type Database = {
         }
         Relationships: []
       }
+      decision_triggers: {
+        Row: {
+          action_fail: string | null
+          action_success: string | null
+          adset_pattern: string
+          applies_to_campaign_type: string | null
+          created_at: string | null
+          evaluation_week: number | null
+          id: string
+          is_active: boolean | null
+          market: string | null
+          metric: string
+          operator: string
+          severity: string
+          shift_to_adset: string | null
+          threshold_value: number | null
+          trigger_name: string
+        }
+        Insert: {
+          action_fail?: string | null
+          action_success?: string | null
+          adset_pattern: string
+          applies_to_campaign_type?: string | null
+          created_at?: string | null
+          evaluation_week?: number | null
+          id?: string
+          is_active?: boolean | null
+          market?: string | null
+          metric: string
+          operator: string
+          severity: string
+          shift_to_adset?: string | null
+          threshold_value?: number | null
+          trigger_name: string
+        }
+        Update: {
+          action_fail?: string | null
+          action_success?: string | null
+          adset_pattern?: string
+          applies_to_campaign_type?: string | null
+          created_at?: string | null
+          evaluation_week?: number | null
+          id?: string
+          is_active?: boolean | null
+          market?: string | null
+          metric?: string
+          operator?: string
+          severity?: string
+          shift_to_adset?: string | null
+          threshold_value?: number | null
+          trigger_name?: string
+        }
+        Relationships: []
+      }
       form_submissions: {
         Row: {
           achternaam: string
@@ -388,6 +442,62 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      triggered_alerts: {
+        Row: {
+          adset_name: string
+          campaign_name: string
+          current_value: number | null
+          id: string
+          metric_name: string
+          notes: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          status: string | null
+          threshold_value: number | null
+          trigger_id: string | null
+          triggered_at: string | null
+        }
+        Insert: {
+          adset_name: string
+          campaign_name: string
+          current_value?: number | null
+          id?: string
+          metric_name: string
+          notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity: string
+          status?: string | null
+          threshold_value?: number | null
+          trigger_id?: string | null
+          triggered_at?: string | null
+        }
+        Update: {
+          adset_name?: string
+          campaign_name?: string
+          current_value?: number | null
+          id?: string
+          metric_name?: string
+          notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          status?: string | null
+          threshold_value?: number | null
+          trigger_id?: string | null
+          triggered_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "triggered_alerts_trigger_id_fkey"
+            columns: ["trigger_id"]
+            isOneToOne: false
+            referencedRelation: "decision_triggers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
