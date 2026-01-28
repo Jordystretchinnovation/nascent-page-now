@@ -34,7 +34,11 @@ interface FormSubmission {
   toelichting: string | null;
 }
 
-export const SalesDashboard = () => {
+interface SalesDashboardProps {
+  tableName?: 'form_submissions' | 'form_submissions_2026';
+}
+
+export const SalesDashboard = ({ tableName = 'form_submissions' }: SalesDashboardProps) => {
   const [submissions, setSubmissions] = useState<FormSubmission[]>([]);
   const [filteredSubmissions, setFilteredSubmissions] = useState<FormSubmission[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -52,13 +56,13 @@ export const SalesDashboard = () => {
     
     // Set up real-time listener
     const channel = supabase
-      .channel('sales_dashboard_changes')
+      .channel(`sales_dashboard_changes_${tableName}`)
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'form_submissions'
+          table: tableName
         },
         (payload) => {
           if (payload.eventType === 'UPDATE') {
@@ -77,7 +81,7 @@ export const SalesDashboard = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [tableName]);
 
   useEffect(() => {
     applyFilters();
@@ -86,7 +90,7 @@ export const SalesDashboard = () => {
   const fetchSubmissions = async () => {
     try {
       const { data, error } = await supabase
-        .from('form_submissions')
+        .from(tableName)
         .select('*')
         .order('created_at', { ascending: false });
 
@@ -149,7 +153,7 @@ export const SalesDashboard = () => {
   const updateSubmissionStatus = async (id: string, newStatus: string) => {
     try {
       const { error } = await supabase
-        .from('form_submissions')
+        .from(tableName)
         .update({ sales_status: newStatus })
         .eq('id', id);
 

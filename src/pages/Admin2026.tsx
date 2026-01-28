@@ -11,9 +11,8 @@ import CampaignAnalytics from "@/components/admin/CampaignAnalytics";
 import LeadQualificationTable from "@/components/admin/LeadQualificationTable";
 import { SalesDashboard } from "@/components/admin/SalesDashboard";
 import { AdminLogin } from "@/components/admin/AdminLogin";
-import { Download, RefreshCw, LogOut, BarChart3 } from "lucide-react";
+import { Download, LogOut, BarChart3 } from "lucide-react";
 import * as XLSX from 'xlsx';
-import { processLeadUpdates } from "@/utils/processLeadUpdates";
 import { Link } from "react-router-dom";
 
 interface FormSubmission {
@@ -45,11 +44,10 @@ interface FormSubmission {
   created_at: string;
 }
 
-const Admin = () => {
+const Admin2026 = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [submissions, setSubmissions] = useState<FormSubmission[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isUpdatingLeads, setIsUpdatingLeads] = useState(false);
 
   useEffect(() => {
     const authenticated = sessionStorage.getItem('adminAuthenticated') === 'true';
@@ -70,20 +68,20 @@ const Admin = () => {
   const [filterTypeBedrijf, setFilterTypeBedrijf] = useState<string[]>([]);
 
   const [activeTab, setActiveTab] = useState("submissions");
-  const [filterQuality, setFilterQuality] = useState<string>("all"); // Quality filter state
+  const [filterQuality, setFilterQuality] = useState<string>("all");
 
   useEffect(() => {
     fetchSubmissions();
     
-    // Set up real-time listener
+    // Set up real-time listener for 2026 table
     const channel = supabase
-      .channel('admin_submissions_changes')
+      .channel('admin_submissions_2026_changes')
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'form_submissions'
+          table: 'form_submissions_2026'
         },
         (payload) => {
           if (payload.eventType === 'UPDATE') {
@@ -106,37 +104,37 @@ const Admin = () => {
 
   const fetchSubmissions = async () => {
     try {
-        const { data, error } = await supabase
-          .from('form_submissions')
-          .select(`
-            id,
-            type,
-            voornaam,
-            achternaam,
-            bedrijf,
-            type_bedrijf,
-            email,
-            telefoon,
-            straat,
-            postcode,
-            gemeente,
-            message,
-            renderbook_type,
-            kwaliteit,
-            toelichting,
-            sales_status,
-            sales_rep,
-            sales_comment,
-            marketing_optin,
-            language,
-            utm_source,
-            utm_medium,
-            utm_campaign,
-            utm_content,
-            utm_term,
-            created_at
-          `)
-          .order('created_at', { ascending: false });
+      const { data, error } = await supabase
+        .from('form_submissions_2026')
+        .select(`
+          id,
+          type,
+          voornaam,
+          achternaam,
+          bedrijf,
+          type_bedrijf,
+          email,
+          telefoon,
+          straat,
+          postcode,
+          gemeente,
+          message,
+          renderbook_type,
+          kwaliteit,
+          toelichting,
+          sales_status,
+          sales_rep,
+          sales_comment,
+          marketing_optin,
+          language,
+          utm_source,
+          utm_medium,
+          utm_campaign,
+          utm_content,
+          utm_term,
+          created_at
+        `)
+        .order('created_at', { ascending: false });
 
       if (error) {
         console.error('Error fetching submissions:', error);
@@ -172,7 +170,6 @@ const Admin = () => {
       filtered = filtered.filter(sub => sub.language === filterLanguage);
     }
     
-    // Add quality filtering
     if (filterQuality !== "all") {
       if (filterQuality === "ongekwalificeerd") {
         filtered = filtered.filter(sub => !sub.kwaliteit);
@@ -252,8 +249,6 @@ const Admin = () => {
       return acc;
     }, {} as Record<string, number>);
     
-    console.log('Quality stats calculation:', stats, 'from data:', currentData.map(s => s.kwaliteit));
-    
     return {
       ongekwalificeerd: stats.ongekwalificeerd || 0,
       goed: stats.Goed || 0,
@@ -294,47 +289,8 @@ const Admin = () => {
     }
   };
 
-  const handleUpdateLeadsFromSheet = async () => {
-    try {
-      setIsUpdatingLeads(true);
-      toast({
-        title: "Lead updates starten...",
-        description: "Dit kan enkele seconden duren.",
-      });
-      
-      const result = await processLeadUpdates();
-      
-      toast({
-        title: "Leads bijgewerkt!",
-        description: `${result.updated} succesvol, ${result.notFound} niet gevonden`,
-      });
-      
-      if (result.errors.length > 0) {
-        console.error("Update errors:", result.errors);
-        toast({
-          title: "Let op",
-          description: `${result.errors.length} fouten opgetreden. Check console voor details.`,
-          variant: "destructive"
-        });
-      }
-      
-      // Refresh de data
-      await fetchSubmissions();
-    } catch (error) {
-      console.error("Error updating leads:", error);
-      toast({
-        title: "Fout",
-        description: "Er is een fout opgetreden bij het updaten van leads",
-        variant: "destructive"
-      });
-    } finally {
-      setIsUpdatingLeads(false);
-    }
-  };
-
   const exportToExcel = () => {
     try {
-      // Transform data for Excel with proper column names
       const excelData = submissions.map(submission => ({
         'ID': submission.id,
         'Type': getTypeLabel(submission.type),
@@ -370,49 +326,24 @@ const Admin = () => {
         })
       }));
 
-      // Create workbook and worksheet
       const wb = XLSX.utils.book_new();
       const ws = XLSX.utils.json_to_sheet(excelData);
 
-      // Set column widths for better readability
       const colWidths = [
-        { wch: 36 }, // ID
-        { wch: 15 }, // Type
-        { wch: 15 }, // Voornaam
-        { wch: 15 }, // Achternaam
-        { wch: 20 }, // Bedrijf
-        { wch: 20 }, // Type Bedrijf
-        { wch: 25 }, // Email
-        { wch: 15 }, // Telefoon
-        { wch: 25 }, // Straat
-        { wch: 10 }, // Postcode
-        { wch: 15 }, // Gemeente
-        { wch: 30 }, // Bericht
-        { wch: 15 }, // Renderbook Type
-        { wch: 15 }, // Kwaliteit
-        { wch: 30 }, // Toelichting
-        { wch: 20 }, // Sales Status
-        { wch: 20 }, // Sales Rep
-        { wch: 30 }, // Sales Opmerking
-        { wch: 12 }, // Marketing Optin
-        { wch: 10 }, // Taal
-        { wch: 15 }, // UTM Source
-        { wch: 15 }, // UTM Medium
-        { wch: 15 }, // UTM Campaign
-        { wch: 15 }, // UTM Content
-        { wch: 15 }, // UTM Term
-        { wch: 18 }  // Aangemaakt op
+        { wch: 36 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 20 },
+        { wch: 20 }, { wch: 25 }, { wch: 15 }, { wch: 25 }, { wch: 10 },
+        { wch: 15 }, { wch: 30 }, { wch: 15 }, { wch: 15 }, { wch: 30 },
+        { wch: 20 }, { wch: 20 }, { wch: 30 }, { wch: 12 }, { wch: 10 },
+        { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 }, { wch: 15 },
+        { wch: 18 }
       ];
       ws['!cols'] = colWidths;
 
-      // Add worksheet to workbook
-      XLSX.utils.book_append_sheet(wb, ws, 'Formulierinzendingen');
+      XLSX.utils.book_append_sheet(wb, ws, 'Formulierinzendingen 2026');
 
-      // Generate filename with current date
       const today = new Date().toISOString().split('T')[0];
-      const filename = `formulierinzendingen_${today}.xlsx`;
+      const filename = `formulierinzendingen_2026_${today}.xlsx`;
 
-      // Save file
       XLSX.writeFile(wb, filename);
 
       toast({
@@ -455,20 +386,20 @@ const Admin = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-semibold text-foreground">
-            Admin Dashboard
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Beheer en analyseer formulierinzendingen
-          </p>
+              Admin Dashboard 2026
+            </h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Beheer en analyseer formulierinzendingen vanaf 2026
+            </p>
           </div>
           <div className="flex gap-2">
-            <Link to="/admin/2026">
+            <Link to="/admin">
               <Button 
                 variant="outline" 
                 size="sm"
                 className="flex items-center gap-2"
               >
-                Admin 2026
+                Admin 2025
               </Button>
             </Link>
             <Link to="/admin/project-analysis">
@@ -669,7 +600,6 @@ const Admin = () => {
           </>
         )}
 
-        {/* Active Filter Indicator */}
         {filterQuality !== "all" && (
           <div className="flex items-center gap-2 mb-4 p-3 bg-muted/50 rounded-lg border">
             <span className="text-sm font-medium">Actief filter:</span>
@@ -717,7 +647,7 @@ const Admin = () => {
           </TabsContent>
           
           <TabsContent value="sales" className="space-y-4 mt-4">
-            <SalesDashboard />
+            <SalesDashboard tableName="form_submissions_2026" />
           </TabsContent>
           
           <TabsContent value="utm" className="space-y-4 mt-4">
@@ -763,4 +693,4 @@ const Admin = () => {
   );
 };
 
-export default Admin;
+export default Admin2026;
