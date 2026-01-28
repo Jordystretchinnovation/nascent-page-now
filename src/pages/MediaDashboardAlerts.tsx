@@ -9,7 +9,21 @@ import { Loader2, Bell, BellOff } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const MediaDashboardAlerts = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return sessionStorage.getItem('adminAuthenticated') === 'true';
+  });
+
+  if (!isAuthenticated) {
+    return <AdminLogin onSuccess={() => setIsAuthenticated(true)} />;
+  }
+
+  return <MediaDashboardAlertsContent onLogout={() => {
+    sessionStorage.removeItem('adminAuthenticated');
+    setIsAuthenticated(false);
+  }} />;
+};
+
+const MediaDashboardAlertsContent = ({ onLogout }: { onLogout: () => void }) => {
   const {
     isLoading,
     alerts,
@@ -22,10 +36,6 @@ const MediaDashboardAlerts = () => {
     updateAlertStatus,
   } = useAlertsDashboard();
 
-  if (!isAuthenticated) {
-    return <AdminLogin onSuccess={() => setIsAuthenticated(true)} />;
-  }
-
   const openAlerts = alerts.filter(a => a.status === 'open');
   const acknowledgedAlerts = alerts.filter(a => a.status === 'acknowledged');
 
@@ -36,7 +46,7 @@ const MediaDashboardAlerts = () => {
   };
 
   return (
-    <MediaDashboardLayout onLogout={() => setIsAuthenticated(false)}>
+    <MediaDashboardLayout onLogout={onLogout}>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
