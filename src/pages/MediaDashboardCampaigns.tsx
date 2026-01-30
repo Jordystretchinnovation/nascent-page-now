@@ -17,13 +17,20 @@ const MediaDashboardCampaigns = () => {
     return sessionStorage.getItem('adminAuthenticated') === 'true';
   });
 
-  const [filters, setFilters] = useState<FilterState>({
-    dateRange: {
-      start: new Date(2026, 1, 2),  // Feb 2, 2026 - Campaign start
-      end: new Date(2026, 4, 3),    // May 3, 2026 - 13 weeks later
-    },
-    market: 'All',
-    campaign: 'All',
+  // Use today or campaign start, whichever is earlier, to catch pre-campaign data
+  const [filters, setFilters] = useState<FilterState>(() => {
+    const today = new Date();
+    const campaignStart = new Date(2026, 1, 2); // Feb 2, 2026
+    const campaignEnd = new Date(2026, 4, 3);   // May 3, 2026
+    
+    return {
+      dateRange: {
+        start: today < campaignStart ? today : campaignStart,
+        end: campaignEnd,
+      },
+      market: 'All',
+      campaign: 'All',
+    };
   });
 
   const [searchQuery, setSearchQuery] = useState('');
