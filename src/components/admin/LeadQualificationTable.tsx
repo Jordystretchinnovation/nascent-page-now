@@ -205,8 +205,7 @@ const LeadQualificationTable: React.FC<LeadQualificationTableProps> = ({ submiss
               <col className="w-16" />
               <col className="w-20" />
               <col className="w-20" />
-              <col className="w-44" />
-              <col className="w-20" />
+              <col className="w-48" />
               <col className="w-32" />  
               <col className="w-28" />
               <col className="w-36" />
@@ -220,8 +219,7 @@ const LeadQualificationTable: React.FC<LeadQualificationTableProps> = ({ submiss
                 <TableHead>Type</TableHead>
                 <TableHead>Naam</TableHead>
                 <TableHead>Bedrijf</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Tel</TableHead>
+                <TableHead>Contact</TableHead>
                 <TableHead>Adres</TableHead>
                 <TableHead>Marketing status</TableHead>
                 <TableHead>Marketing comment</TableHead>
@@ -262,11 +260,11 @@ const LeadQualificationTable: React.FC<LeadQualificationTableProps> = ({ submiss
                     <div className="break-all">
                       {submission.email}
                     </div>
-                  </TableCell>
-                  <TableCell className="text-xs">
-                    <div className="break-words">
-                      {submission.telefoon || '-'}
-                    </div>
+                    {submission.telefoon && (
+                      <div className="break-words text-muted-foreground mt-0.5">
+                        {submission.telefoon}
+                      </div>
+                    )}
                   </TableCell>
                   <TableCell className="text-xs">
                     <div className="break-words">
