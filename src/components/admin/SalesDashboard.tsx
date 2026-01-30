@@ -517,6 +517,7 @@ export const SalesDashboard = ({ tableName = 'form_submissions' }: SalesDashboar
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onUpdate={fetchSubmissions}
+        tableName={tableName}
       />
     </div>
   );
