@@ -30,9 +30,13 @@ interface FormSubmission {
 
 interface LeadQualificationTableProps {
   submissions?: FormSubmission[];
+  tableName?: 'form_submissions' | 'form_submissions_2026';
 }
 
-const LeadQualificationTable: React.FC<LeadQualificationTableProps> = ({ submissions: propSubmissions }) => {
+const LeadQualificationTable: React.FC<LeadQualificationTableProps> = ({ 
+  submissions: propSubmissions,
+  tableName = 'form_submissions'
+}) => {
   const [submissions, setSubmissions] = useState<FormSubmission[]>([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -47,13 +51,13 @@ const LeadQualificationTable: React.FC<LeadQualificationTableProps> = ({ submiss
     
     // Set up real-time listener
     const channel = supabase
-      .channel('form_submissions_changes')
+      .channel(`${tableName}_changes`)
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'form_submissions'
+          table: tableName
         },
         (payload) => {
           if (payload.eventType === 'UPDATE') {
@@ -72,12 +76,12 @@ const LeadQualificationTable: React.FC<LeadQualificationTableProps> = ({ submiss
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [propSubmissions]);
+  }, [propSubmissions, tableName]);
 
   const fetchSubmissions = async () => {
     try {
       const { data, error } = await supabase
-        .from('form_submissions')
+        .from(tableName)
         .select('*')
         .order('created_at', { ascending: false });
 
@@ -99,7 +103,7 @@ const LeadQualificationTable: React.FC<LeadQualificationTableProps> = ({ submiss
     setUpdatingId(id);
     try {
       const { error } = await supabase
-        .from('form_submissions')
+        .from(tableName)
         .update({ [field]: value })
         .eq('id', id);
 
