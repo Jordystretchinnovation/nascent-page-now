@@ -643,7 +643,7 @@ const Admin2026 = () => {
           </TabsContent>
           
           <TabsContent value="qualification" className="space-y-4 mt-4">
-            <LeadQualificationTable submissions={getSubmissionsFilteredData()} />
+            <LeadQualificationTable submissions={getSubmissionsFilteredData()} tableName="form_submissions_2026" />
           </TabsContent>
           
           <TabsContent value="sales" className="space-y-4 mt-4">
