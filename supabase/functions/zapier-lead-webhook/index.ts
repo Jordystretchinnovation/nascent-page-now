@@ -60,7 +60,14 @@ serve(async (req) => {
       postcode,
       gemeente,
       type_bedrijf,
-      utm_content, // This will be the ad set name from Zapier
+      type,
+      language,
+      marketing_optin,
+      utm_source,
+      utm_medium,
+      utm_campaign,
+      utm_content,
+      utm_term,
     } = payload;
 
     // Validate required fields
@@ -74,7 +81,10 @@ serve(async (req) => {
       });
     }
 
-    // Prepare data for insertion
+    // Parse marketing_optin (Zapier sends "TRUE" or "FALSE" as string)
+    const parsedMarketingOptin = marketing_optin === 'TRUE' || marketing_optin === true || marketing_optin === 'true';
+
+    // Prepare data for insertion - use Zapier values, with sensible defaults
     const leadData = {
       voornaam: voornaam?.trim(),
       achternaam: achternaam?.trim(),
@@ -85,13 +95,14 @@ serve(async (req) => {
       postcode: postcode?.trim() || null,
       gemeente: gemeente?.trim() || null,
       type_bedrijf: type_bedrijf?.trim() || null,
-      type: 'stalen',
-      marketing_optin: true,
-      language: 'nl',
-      utm_source: 'fb',
-      utm_medium: 'cpc',
-      utm_campaign: '2909_gh16_leads',
+      type: type?.trim() || 'stalen',
+      marketing_optin: parsedMarketingOptin,
+      language: language?.trim() || 'nl',
+      utm_source: utm_source?.trim() || null,
+      utm_medium: utm_medium?.trim() || null,
+      utm_campaign: utm_campaign?.trim() || null,
       utm_content: utm_content?.trim() || null,
+      utm_term: utm_term?.trim() || null,
     };
 
     console.log('Inserting lead data:', JSON.stringify(leadData, null, 2));
