@@ -176,8 +176,7 @@ export const SubmissionsTable = ({
                     <TableHead className="text-xs font-medium text-muted-foreground">Taal</TableHead>
                     <TableHead className="text-xs font-medium text-muted-foreground">Naam</TableHead>
                     <TableHead className="text-xs font-medium text-muted-foreground">Bedrijf</TableHead>
-                    <TableHead className="text-xs font-medium text-muted-foreground">Email</TableHead>
-                    <TableHead className="text-xs font-medium text-muted-foreground">Telefoon</TableHead>
+                    <TableHead className="text-xs font-medium text-muted-foreground">Contact</TableHead>
                     <TableHead className="text-xs font-medium text-muted-foreground">Adres</TableHead>
                     <TableHead className="text-xs font-medium text-muted-foreground">Renderbook Type</TableHead>
                     <TableHead className="text-xs font-medium text-muted-foreground">Type Bedrijf</TableHead>
@@ -207,10 +206,14 @@ export const SubmissionsTable = ({
                         {submission.voornaam} {submission.achternaam}
                       </TableCell>
                       <TableCell className="text-sm text-foreground">{submission.bedrijf}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {submission.email}
+                      <TableCell>
+                        <div className="text-sm">
+                          <div className="text-muted-foreground">{submission.email}</div>
+                          {submission.telefoon && (
+                            <div className="text-xs text-foreground">{submission.telefoon}</div>
+                          )}
+                        </div>
                       </TableCell>
-                      <TableCell className="text-sm text-foreground">{submission.telefoon || '—'}</TableCell>
                       <TableCell>
                         {submission.straat ? (
                           <div className="text-sm">
