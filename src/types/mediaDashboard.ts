@@ -124,15 +124,15 @@ export interface DashboardFilters {
   campaign: string | 'All';
 }
 
-// Q1 2026 Targets - Campaign starts Feb 2, 2026
+// Q1 2026 Targets - Campaign starts Jan 30, 2026
 export const Q1_TARGETS = {
   budget: 15840,
   sqls: 132,
   max_cpsql: 120,
   mql_to_sql_rate: 0.16,
   weeks: 13,
-  // Campaign start date: Monday Feb 2, 2026
-  campaign_start: new Date(2026, 1, 2), // Month is 0-indexed, so 1 = February
+  // Campaign start date: Thursday Jan 30, 2026
+  campaign_start: new Date(2026, 0, 30), // Month is 0-indexed, so 0 = January
 } as const;
 
 // Phased Budget Distribution
