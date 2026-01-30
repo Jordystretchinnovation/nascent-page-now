@@ -43,13 +43,15 @@ interface LeadDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   onUpdate: () => void;
+  tableName?: 'form_submissions' | 'form_submissions_2026';
 }
 
 export const LeadDetailsModal: React.FC<LeadDetailsModalProps> = ({
   lead,
   isOpen,
   onClose,
-  onUpdate
+  onUpdate,
+  tableName = 'form_submissions'
 }) => {
   const [salesStatus, setSalesStatus] = useState('');
   const [salesRep, setSalesRep] = useState('');
@@ -71,7 +73,7 @@ export const LeadDetailsModal: React.FC<LeadDetailsModalProps> = ({
     setIsUpdating(true);
     try {
       const { error } = await supabase
-        .from('form_submissions')
+        .from(tableName)
         .update({
           sales_status: salesStatus,
           sales_rep: salesRep === 'none' ? null : salesRep,
