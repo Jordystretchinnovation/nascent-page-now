@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { MediaDashboardLayout } from '@/components/media-dashboard/MediaDashboardLayout';
 import { DashboardFilters } from '@/components/media-dashboard/DashboardFilters';
 import { useMediaDashboard } from '@/hooks/useMediaDashboard';
-import { DashboardFilters as FilterState, getCPSQLColor, getCPSQLBgColor, getCampaignType, getAdsetTypeBadge, getAudienceTargetCPL } from '@/types/mediaDashboard';
+import { DashboardFilters as FilterState, Q1_TARGETS, getCPSQLColor, getCPSQLBgColor, getCampaignType, getAdsetTypeBadge, getAudienceTargetCPL } from '@/types/mediaDashboard';
 import { AdminLogin } from '@/components/admin/AdminLogin';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -17,15 +17,13 @@ const MediaDashboardCampaigns = () => {
     return sessionStorage.getItem('adminAuthenticated') === 'true';
   });
 
-  // Use today or campaign start, whichever is earlier, to catch pre-campaign data
+  // Use campaign start date (Jan 30, 2026) to ensure all leads are included
   const [filters, setFilters] = useState<FilterState>(() => {
-    const today = new Date();
-    const campaignStart = new Date(2026, 1, 2); // Feb 2, 2026
     const campaignEnd = new Date(2026, 4, 3);   // May 3, 2026
     
     return {
       dateRange: {
-        start: today < campaignStart ? today : campaignStart,
+        start: Q1_TARGETS.campaign_start, // Jan 30, 2026
         end: campaignEnd,
       },
       market: 'All',
