@@ -15,6 +15,7 @@ interface FormSubmission {
   voornaam: string;
   achternaam: string;
   bedrijf: string;
+  type_bedrijf: string | null;
   email: string;
   telefoon: string | null;
   straat: string | null;
@@ -209,6 +210,7 @@ const LeadQualificationTable: React.FC<LeadQualificationTableProps> = ({
               <col className="w-16" />
               <col className="w-20" />
               <col className="w-20" />
+              <col className="w-24" />
               <col className="w-48" />
               <col className="w-32" />  
               <col className="w-28" />
@@ -223,6 +225,7 @@ const LeadQualificationTable: React.FC<LeadQualificationTableProps> = ({
                 <TableHead>Type</TableHead>
                 <TableHead>Naam</TableHead>
                 <TableHead>Bedrijf</TableHead>
+                <TableHead>Type bedrijf</TableHead>
                 <TableHead>Contact</TableHead>
                 <TableHead>Adres</TableHead>
                 <TableHead>Marketing status</TableHead>
@@ -258,6 +261,11 @@ const LeadQualificationTable: React.FC<LeadQualificationTableProps> = ({
                   <TableCell className="text-xs">
                     <div className="break-words">
                       {submission.bedrijf}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-xs">
+                    <div className="break-words">
+                      {submission.type_bedrijf || '-'}
                     </div>
                   </TableCell>
                   <TableCell className="text-xs">
