@@ -149,14 +149,12 @@ export function useMediaDashboard(filters: DashboardFilters) {
   // Calculate funnel stages
   const funnelStages: FunnelStage[] = useMemo(() => {
     const totalLeads = filteredLeads.length;
-    const gekwalificeerd = filteredLeads.filter(l => isGekwalificeerd(l.kwaliteit)).length;
     const mqls = filteredLeads.filter(l => isMQL(l.kwaliteit) || isSQL(l.kwaliteit)).length;
     const sqls = filteredLeads.filter(l => isSQL(l.kwaliteit)).length;
 
     return [
       { name: 'Leads', value: totalLeads, percentage: 100, dropoff: 0 },
-      { name: 'Gekwalificeerd', value: gekwalificeerd, percentage: totalLeads > 0 ? (gekwalificeerd / totalLeads) * 100 : 0, dropoff: totalLeads - gekwalificeerd },
-      { name: 'MQL', value: mqls, percentage: totalLeads > 0 ? (mqls / totalLeads) * 100 : 0, dropoff: gekwalificeerd - mqls },
+      { name: 'MQL', value: mqls, percentage: totalLeads > 0 ? (mqls / totalLeads) * 100 : 0, dropoff: totalLeads - mqls },
       { name: 'SQL', value: sqls, percentage: totalLeads > 0 ? (sqls / totalLeads) * 100 : 0, dropoff: mqls - sqls },
     ];
   }, [filteredLeads]);
