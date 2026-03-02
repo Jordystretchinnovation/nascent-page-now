@@ -1,0 +1,5 @@
+INSERT INTO form_submissions_2026 (voornaam, achternaam, bedrijf, email, telefoon, type_bedrijf, type, marketing_optin, language, utm_source, utm_medium, utm_campaign, utm_term, utm_content)
+VALUES 
+('Jef', 'De peuter', 'Real Estate', 'jefenjaklien@gmail.com', '0', 'Interieurarchitect', 'renderboek', true, 'nl', 'paidsocial', 'ig', 'stretch_be_nl_26_02_mofu_leadgen_scaling_nl', '4_image_lookbook_body_short - Copy', 'lookalike_scraping_nl'),
+('Joost', 'Michiels', 'Renoconcept', 'joost@renoconcept.be', '+32497762005', 'Keukenbouwer', 'renderboek', true, 'nl', 'paidsocial', 'ig', 'stretch_be_nl_26_02_mofu_leadgen_scaling_nl', '4_image_lookbook_body_short - Copy', 'lookalike_scraping_nl'),
+('Elio Di', 'Rose', 'Elrobvba@skynet.be', 'elrobvba@skynet.be', '+32477817156', 'Keukenbouwer', 'renderboek', true, 'nl', 'paidsocial', 'ig', 'stretch_be_nl_26_02_mofu_leadgen_scaling_nl', '4_image_lookbook_body_short - Copy', 'lookalike_scraping_nl');
