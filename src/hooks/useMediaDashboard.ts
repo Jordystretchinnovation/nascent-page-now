@@ -39,12 +39,25 @@ export function useMediaDashboard(filters: DashboardFilters) {
       const endDate = format(filters.dateRange.end, 'yyyy-MM-dd');
 
       // Fetch meta performance data
-      const { data: metaResult, error: metaError } = await supabase
-        .from('meta_performance')
-        .select('*')
-        .gte('date', startDate)
-        .lte('date', endDate)
-        .order('date', { ascending: true });
+      // Fetch all meta performance data (may exceed 1000 row default limit)
+      let allMeta: MetaPerformance[] = [];
+      let metaFrom = 0;
+      const metaPageSize = 1000;
+      while (true) {
+        const { data: metaPage, error: metaError } = await supabase
+          .from('meta_performance')
+          .select('*')
+          .gte('date', startDate)
+          .lte('date', endDate)
+          .order('date', { ascending: true })
+          .range(metaFrom, metaFrom + metaPageSize - 1);
+
+        if (metaError) throw metaError;
+        if (!metaPage || metaPage.length === 0) break;
+        allMeta = allMeta.concat(metaPage);
+        if (metaPage.length < metaPageSize) break;
+        metaFrom += metaPageSize;
+      }
 
       if (metaError) throw metaError;
 
