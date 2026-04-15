@@ -59,8 +59,6 @@ export function useMediaDashboard(filters: DashboardFilters) {
         metaFrom += metaPageSize;
       }
 
-      if (metaError) throw metaError;
-
       // Fetch leads data
       const { data: leadsResult, error: leadsError } = await supabase
         .from('form_submissions_2026')
@@ -71,7 +69,7 @@ export function useMediaDashboard(filters: DashboardFilters) {
 
       if (leadsError) throw leadsError;
 
-      setMetaData(metaResult || []);
+      setMetaData(allMeta);
       setLeads(leadsResult || []);
       setLastUpdated(new Date());
     } catch (error) {
