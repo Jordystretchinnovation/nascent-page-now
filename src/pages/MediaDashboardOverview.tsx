@@ -18,7 +18,7 @@ const MediaDashboardOverview = () => {
 
   // Use campaign start date (Jan 30, 2026) to ensure all leads are included
   const [filters, setFilters] = useState<FilterState>(() => {
-    const campaignEnd = new Date(2026, 4, 3);   // May 3, 2026
+    const campaignEnd = new Date(2026, 4, 31);  // May 31, 2026
     
     return {
       dateRange: {
