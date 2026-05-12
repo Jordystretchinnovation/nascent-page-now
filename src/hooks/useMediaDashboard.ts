@@ -59,18 +59,28 @@ export function useMediaDashboard(filters: DashboardFilters) {
         metaFrom += metaPageSize;
       }
 
-      // Fetch leads data
-      const { data: leadsResult, error: leadsError } = await supabase
-        .from('form_submissions_2026')
-        .select('id, created_at, language, type_bedrijf, utm_campaign, utm_content, kwaliteit')
-        .gte('created_at', `${startDate}T00:00:00`)
-        .lte('created_at', `${endDate}T23:59:59`)
-        .order('created_at', { ascending: true });
+      // Fetch all leads (paginated to bypass 1000 row default limit)
+      let allLeads: Lead[] = [];
+      let leadsFrom = 0;
+      const leadsPageSize = 1000;
+      while (true) {
+        const { data: leadsPage, error: leadsError } = await supabase
+          .from('form_submissions_2026')
+          .select('id, created_at, language, type_bedrijf, utm_campaign, utm_content, kwaliteit')
+          .gte('created_at', `${startDate}T00:00:00`)
+          .lte('created_at', `${endDate}T23:59:59`)
+          .order('created_at', { ascending: true })
+          .range(leadsFrom, leadsFrom + leadsPageSize - 1);
 
-      if (leadsError) throw leadsError;
+        if (leadsError) throw leadsError;
+        if (!leadsPage || leadsPage.length === 0) break;
+        allLeads = allLeads.concat(leadsPage as Lead[]);
+        if (leadsPage.length < leadsPageSize) break;
+        leadsFrom += leadsPageSize;
+      }
 
       setMetaData(allMeta);
-      setLeads(leadsResult || []);
+      setLeads(allLeads);
       setLastUpdated(new Date());
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
