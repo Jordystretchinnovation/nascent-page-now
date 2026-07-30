@@ -33,6 +33,8 @@ import MediaDashboardPacing from "./pages/MediaDashboardPacing";
 import MediaDashboardFatigue from "./pages/MediaDashboardFatigue";
 import MediaDashboardSettings from "./pages/MediaDashboardSettings";
 import MediaDashboardAlerts from "./pages/MediaDashboardAlerts";
+import Login from "./pages/Login";
+import OAuthConsent from "./pages/OAuthConsent";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -54,6 +56,8 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
             <Route path="/fr" element={<IndexFr />} />
             <Route path="/gratis-stalen" element={<GratisStalen />} />
             <Route path="/lookbook" element={<Lookbook />} />
