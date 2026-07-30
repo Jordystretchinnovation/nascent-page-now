@@ -1,0 +1,169 @@
+{
+  "version": 1,
+  "sdk_version": "0.25.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://zwytwtwnfouazkuyygkm.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "covarte-landingspages",
+      "version": "0.1.0",
+      "title": "covarte-landingspages"
+    },
+    "tools": [
+      {
+        "name": "list_leads",
+        "title": "List leads",
+        "description": "List lead form submissions from the 2026 table, optionally filtered by date range, language, lead type or quality.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "start_date": {
+              "type": "string",
+              "description": "ISO date (YYYY-MM-DD) lower bound on created_at."
+            },
+            "end_date": {
+              "type": "string",
+              "description": "ISO date (YYYY-MM-DD) upper bound on created_at."
+            },
+            "language": {
+              "type": "string",
+              "enum": [
+                "nl",
+                "fr"
+              ],
+              "description": "Market language of the lead."
+            },
+            "type": {
+              "type": "string",
+              "description": "Lead magnet type, e.g. stalen, lookbook, korting, keukentrends."
+            },
+            "kwaliteit": {
+              "type": "string",
+              "description": "Lead quality label, e.g. Goed, Redelijk, Slecht."
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200,
+              "default": 50,
+              "description": "Maximum rows to return."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "lead_funnel_summary",
+        "title": "Lead funnel summary",
+        "description": "Summarise the 2026 lead funnel (Leads → MQL → SQL) for a date range, broken down by market and lead type. SQL excludes keukentrends leads.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "start_date": {
+              "type": "string",
+              "description": "ISO date (YYYY-MM-DD) lower bound on created_at."
+            },
+            "end_date": {
+              "type": "string",
+              "description": "ISO date (YYYY-MM-DD) upper bound on created_at."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "campaign_spend",
+        "title": "Meta campaign spend",
+        "description": "Total Meta Ads spend for a date range, broken down by campaign and adset, from the synced meta_performance data.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "start_date": {
+              "type": "string",
+              "description": "ISO date (YYYY-MM-DD) lower bound on the report date."
+            },
+            "end_date": {
+              "type": "string",
+              "description": "ISO date (YYYY-MM-DD) upper bound on the report date."
+            },
+            "campaign_name": {
+              "type": "string",
+              "description": "Filter to a single campaign name (exact match)."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "update_lead_qualification",
+        "title": "Update lead qualification",
+        "description": "Update the qualification of a 2026 lead: quality label, sales status, sales rep and/or sales comment.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "lead_id": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The id of the lead in form_submissions_2026."
+            },
+            "kwaliteit": {
+              "type": "string",
+              "description": "Quality label, e.g. Goed, Redelijk, Slecht."
+            },
+            "sales_status": {
+              "type": "string",
+              "description": "Sales pipeline status."
+            },
+            "sales_rep": {
+              "type": "string",
+              "description": "Name of the responsible sales rep."
+            },
+            "sales_comment": {
+              "type": "string",
+              "description": "Free-text sales note."
+            }
+          },
+          "required": [
+            "lead_id"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
