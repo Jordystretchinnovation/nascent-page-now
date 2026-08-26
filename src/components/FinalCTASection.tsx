@@ -24,7 +24,7 @@ const FinalCTASection = () => {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Dialog>
             <DialogTrigger asChild>
-              <Button size="lg" className="font-body bg-white text-stone-800 hover:bg-stone-100 py-4 px-8 rounded-lg">
+              <Button size="lg" className="font-body bg-amber-600 hover:bg-amber-700 text-white py-4 px-8 rounded-lg">
                 Ontvang gratis stalen
               </Button>
             </DialogTrigger>
