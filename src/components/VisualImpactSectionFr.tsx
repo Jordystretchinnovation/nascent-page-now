@@ -1,4 +1,5 @@
-
+import heroKitchenFr from "@/assets/render-02-2-fr.jpg.asset.json";
+import savoirFaireFr from "@/assets/render-01-fr.jpg.asset.json";
 import { useState } from 'react';
 import { Play, Pause } from 'lucide-react';
 
@@ -28,7 +29,7 @@ const VisualImpactSectionFr = () => {
         <div className="mb-12">
           <div className="relative overflow-hidden rounded-3xl shadow-lg">
             <img 
-              src="/lovable-uploads/45383296-94d8-4a21-ab9f-2693927c4c0d.png" 
+              src={heroKitchenFr.url} 
               alt="Cuisine moderne avec plan de travail céramique Covarte" 
               className="w-full h-[400px] md:h-[500px] object-cover" 
             />
@@ -60,7 +61,7 @@ const VisualImpactSectionFr = () => {
               <img 
                 alt="Savoir-faire qui se voit et se sent" 
                 className="w-full h-[350px] object-cover" 
-                src="/lovable-uploads/364225d6-e44e-479c-8335-83ae4fdad1c2.jpg" 
+                src={savoirFaireFr.url} 
               />
             </div>
           </div>
