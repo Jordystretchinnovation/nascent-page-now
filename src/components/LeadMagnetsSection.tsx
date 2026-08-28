@@ -27,7 +27,7 @@ const LeadMagnetsSection = () => {
             </p>
             <Dialog>
               <DialogTrigger asChild>
-                <Button className="font-body w-full bg-stone-800 hover:bg-stone-700 text-white rounded-lg py-3">
+                <Button className="font-body w-full bg-[#D97706] hover:bg-[#B45309] text-white rounded-lg py-3">
                   Vraag gratis stalen aan
                 </Button>
               </DialogTrigger>
