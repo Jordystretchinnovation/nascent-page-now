@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Play, Pause } from 'lucide-react';
 import heroKitchen from "@/assets/render-02-2.jpg.asset.json";
+import vakmanschap from "@/assets/render-01.jpg.asset.json";
 const VisualImpactSection = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const handleVideoToggle = () => {
@@ -40,7 +41,7 @@ const VisualImpactSection = () => {
           
           <div className="order-1 md:order-2">
             <div className="relative overflow-hidden rounded-2xl shadow-lg">
-              <img alt="Vakmanschap dat je ziet en voelt" className="w-full h-[350px] object-cover" src="/lovable-uploads/364225d6-e44e-479c-8335-83ae4fdad1c2.jpg" />
+              <img alt="Vakmanschap dat je ziet en voelt" className="w-full h-[350px] object-cover" src={vakmanschap.url} />
             </div>
           </div>
         </div>
