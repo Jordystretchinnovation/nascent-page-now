@@ -25,7 +25,7 @@ const FinalCTASection = () => {
           <Dialog>
             <DialogTrigger asChild>
               <Button size="lg" className="font-body bg-amber-600 hover:bg-amber-700 text-white py-4 px-8 rounded-lg">
-                Ontvang gratis stalen
+                Ontvang onze vernieuwde gratis stalen
               </Button>
             </DialogTrigger>
             <CTAForm type="stalen" title="Gratis stalenpakket aanvragen" />
