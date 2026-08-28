@@ -41,7 +41,7 @@ const LeadMagnetsSectionFr = () => {
               <img 
                 alt="Téléchargement du lookbook" 
                 className="w-full h-48 object-contain rounded-lg" 
-                src="/lovable-uploads/e61e5bce-1634-43db-8c9d-34cc46bcfc70.png" 
+                src={lookbookFr.url} 
               />
             </div>
             <p className="font-body text-stone-600 mb-8 leading-relaxed">
