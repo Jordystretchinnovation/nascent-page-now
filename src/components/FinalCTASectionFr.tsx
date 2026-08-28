@@ -24,7 +24,7 @@ const FinalCTASectionFr = () => {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Dialog>
             <DialogTrigger asChild>
-              <Button size="lg" className="font-body bg-white text-stone-800 hover:bg-stone-100 py-4 px-8 rounded-lg">
+              <Button size="lg" className="font-body bg-[#D97706] text-white hover:bg-[#B45309] py-4 px-8 rounded-lg">
                 Demandez des échantillons gratuits
               </Button>
             </DialogTrigger>
@@ -40,14 +40,6 @@ const FinalCTASectionFr = () => {
             <CTAFormFr type="renderboek" title="Télécharger le Collection Lookbook" />
           </Dialog>
           
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button size="lg" className="font-body bg-amber-600 hover:bg-amber-700 text-white py-4 px-8 rounded-lg">
-                Commander avec 50% de réduction
-              </Button>
-            </DialogTrigger>
-            <CTAFormFr type="korting" title="50% de réduction sur la première commande" />
-          </Dialog>
         </div>
       </div>
     </section>
