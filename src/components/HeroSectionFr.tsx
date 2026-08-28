@@ -54,14 +54,6 @@ const HeroSectionFr = () => {
             <CTAFormFr type="renderboek" title="Télécharger le Collection Lookbook" />
           </Dialog>
           
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button size="lg" className="font-body bg-amber-600 hover:bg-amber-700 text-white text-base py-4 px-8 rounded-lg">
-                Commander avec 50% de réduction
-              </Button>
-            </DialogTrigger>
-            <CTAFormFr type="korting" title="50% de réduction sur la première commande" />
-          </Dialog>
         </div>
       </div>
     </section>
