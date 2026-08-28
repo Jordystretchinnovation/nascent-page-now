@@ -12,7 +12,7 @@ const LeadMagnetsSection = () => {
           Ontdek de kwaliteit van Covarte. Helemaal op jouw tempo.
         </h2>
         
-        <div className="grid md:grid-cols-3 gap-4">
+        <div className="grid md:grid-cols-2 gap-4">
           <div className="bg-white p-8 rounded-2xl border border-stone-200 shadow-sm hover:shadow-md transition-shadow">
             {/* Material samples image */}
             <div className="mb-3">
