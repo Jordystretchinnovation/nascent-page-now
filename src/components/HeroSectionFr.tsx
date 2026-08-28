@@ -1,4 +1,4 @@
-
+import heroBgFr from "@/assets/laminam-hero-bg-fr.jpg.asset.json";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import CTAFormFr from "./CTAFormFr";
