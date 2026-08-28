@@ -1,4 +1,4 @@
-
+import stalenDisplayFr from "@/assets/covarte-stalen-display-fr.jpg.asset.json";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import CTAFormFr from "./CTAFormFr";
@@ -16,7 +16,7 @@ const LeadMagnetsSectionFr = () => {
             {/* Material samples image */}
             <div className="mb-3">
               <img 
-                src="/lovable-uploads/aa091f8d-1628-4e75-bbc7-0b266a292416.png" 
+                src={stalenDisplayFr.url} 
                 alt="Échantillons de plans de travail céramiques" 
                 className="w-full h-48 object-contain rounded-lg" 
               />
