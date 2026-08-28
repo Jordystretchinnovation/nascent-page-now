@@ -57,27 +57,6 @@ const LeadMagnetsSectionFr = () => {
             </Dialog>
           </div>
           
-          <div className="bg-white p-8 rounded-2xl border border-stone-200 shadow-sm hover:shadow-md transition-shadow">
-            {/* Discount offer image */}
-            <div className="mb-3">
-              <img 
-                alt="50% de réduction sur la première commande" 
-                className="w-full h-48 object-contain rounded-lg" 
-                src="/lovable-uploads/b66fa845-e1ad-40f8-903c-6e32783c228e.png" 
-              />
-            </div>
-            <p className="font-body text-stone-600 mb-8 leading-relaxed">
-              Commandez pour la première fois chez Covarte et recevez 50% de réduction. Sans risque, avec un service de qualité.
-            </p>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button className="font-body w-full bg-amber-600 hover:bg-amber-700 text-white rounded-lg py-3">
-                  Commander avec 50% de réduction
-                </Button>
-              </DialogTrigger>
-              <CTAFormFr type="korting" title="50% de réduction sur la première commande" />
-            </Dialog>
-          </div>
         </div>
       </div>
     </section>
