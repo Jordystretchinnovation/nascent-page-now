@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import CTAForm from "./CTAForm";
+import stalenDisplay from "@/assets/covarte-stalen-display.jpg.asset.json";
 
 const LeadMagnetsSection = () => {
   return (
@@ -16,8 +17,8 @@ const LeadMagnetsSection = () => {
             {/* Material samples image */}
             <div className="mb-3">
               <img 
-                src="/lovable-uploads/aa091f8d-1628-4e75-bbc7-0b266a292416.png" 
-                alt="Keramische werkblad stalen" 
+                src={stalenDisplay.url} 
+                alt="Keramische werkblad stalen"
                 className="w-full h-48 object-contain rounded-lg" 
               />
             </div>
