@@ -28,7 +28,7 @@ const VisualImpactSectionFr = () => {
         <div className="mb-12">
           <div className="relative overflow-hidden rounded-3xl shadow-lg">
             <img 
-              src="/lovable-uploads/45383296-94d8-4a21-ab9f-2693927c4c0d.png" 
+              src={heroKitchenFr.url} 
               alt="Cuisine moderne avec plan de travail céramique Covarte" 
               className="w-full h-[400px] md:h-[500px] object-cover" 
             />
