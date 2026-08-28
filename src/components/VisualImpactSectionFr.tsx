@@ -1,4 +1,4 @@
-
+import heroKitchenFr from "@/assets/render-02-2-fr.jpg.asset.json";
 import { useState } from 'react';
 import { Play, Pause } from 'lucide-react';
 
