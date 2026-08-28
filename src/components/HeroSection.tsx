@@ -39,7 +39,7 @@ const HeroSection = () => {
         <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-3xl mx-auto">
           <Dialog>
             <DialogTrigger asChild>
-              <Button size="lg" className="font-body bg-white text-stone-800 hover:bg-stone-100 text-base py-4 px-8 rounded-lg">
+              <Button size="lg" className="font-body bg-[#D97706] text-white hover:bg-[#B45309] text-base py-4 px-8 rounded-lg">
                 Ontvang gratis stalen
               </Button>
             </DialogTrigger>
