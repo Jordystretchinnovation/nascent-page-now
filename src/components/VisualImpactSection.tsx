@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Play, Pause } from 'lucide-react';
+import heroKitchen from "@/assets/render-02-2.jpg.asset.json";
 const VisualImpactSection = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const handleVideoToggle = () => {
@@ -20,7 +21,7 @@ const VisualImpactSection = () => {
         {/* Hero Kitchen Image */}
         <div className="mb-12">
           <div className="relative overflow-hidden rounded-3xl shadow-lg">
-            <img src="/lovable-uploads/45383296-94d8-4a21-ab9f-2693927c4c0d.png" alt="Moderne keuken met Covarte keramische werkblad" className="w-full h-[400px] md:h-[500px] object-cover" />
+            <img src={heroKitchen.url} alt="Moderne keuken met Covarte keramische werkblad" className="w-full h-[400px] md:h-[500px] object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-stone-900/30 to-transparent"></div>
             <div className="absolute bottom-8 left-8 text-white">
               <h3 className="font-heading mb-2 text-3xl">Keramische perfectie in elke detail</h3>
