@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Play, Pause } from 'lucide-react';
+import heroKitchen from "@/assets/render-02-2.jpg.asset.json";
 const VisualImpactSection = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const handleVideoToggle = () => {
