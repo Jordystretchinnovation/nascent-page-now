@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import CTAForm from "./CTAForm";
 import stalenDisplay from "@/assets/covarte-stalen-display.jpg.asset.json";
+import renderboekAsset from "@/assets/group-27805.png.asset.json";
+
 
 const LeadMagnetsSection = () => {
   return (
@@ -41,7 +43,7 @@ const LeadMagnetsSection = () => {
               <img 
                 alt="Renderboek download" 
                 className="w-full h-48 object-contain rounded-lg" 
-                src="/lovable-uploads/e61e5bce-1634-43db-8c9d-34cc46bcfc70.png" 
+                src={renderboekAsset.url} 
               />
             </div>
             <p className="font-body text-stone-600 mb-8 leading-relaxed">
