@@ -1,4 +1,5 @@
 import stalenDisplayFr from "@/assets/covarte-stalen-display-fr.jpg.asset.json";
+import lookbookFr from "@/assets/group-27805-2.png.asset.json";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import CTAFormFr from "./CTAFormFr";
