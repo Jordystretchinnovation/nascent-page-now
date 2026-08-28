@@ -61,7 +61,7 @@ const VisualImpactSectionFr = () => {
               <img 
                 alt="Savoir-faire qui se voit et se sent" 
                 className="w-full h-[350px] object-cover" 
-                src="/lovable-uploads/364225d6-e44e-479c-8335-83ae4fdad1c2.jpg" 
+                src={savoirFaireFr.url} 
               />
             </div>
           </div>
