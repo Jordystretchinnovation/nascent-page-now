@@ -30,26 +30,6 @@ const FooterFr = () => {
             <h4 className="font-heading text-lg mb-4">Liens rapides</h4>
             <ul className="space-y-2">
               <li>
-                <Link to="/fr/echantillons-gratuits" className="font-body text-stone-300 hover:text-white transition-colors">
-                  Échantillons gratuits
-                </Link>
-              </li>
-              <li>
-                <Link to="/fr/lookbook" className="font-body text-stone-300 hover:text-white transition-colors">
-                  Collection Lookbook
-                </Link>
-              </li>
-              <li>
-                <Link to="/fr/reduction" className="font-body text-stone-300 hover:text-white transition-colors">
-                  50% de réduction
-                </Link>
-              </li>
-              <li>
-                <Link to="/fr/politique-cookies" className="font-body text-stone-300 hover:text-white transition-colors">
-                  Politique de cookies
-                </Link>
-              </li>
-              <li>
                 <a 
                   href="https://www.iubenda.com/privacy-policy/59860343" 
                   target="_blank" 
