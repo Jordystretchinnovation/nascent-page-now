@@ -13,10 +13,10 @@ const USPSectionFr = () => {
           <div className="bg-stone-50 p-8 rounded-2xl border border-stone-100 hover:shadow-lg transition-shadow">
             <Layers className="h-12 w-12 text-stone-700 mb-6" />
             <h3 className="font-heading text-xl mb-4 text-stone-800">
-              Plans de travail en céramique uniques de 15 mm
+              14 nouvelles couleurs en stock
             </h3>
             <p className="font-body text-stone-600 leading-relaxed">
-              Solidité, au meilleur prix.
+              Épatez vos clients avec les nouveaux plans de travail en céramique
             </p>
           </div>
           
