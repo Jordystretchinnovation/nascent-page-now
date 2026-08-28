@@ -7,11 +7,8 @@ const USPSection = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           <div className="bg-stone-50 p-8 rounded-2xl border border-stone-100 hover:shadow-lg transition-shadow">
             <Layers className="h-12 w-12 text-stone-700 mb-6" />
-            <h3 className="font-heading text-xl mb-4 text-stone-800">Unieke keramische werkbladen van 15 mm
-          </h3>
-            <p className="font-body text-stone-600 leading-relaxed">Stevigheid, voor de beste prijs.
-
-          </p>
+            <h3 className="font-heading text-xl mb-4 text-stone-800">14 nieuwe kleuren in voorraad</h3>
+            <p className="font-body text-stone-600 leading-relaxed">Blaas je klanten omver met de nieuwe keramische werkbladen</p>
           </div>
           
           <div className="bg-stone-50 p-8 rounded-2xl border border-stone-100 hover:shadow-lg transition-shadow">
