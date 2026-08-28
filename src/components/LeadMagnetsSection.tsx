@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import CTAForm from "./CTAForm";
 import stalenDisplay from "@/assets/covarte-stalen-display.jpg.asset.json";
+import renderboekAsset from "@/assets/group-27805.png.asset.json";
+
 
 const LeadMagnetsSection = () => {
   return (
