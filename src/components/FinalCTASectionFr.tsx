@@ -24,7 +24,7 @@ const FinalCTASectionFr = () => {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Dialog>
             <DialogTrigger asChild>
-              <Button size="lg" className="font-body bg-white text-stone-800 hover:bg-stone-100 py-4 px-8 rounded-lg">
+              <Button size="lg" className="font-body bg-[#D97706] text-white hover:bg-[#B45309] py-4 px-8 rounded-lg">
                 Demandez des échantillons gratuits
               </Button>
             </DialogTrigger>
