@@ -1,4 +1,5 @@
 import stalenDisplayFr from "@/assets/covarte-stalen-display-fr.jpg.asset.json";
+import lookbookFr from "@/assets/group-27805-2.png.asset.json";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import CTAFormFr from "./CTAFormFr";
@@ -11,7 +12,7 @@ const LeadMagnetsSectionFr = () => {
           Découvrez la qualité de Covarte. À votre rythme.
         </h2>
         
-        <div className="grid md:grid-cols-3 gap-4">
+        <div className="grid md:grid-cols-2 gap-4">
           <div className="bg-white p-8 rounded-2xl border border-stone-200 shadow-sm hover:shadow-md transition-shadow">
             {/* Material samples image */}
             <div className="mb-3">
@@ -40,7 +41,7 @@ const LeadMagnetsSectionFr = () => {
               <img 
                 alt="Téléchargement du lookbook" 
                 className="w-full h-48 object-contain rounded-lg" 
-                src="/lovable-uploads/e61e5bce-1634-43db-8c9d-34cc46bcfc70.png" 
+                src={lookbookFr.url} 
               />
             </div>
             <p className="font-body text-stone-600 mb-8 leading-relaxed">
@@ -56,27 +57,6 @@ const LeadMagnetsSectionFr = () => {
             </Dialog>
           </div>
           
-          <div className="bg-white p-8 rounded-2xl border border-stone-200 shadow-sm hover:shadow-md transition-shadow">
-            {/* Discount offer image */}
-            <div className="mb-3">
-              <img 
-                alt="50% de réduction sur la première commande" 
-                className="w-full h-48 object-contain rounded-lg" 
-                src="/lovable-uploads/b66fa845-e1ad-40f8-903c-6e32783c228e.png" 
-              />
-            </div>
-            <p className="font-body text-stone-600 mb-8 leading-relaxed">
-              Commandez pour la première fois chez Covarte et recevez 50% de réduction. Sans risque, avec un service de qualité.
-            </p>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button className="font-body w-full bg-amber-600 hover:bg-amber-700 text-white rounded-lg py-3">
-                  Commander avec 50% de réduction
-                </Button>
-              </DialogTrigger>
-              <CTAFormFr type="korting" title="50% de réduction sur la première commande" />
-            </Dialog>
-          </div>
         </div>
       </div>
     </section>
