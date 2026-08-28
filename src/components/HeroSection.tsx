@@ -3,6 +3,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import CTAForm from "./CTAForm";
+import heroBg from "@/assets/laminam-hero-bg.jpg.asset.json";
 
 const HeroSection = () => {
   return (
@@ -11,8 +12,8 @@ const HeroSection = () => {
       <div 
         className="absolute inset-0 bg-cover bg-center" 
         style={{
-          backgroundImage: `url('/lovable-uploads/4dce403a-0b1e-45cf-bc5d-36176b7bb654.png')`
-        }} 
+          backgroundImage: `url('${heroBg.url}')`
+        }}
       />
       
       {/* Subtle 5% fade overlay */}
