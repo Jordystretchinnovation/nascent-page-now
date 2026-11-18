@@ -1,0 +1,1 @@
+ALTER TABLE public.form_submissions_2026 ADD COLUMN IF NOT EXISTS ik_ben_een text, ADD COLUMN IF NOT EXISTS hubspot_synced boolean NOT NULL DEFAULT false;

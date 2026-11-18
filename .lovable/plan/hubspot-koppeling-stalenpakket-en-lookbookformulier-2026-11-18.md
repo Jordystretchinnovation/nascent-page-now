@@ -3,36 +3,43 @@
 ## Wat jij in HubSpot (portal 148511656) aanmaakt
 
 ### 1. Eigen contact-eigenschappen (Instellingen → Eigenschappen → Contact)
-| Label | Interne naam | Type |
-|---|---|---|
-| Ik ben een... | `ik_ben_een` | Keuzelijst (dropdown) met de 28 waarden uit je CSV (Handelaar ... Bestratingshandel). Interne waarde = label. |
-| Lead magnet | `lead_magnet` | Keuzelijst: `stalenpakket`, `lookbook` |
-| Taal formulier | `form_language` | Keuzelijst: `nl`, `fr` |
-| UTM source / medium / campaign / term / content | `utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content` | Eén regel tekst |
-| Facebook click ID | `fbclid` | Eén regel tekst |
-| Google click ID | `gclid` | Eén regel tekst |
+
+
+| Label                                           | Interne naam                                                          | Type                                                                                                          |
+| ----------------------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Ik ben een...                                   | `ik_ben_een`                                                          | Keuzelijst (dropdown) met de 28 waarden uit je CSV (Handelaar ... Bestratingshandel). Interne waarde = label. |
+| Lead magnet                                     | `lead_magnet`                                                         | Keuzelijst: `stalenpakket`, `lookbook`                                                                        |
+| Taal formulier                                  | `form_language`                                                       | Keuzelijst: `nl`, `fr`                                                                                        |
+| UTM source / medium / campaign / term / content | `utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content` | Eén regel tekst                                                                                               |
+| Facebook click ID                               | `fbclid`                                                              | Eén regel tekst                                                                                               |
+| Google click ID                                 | `gclid`                                                               | Eén regel tekst                                                                                               |
+
 
 Standaardvelden die al bestaan: `firstname`, `lastname`, `company`, `email`, `phone`, `address`, `zip`, `city`.
 
-### 2. Formulier "Covarte – Stalenpakket 2026"
+### 2. Formulier "Covarte – Stalenpakket 2026" = 156e5aa3-54f4-49a1-b08a-b4d2a5345f5d
+
 Velden (allemaal toevoegen, verborgen velden mogen verborgen staan):
+
 - `firstname`, `lastname`, `company`, `email` (verplicht)
 - `phone`, `address`, `zip`, `city` (verplicht)
 - `ik_ben_een` (verplicht)
 - Verborgen: `lead_magnet`, `form_language`, `utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content`, `fbclid`, `gclid`
 - Toestemming: zet "GDPR / communicatietoestemming" aan, met een abonnementstype voor marketing (bv. "Marketing informatie") en "verwerking van gegevens".
 
-### 3. Formulier "Covarte – Lookbook 2026"
-- `firstname`, `lastname`, `company`, `email` (verplicht)
+### 3. Formulier "Covarte – Lookbook 2026" = 5f755978-8346-40d9-83f2-736f22e84320
+
+- `firstname`, `lastname`, `company`, `email` (verplicht), phone
 - `city` = "Gemeente" (verplicht)
 - `ik_ben_een` (verplicht)
 - Dezelfde verborgen velden en toestemming als hierboven
 
-Daarna stuur je mij: de 2 form-ID's (in de URL van de formulier-editor) en de ID van het marketing-abonnementstype (Instellingen → Marketing → Abonnementen).
+De 2 form-ID's zitten naast de naam van de form hierboven en de ID van het marketing-abonnementstype (Instellingen → Marketing → Abonnementen).
 
-Eén formulier per lead magnet volstaat voor NL en FR; `form_language` maakt het onderscheid. Wil je liever aparte FR-formulieren, dan worden dat er 4.
+Eén formulier per lead magnet volstaat voor NL en FR; `form_language` maakt het onderscheid.
 
 ## Wat ik in de app bouw
+
 - Nieuw veld "Ik ben een..." (dropdown, verplicht) op stalen- en lookbookformulier; FR-pagina's tonen "Je suis un..." met Franse labels; de waarde naar HubSpot blijft de Nederlandse waarde uit de lijst.
 - Lookbookformulier: veld "Gemeente" toegevoegd (verplicht).
 - Bij verzenden: inzending wordt zoals nu in onze eigen database bewaard (dashboards blijven werken) én doorgestuurd naar HubSpot.
@@ -45,6 +52,7 @@ Eén formulier per lead magnet volstaat voor NL en FR; `form_language` maakt het
 - Faalt HubSpot, dan krijgt de bezoeker toch de bedankpagina en blijft de lead bewaard; de fout wordt gelogd.
 
 ## Technische details
+
 - Edge function `hubspot-form-submit` roept `POST https://api.hsforms.com/submissions/v3/integration/submit/148511656/{formGuid}` aan met `fields`, `context { hutk, pageUri, pageName, ipAddress }`, `legalConsentOptions`. Geen API-sleutel nodig; IP komt uit `x-forwarded-for`.
 - Form-GUIDs en subscription-type-ID als configuratie in de function; inputvalidatie met zod; `ik_ben_een` gevalideerd tegen de CSV-lijst.
 - Nieuwe kolommen `ik_ben_een` en `hubspot_synced` (bool) in `form_submissions_2026`.

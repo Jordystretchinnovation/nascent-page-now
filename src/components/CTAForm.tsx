@@ -8,6 +8,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import IkBenEenSelect from "@/components/IkBenEenSelect";
+import { sendToHubspot } from "@/lib/hubspot";
 
 interface CTAFormProps {
   type: string;
@@ -36,6 +38,7 @@ const CTAForm = ({ type, title }: CTAFormProps) => {
   const [marketingOptin, setMarketingOptin] = useState(false);
   const [marketingOptinError, setMarketingOptinError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [ikBenEen, setIkBenEen] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -96,12 +99,21 @@ const CTAForm = ({ type, title }: CTAFormProps) => {
       return;
     }
 
+    if ((type === "stalen" || type === "renderboek") && !ikBenEen) {
+      toast({ title: "Vereist veld ontbreekt", description: "Geef aan wie je bent.", variant: "destructive" });
+      return;
+    }
+    if (type === "renderboek" && !formData.gemeente.trim()) {
+      toast({ title: "Gemeente ontbreekt", description: "Vul je gemeente in.", variant: "destructive" });
+      return;
+    }
     setIsSubmitting(true);
     console.log("CTAForm - Set submitting to true");
 
     try {
       // Prepare submission data
       const submissionData = {
+        ik_ben_een: ikBenEen || null,
         type,
         voornaam: formData.voornaam,
         achternaam: formData.achternaam,
@@ -130,6 +142,14 @@ const CTAForm = ({ type, title }: CTAFormProps) => {
         console.error("CTAForm - Supabase error:", error);
         throw error;
       }
+      if (type === "stalen" || type === "renderboek") {
+        await sendToHubspot({
+          submissionId: data?.[0]?.id, formType: type as "stalen" | "renderboek", language: "nl",
+          voornaam: formData.voornaam, achternaam: formData.achternaam, bedrijf: formData.bedrijf, email: formData.email,
+          telefoon: formData.telefoon, straat: formData.straat, postcode: formData.postcode, gemeente: formData.gemeente,
+          ikBenEen, marketingOptin, consentText: getMarketingOptinText(),
+        });
+      }
 
       console.log("CTAForm - Form submission successful:", data);
 
@@ -152,6 +172,7 @@ const CTAForm = ({ type, title }: CTAFormProps) => {
       });
       setRenderbookType("digitaal");
       setMarketingOptin(false);
+      setIkBenEen("");
 
       // Redirect to appropriate thank you page
       setTimeout(() => {
@@ -242,6 +263,15 @@ const CTAForm = ({ type, title }: CTAFormProps) => {
           </div>
         </div>
 
+        {(type === "stalen" || type === "renderboek") && (
+          <IkBenEenSelect value={ikBenEen} onChange={setIkBenEen} language="nl" disabled={isSubmitting} />
+        )}
+        {type === "renderboek" && renderbookType !== "fysiek" && (
+          <div>
+            <Label htmlFor="gemeente-lookbook" className="text-stone-700 font-medium">Gemeente *</Label>
+            <Input id="gemeente-lookbook" value={formData.gemeente} onChange={e => setFormData({ ...formData, gemeente: e.target.value })} className="mt-1 border-stone-200 focus:border-stone-400 focus:ring-stone-400" required maxLength={120} disabled={isSubmitting} />
+          </div>
+        )}
         <div>
           <Label htmlFor="bedrijf" className="text-stone-700 font-medium">
             Bedrijf *
@@ -281,7 +311,7 @@ const CTAForm = ({ type, title }: CTAFormProps) => {
               onChange={(e) => setFormData({ ...formData, telefoon: e.target.value })}
               className="mt-1 border-stone-200 focus:border-stone-400 focus:ring-stone-400"
               required={
-                type === "stalen" || type === "korting" || (type === "renderboek" && renderbookType === "fysiek")
+                type === "stalen" || type === "korting" || type === "renderboek"
               }
               disabled={isSubmitting}
             />

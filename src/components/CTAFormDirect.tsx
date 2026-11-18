@@ -7,6 +7,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import IkBenEenSelect from "@/components/IkBenEenSelect";
+import { sendToHubspot } from "@/lib/hubspot";
 
 interface CTAFormDirectProps {
   type: string;
@@ -32,10 +34,10 @@ const CTAFormDirect = ({ type, title }: CTAFormDirectProps) => {
     utm_content: ""
   });
   const [renderbookType, setRenderbookType] = useState("digitaal");
-  const [typeBedrijf, setTypeBedrijf] = useState("particulier");
   const [marketingOptin, setMarketingOptin] = useState(false);
   const [marketingOptinError, setMarketingOptinError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [ikBenEen, setIkBenEen] = useState("");
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -74,6 +76,14 @@ const CTAFormDirect = ({ type, title }: CTAFormDirectProps) => {
       return;
     }
     
+    if ((type === "stalen" || type === "renderboek") && !ikBenEen) {
+      toast({ title: "Vereist veld ontbreekt", description: "Geef aan wie je bent.", variant: "destructive" });
+      return;
+    }
+    if (type === "renderboek" && !formData.gemeente.trim()) {
+      toast({ title: "Gemeente ontbreekt", description: "Vul je gemeente in.", variant: "destructive" });
+      return;
+    }
     setIsSubmitting(true);
     console.log('CTAFormDirect - Set submitting to true');
     
@@ -162,6 +172,7 @@ const CTAFormDirect = ({ type, title }: CTAFormDirectProps) => {
 
       // Prepare submission data
       const submissionData = {
+        ik_ben_een: ikBenEen || null,
         type: type,
         voornaam: formData.voornaam,
         achternaam: formData.achternaam,
@@ -172,7 +183,7 @@ const CTAFormDirect = ({ type, title }: CTAFormDirectProps) => {
         postcode: formData.postcode || null,
         gemeente: formData.gemeente || null,
         renderbook_type: type === "renderboek" ? renderbookType : null,
-        type_bedrijf: type === "stalen" ? typeBedrijf : null,
+        type_bedrijf: type === "stalen" ? ikBenEen : null,
         marketing_optin: marketingOptin,
         language: "nl",
         utm_source: utmParams.utm_source || null,
@@ -202,6 +213,14 @@ const CTAFormDirect = ({ type, title }: CTAFormDirectProps) => {
         });
         throw error;
       }
+      if (type === "stalen" || type === "renderboek") {
+        await sendToHubspot({
+          submissionId: data?.[0]?.id, formType: type as "stalen" | "renderboek", language: "nl",
+          voornaam: formData.voornaam, achternaam: formData.achternaam, bedrijf: formData.bedrijf, email: formData.email,
+          telefoon: formData.telefoon, straat: formData.straat, postcode: formData.postcode, gemeente: formData.gemeente,
+          ikBenEen, marketingOptin, consentText: getOptinText(),
+        });
+      }
 
       console.log('CTAFormDirect - Form submission successful:', data);
       
@@ -223,8 +242,8 @@ const CTAFormDirect = ({ type, title }: CTAFormDirectProps) => {
         gemeente: ""
       });
       setRenderbookType("digitaal");
-      setTypeBedrijf("particulier");
       setMarketingOptin(false);
+      setIkBenEen("");
 
       // Redirect to appropriate thank you page
       let redirectPath = "/thank-you/";
@@ -270,7 +289,7 @@ const CTAFormDirect = ({ type, title }: CTAFormDirectProps) => {
   };
 
   const requiresAddress = type === "stalen" || (type === "renderboek" && renderbookType === "fysiek");
-  const requiresTelephone = type === "korting" || type === "stalen";
+  const requiresTelephone = type === "korting" || type === "stalen" || type === "renderboek";
 
   // Get specific opt-in text based on type
   const getOptinText = () => {
@@ -327,27 +346,16 @@ const CTAFormDirect = ({ type, title }: CTAFormDirectProps) => {
             />
           </div>
         </div>
-        
-        {type === "stalen" && (
+
+        {(type === "stalen" || type === "renderboek") && (
+          <IkBenEenSelect value={ikBenEen} onChange={setIkBenEen} language="nl" disabled={isSubmitting} />
+        )}
+        {type === "renderboek" && renderbookType !== "fysiek" && (
           <div>
-            <Label className="text-stone-700 font-medium">Ik ben een... *</Label>
-            <RadioGroup value={typeBedrijf} onValueChange={setTypeBedrijf} className="mt-2" disabled={isSubmitting}>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="particulier" id="particulier" />
-                <Label htmlFor="particulier" className="text-stone-700">Particulier</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="keukenbouwer" id="keukenbouwer" />
-                <Label htmlFor="keukenbouwer" className="text-stone-700">Keukenbouwer</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="interieurarchitect" id="interieurarchitect" />
-                <Label htmlFor="interieurarchitect" className="text-stone-700">Interieurarchitect</Label>
-              </div>
-            </RadioGroup>
+            <Label htmlFor="gemeente-lookbook" className="text-stone-700 font-medium">Gemeente *</Label>
+            <Input id="gemeente-lookbook" value={formData.gemeente} onChange={e => setFormData({ ...formData, gemeente: e.target.value })} className="mt-1 border-stone-200 focus:border-stone-400 focus:ring-stone-400" required maxLength={120} disabled={isSubmitting} />
           </div>
         )}
-
         <div>
           <Label htmlFor="bedrijf" className="text-stone-700 font-medium">Bedrijf *</Label>
           <Input 

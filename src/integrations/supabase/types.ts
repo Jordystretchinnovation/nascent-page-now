@@ -300,7 +300,9 @@ export type Database = {
           created_at: string
           email: string
           gemeente: string | null
+          hubspot_synced: boolean
           id: string
+          ik_ben_een: string | null
           kwaliteit: string | null
           language: string
           marketing_optin: boolean
@@ -328,7 +330,9 @@ export type Database = {
           created_at?: string
           email: string
           gemeente?: string | null
+          hubspot_synced?: boolean
           id?: string
+          ik_ben_een?: string | null
           kwaliteit?: string | null
           language?: string
           marketing_optin?: boolean
@@ -356,7 +360,9 @@ export type Database = {
           created_at?: string
           email?: string
           gemeente?: string | null
+          hubspot_synced?: boolean
           id?: string
+          ik_ben_een?: string | null
           kwaliteit?: string | null
           language?: string
           marketing_optin?: boolean
