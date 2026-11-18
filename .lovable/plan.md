@@ -33,7 +33,7 @@ Daarna stuur je mij: de 2 form-ID's (in de URL van de formulier-editor) en de ID
 Eén formulier per lead magnet volstaat voor NL en FR; `form_language` maakt het onderscheid. Wil je liever aparte FR-formulieren, dan worden dat er 4.
 
 ## Wat ik in de app bouw
-- Nieuw veld "Ik ben een..." (dropdown, verplicht) op stalen- en lookbookformulier; FR-versie "Je suis un..." afhankelijk van je antwoord op de taalvraag.
+- Nieuw veld "Ik ben een..." (dropdown, verplicht) op stalen- en lookbookformulier; FR-pagina's tonen "Je suis un..." met Franse labels; de waarde naar HubSpot blijft de Nederlandse waarde uit de lijst.
 - Lookbookformulier: veld "Gemeente" toegevoegd (verplicht).
 - Bij verzenden: inzending wordt zoals nu in onze eigen database bewaard (dashboards blijven werken) én doorgestuurd naar HubSpot.
 - Tracking die meegaat naar HubSpot:
