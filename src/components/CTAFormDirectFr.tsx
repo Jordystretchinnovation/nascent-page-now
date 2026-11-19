@@ -204,6 +204,7 @@ const CTAFormDirectFr = ({ type, title }: CTAFormDirectFrProps) => {
           submissionId: submissionId, formType: type as "stalen" | "renderboek", language: "fr",
           voornaam: formData.voornaam, achternaam: formData.achternaam, bedrijf: formData.bedrijf, email: formData.email,
           telefoon: formData.telefoon, straat: formData.straat, postcode: formData.postcode, gemeente: formData.gemeente,
+          renderbookType: type === "renderboek" ? renderbookType : null,
           ikBenEen, marketingOptin, consentText: getOptinText(),
         });
       }

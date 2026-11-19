@@ -16,6 +16,7 @@ export interface HubspotLead {
   straat?: string | null;
   postcode?: string | null;
   gemeente?: string | null;
+  renderbookType?: string | null;
   ikBenEen: string;
   marketingOptin: boolean;
   consentText: string;

@@ -8,8 +8,8 @@ const FORM_GUIDS = {
   stalen: "156e5aa3-54f4-49a1-b08a-b4d2a5345f5d",
   renderboek: "5f755978-8346-40d9-83f2-736f22e84320",
 } as const;
-// Set HUBSPOT_SUBSCRIPTION_TYPE_ID to the marketing subscription type id to record marketing consent.
-const SUBSCRIPTION_TYPE_ID = Deno.env.get("HUBSPOT_SUBSCRIPTION_TYPE_ID");
+// "Marketing information - Covarte" subscription type
+const SUBSCRIPTION_TYPE_ID = "3185137916";
 
 const allowed = IK_BEN_EEN_OPTIONS.map((o) => o.value) as [string, ...string[]];
 const s = (max: number) => z.string().trim().max(max).optional().nullable();
@@ -26,6 +26,7 @@ const Body = z.object({
   straat: s(255),
   postcode: s(20),
   gemeente: s(120),
+  renderbookType: z.enum(["digitaal", "fysiek"]).optional().nullable(),
   ikBenEen: z.enum(allowed),
   marketingOptin: z.boolean(),
   consentText: z.string().max(1000),
@@ -60,6 +61,9 @@ Deno.serve(async (req) => {
       address: d.straat,
       zip: d.postcode,
       city: d.gemeente,
+      renderbook_type: d.formType === "renderboek" ? d.renderbookType : null,
+      // Address only for physical lookbook (or stalen)
+      ...(d.formType === "renderboek" && d.renderbookType !== "fysiek" ? { address: null, zip: null } : {}),
       customer_category: d.ikBenEen,
       hs_language: d.language,
       utm_source: d.utm_source,
