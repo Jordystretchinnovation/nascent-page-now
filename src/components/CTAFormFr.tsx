@@ -152,7 +152,9 @@ const CTAFormFr = ({ type, title }: CTAFormFrProps) => {
       }
 
       // Prepare submission data
+      const submissionId = crypto.randomUUID();
       const submissionData = {
+        id: submissionId,
         ik_ben_een: ikBenEen || null,
         type: type,
         voornaam: formData.voornaam,
@@ -174,29 +176,22 @@ const CTAFormFr = ({ type, title }: CTAFormFrProps) => {
       };
       
       // Insert into Supabase
-      const { data, error } = await supabase
-        .from('form_submissions_2026')
-        .insert([submissionData])
-        .select();
-
-      if (error) {
-        console.error('Supabase error:', error);
-        throw error;
-      }
       if (type === "stalen" || type === "renderboek") {
-        await sendToHubspot({
-          submissionId: data?.[0]?.id, formType: type as "stalen" | "renderboek", language: "fr",
+        void sendToHubspot({
+          submissionId: submissionId, formType: type as "stalen" | "renderboek", language: "fr",
           voornaam: formData.voornaam, achternaam: formData.achternaam, bedrijf: formData.bedrijf, email: formData.email,
           telefoon: formData.telefoon, straat: formData.straat, postcode: formData.postcode, gemeente: formData.gemeente,
           ikBenEen, marketingOptin, consentText: getOptinText(),
         });
       }
-      
-      // Show success toast
-      toast({
-        title: "Demande envoyée !",
-        description: "Nous vous contacterons dans les 24 heures."
-      });
+      const { error } = await supabase
+        .from('form_submissions_2026')
+        .insert([submissionData]);
+
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
 
       // Reset form
       setFormData({
@@ -229,9 +224,7 @@ const CTAFormFr = ({ type, title }: CTAFormFrProps) => {
           redirectPath += "echantillons";
       }
       
-      setTimeout(() => {
-        navigate(redirectPath);
-      }, 1000);
+      navigate(redirectPath);
       
     } catch (error) {
       console.error('Error submitting form:', error);

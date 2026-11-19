@@ -171,7 +171,9 @@ const CTAFormDirectFr = ({ type, title }: CTAFormDirectFrProps) => {
       }
 
       // Prepare submission data
+      const submissionId = crypto.randomUUID();
       const submissionData = {
+        id: submissionId,
         ik_ben_een: ikBenEen || null,
         type: type,
         voornaam: formData.voornaam,
@@ -197,10 +199,17 @@ const CTAFormDirectFr = ({ type, title }: CTAFormDirectFrProps) => {
       
       // Insert into Supabase directly without testing connection first
       console.log('CTAFormDirectFr - Inserting data into form_submissions table...');
-      const { data, error } = await supabase
+      if (type === "stalen" || type === "renderboek") {
+        void sendToHubspot({
+          submissionId: submissionId, formType: type as "stalen" | "renderboek", language: "fr",
+          voornaam: formData.voornaam, achternaam: formData.achternaam, bedrijf: formData.bedrijf, email: formData.email,
+          telefoon: formData.telefoon, straat: formData.straat, postcode: formData.postcode, gemeente: formData.gemeente,
+          ikBenEen, marketingOptin, consentText: getOptinText(),
+        });
+      }
+      const { error } = await supabase
         .from('form_submissions_2026')
-        .insert([submissionData])
-        .select();
+        .insert([submissionData]);
 
       if (error) {
         console.error('CTAFormDirectFr - Supabase error:', error);
@@ -212,22 +221,6 @@ const CTAFormDirectFr = ({ type, title }: CTAFormDirectFrProps) => {
         });
         throw error;
       }
-      if (type === "stalen" || type === "renderboek") {
-        await sendToHubspot({
-          submissionId: data?.[0]?.id, formType: type as "stalen" | "renderboek", language: "fr",
-          voornaam: formData.voornaam, achternaam: formData.achternaam, bedrijf: formData.bedrijf, email: formData.email,
-          telefoon: formData.telefoon, straat: formData.straat, postcode: formData.postcode, gemeente: formData.gemeente,
-          ikBenEen, marketingOptin, consentText: getOptinText(),
-        });
-      }
-
-      console.log('CTAFormDirectFr - Form submission successful:', data);
-      
-      // Show success toast
-      toast({
-        title: "Demande envoyée !",
-        description: "Nous vous contacterons dans les 24 heures."
-      });
 
       // Reset form
       setFormData({
@@ -264,9 +257,7 @@ const CTAFormDirectFr = ({ type, title }: CTAFormDirectFrProps) => {
       }
       
       console.log('CTAFormDirectFr - Redirecting to:', redirectPath);
-      setTimeout(() => {
-        navigate(redirectPath);
-      }, 1000);
+      navigate(redirectPath);
       
     } catch (error) {
       console.error('CTAFormDirectFr - Error submitting form:', error);

@@ -112,7 +112,9 @@ const CTAForm = ({ type, title }: CTAFormProps) => {
 
     try {
       // Prepare submission data
+      const submissionId = crypto.randomUUID();
       const submissionData = {
+        id: submissionId,
         ik_ben_een: ikBenEen || null,
         type,
         voornaam: formData.voornaam,
@@ -136,28 +138,20 @@ const CTAForm = ({ type, title }: CTAFormProps) => {
       console.log("CTAForm - Submitting form data:", submissionData);
 
       // Insert into Supabase
-      const { data, error } = await supabase.from("form_submissions_2026").insert([submissionData]).select();
-
-      if (error) {
-        console.error("CTAForm - Supabase error:", error);
-        throw error;
-      }
       if (type === "stalen" || type === "renderboek") {
-        await sendToHubspot({
-          submissionId: data?.[0]?.id, formType: type as "stalen" | "renderboek", language: "nl",
+        void sendToHubspot({
+          submissionId: submissionId, formType: type as "stalen" | "renderboek", language: "nl",
           voornaam: formData.voornaam, achternaam: formData.achternaam, bedrijf: formData.bedrijf, email: formData.email,
           telefoon: formData.telefoon, straat: formData.straat, postcode: formData.postcode, gemeente: formData.gemeente,
           ikBenEen, marketingOptin, consentText: getMarketingOptinText(),
         });
       }
+      const { error } = await supabase.from("form_submissions_2026").insert([submissionData]);
 
-      console.log("CTAForm - Form submission successful:", data);
-
-      // Show success toast
-      toast({
-        title: "Aanvraag verzonden!",
-        description: "We nemen binnen 24 uur contact met je op.",
-      });
+      if (error) {
+        console.error("CTAForm - Supabase error:", error);
+        throw error;
+      }
 
       // Reset form
       setFormData({
@@ -175,7 +169,7 @@ const CTAForm = ({ type, title }: CTAFormProps) => {
       setIkBenEen("");
 
       // Redirect to appropriate thank you page
-      setTimeout(() => {
+      {
         switch (type) {
           case "stalen":
             navigate("/thank-you/stalen");
@@ -189,7 +183,7 @@ const CTAForm = ({ type, title }: CTAFormProps) => {
           default:
             navigate("/");
         }
-      }, 1000);
+      }
     } catch (error) {
       console.error("CTAForm - Error submitting form:", error);
       toast({

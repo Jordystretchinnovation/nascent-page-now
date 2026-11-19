@@ -1,4 +1,5 @@
-import { supabase } from "@/integrations/supabase/client";
+const FN_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/hubspot-form-submit`;
+const ANON = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
 const getCookie = (name: string) =>
   document.cookie.split("; ").find((c) => c.startsWith(name + "="))?.split("=")[1] || "";
@@ -24,8 +25,12 @@ export interface HubspotLead {
 export async function sendToHubspot(lead: HubspotLead) {
   try {
     const params = new URLSearchParams(window.location.search);
-    const { error } = await supabase.functions.invoke("hubspot-form-submit", {
-      body: {
+    // keepalive: request survives the navigation to the thank-you page
+    const res = await fetch(FN_URL, {
+      method: "POST",
+      keepalive: true,
+      headers: { "Content-Type": "application/json", apikey: ANON, Authorization: `Bearer ${ANON}` },
+      body: JSON.stringify({
         ...lead,
         utm_source: params.get("utm_source") || "",
         utm_medium: params.get("utm_medium") || "",
@@ -37,9 +42,9 @@ export async function sendToHubspot(lead: HubspotLead) {
         hutk: getCookie("hubspotutk"),
         pageUri: window.location.href,
         pageName: document.title,
-      },
+      }),
     });
-    if (error) console.error("HubSpot sync failed:", error);
+    if (!res.ok) console.error("HubSpot sync failed:", res.status, await res.text());
   } catch (e) {
     console.error("HubSpot sync failed:", e);
   }
