@@ -22,13 +22,23 @@ const Body = z.object({
   achternaam: z.string().trim().min(1).max(100),
   bedrijf: z.string().trim().min(1).max(200),
   email: z.string().trim().email().max(255),
-  telefoon: s(50), straat: s(255), postcode: s(20), gemeente: s(120),
+  telefoon: s(50),
+  straat: s(255),
+  postcode: s(20),
+  gemeente: s(120),
   ikBenEen: z.enum(allowed),
   marketingOptin: z.boolean(),
   consentText: z.string().max(1000),
-  utm_source: s(255), utm_medium: s(255), utm_campaign: s(255), utm_term: s(255), utm_content: s(255),
-  fbclid: s(500), gclid: s(500),
-  hutk: s(100), pageUri: z.string().max(2000), pageName: z.string().max(500),
+  utm_source: s(255),
+  utm_medium: s(255),
+  utm_campaign: s(255),
+  utm_term: s(255),
+  utm_content: s(255),
+  fbclid: s(500),
+  gclid: s(500),
+  hutk: s(100),
+  pageUri: z.string().max(2000),
+  pageName: z.string().max(500),
 });
 
 const json = (b: unknown, status = 200) =>
@@ -42,13 +52,23 @@ Deno.serve(async (req) => {
     const d = parsed.data;
 
     const raw: Record<string, string | null | undefined> = {
-      firstname: d.voornaam, lastname: d.achternaam, company: d.bedrijf, email: d.email,
-      phone: d.telefoon, address: d.straat, zip: d.postcode, city: d.gemeente,
-      ik_ben_een: d.ikBenEen,
-      lead_magnet: d.formType === "stalen" ? "stalenpakket" : "lookbook",
-      form_language: d.language,
-      utm_source: d.utm_source, utm_medium: d.utm_medium, utm_campaign: d.utm_campaign,
-      utm_term: d.utm_term, utm_content: d.utm_content, fbclid: d.fbclid, gclid: d.gclid,
+      firstname: d.voornaam,
+      lastname: d.achternaam,
+      company: d.bedrijf,
+      email: d.email,
+      phone: d.telefoon,
+      address: d.straat,
+      zip: d.postcode,
+      city: d.gemeente,
+      customer_category: d.ikBenEen,
+      hs_language: d.language,
+      utm_source: d.utm_source,
+      utm_medium: d.utm_medium,
+      utm_campaign: d.utm_campaign,
+      utm_term: d.utm_term,
+      utm_content: d.utm_content,
+      fbclid: d.fbclid,
+      gclid: d.gclid,
     };
     const fields = Object.entries(raw)
       .filter(([, v]) => v)
@@ -87,7 +107,10 @@ Deno.serve(async (req) => {
     if (d.submissionId) {
       const url = Deno.env.get("SUPABASE_URL")!;
       const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || Deno.env.get("SUPABASE_ANON_KEY")!;
-      await createClient(url, key).from("form_submissions_2026").update({ hubspot_synced: true }).eq("id", d.submissionId);
+      await createClient(url, key)
+        .from("form_submissions_2026")
+        .update({ hubspot_synced: true })
+        .eq("id", d.submissionId);
     }
     return json({ ok: true });
   } catch (e) {
